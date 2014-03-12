@@ -1,22 +1,19 @@
 package pt.ua.it.atnog.ml.optimization.genetic.selection;
 
-public class Pair<Type> {
-	private Type first, second;
-	
-	public Pair (Type first, Type second) {
+public class Pair<F, S> {
+	protected F first;
+	protected S second;
+
+	public Pair(F first, S second) {
 		this.first = first;
 		this.second = second;
 	}
-	
-	public Type first() {
+
+	public F first() {
 		return first;
 	}
-	
-	public Type second() {
+
+	public S second() {
 		return second;
-	}
-	
-	public String toString() {
-		return "first: "+first.toString()+"\nsecond: "+second.toString();
 	}
 }

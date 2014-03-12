@@ -1,76 +1,43 @@
 package pt.ua.it.atnog.ml.optimization.genetic.selection;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import pt.ua.it.atnog.ml.optimization.genetic.Chromosome;
 
 public class TournamentSelection implements Selection {
+	private Chromosome array[];
 
-	private final int roundSize;
-	private final double percentgeWinning;
-	private Random random;
-	private List<Pair<Chromosome>> matingPool;
-
-	public TournamentSelection(double percentgeWinning) {
-		this(2, percentgeWinning);
+	public TournamentSelection() {
+		array = new Chromosome[3];
 	}
 
-	public TournamentSelection(int roundSize, double percentgeWinning) {
-		this.roundSize = roundSize;
-		this.percentgeWinning = percentgeWinning;
-		random = new Random();
-		matingPool = new ArrayList<Pair<Chromosome>>();
+	private void swap(Chromosome array[], int i, int j) {
+		Chromosome t = array[i];
+		array[i] = array[j];
+		array[j] = t;
 	}
 
-	public List<Pair<Chromosome>> select(List<Chromosome> population) {
-		int size = (population.size() / (2 * roundSize)) * (2 * roundSize);
-		matingPool.clear();
-		Chromosome championRound1, championRound2;
+	private void sort(Chromosome array[]) {
+		if (array[0].fitness() < array[1].fitness())
+			swap(array, 0, 1);
+		if (array[1].fitness() < array[2].fitness())
+			swap(array, 1, 2);
+		if (array[0].fitness() < array[1].fitness())
+			swap(array, 0, 1);
+	}
 
-		for (int tournament = 0; tournament < roundSize; tournament++) {
+	public void select(List<Chromosome> population, List<Chromosome> offspring) {
+		int size = (population.size() / 3) * 3;
+		for (int r = 0; r < 2; r++) {
 			Collections.shuffle(population);
-
-			for (int i = 0; i < size; i = i + (2 * roundSize)) {
-
-				int j = i + 1;
-				championRound1 = population.get(i);
-				championRound2 = population.get(i + roundSize);
-
-				for (; j < (i + roundSize); j++) {
-					boolean winning = random.nextDouble() >= percentgeWinning;
-					if (winning
-							&& championRound1.fitness() < population.get(j)
-									.fitness()) {
-						championRound1 = population.get(j);
-					}
-				}
-
-				for (; j < (i + (2 * roundSize)); j++) {
-					boolean winning = random.nextDouble() >= percentgeWinning;
-					if (winning
-							&& championRound2.fitness() < population.get(j)
-									.fitness()) {
-						championRound2 = population.get(j);
-					}
-				}
-
-				matingPool.add(new Pair<Chromosome>(championRound1,
-						championRound2));
-
+			for (int i = 0; i < size; i += 3) {
+				array[0] = population.get(i);
+				array[1] = population.get(i + 1);
+				array[2] = population.get(i + 2);
+				sort(array);
+				offspring.add(array[0].crossover(array[1]));
 			}
 		}
-
-		Collections.shuffle(population);
-
-		for (int i = 0; i < population.size() - size; i += 2) {
-			matingPool.add(new Pair<Chromosome>(population.get(i), population
-					.get(i + 1)));
-
-		}
-
-		return matingPool;
 	}
 }
