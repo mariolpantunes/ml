@@ -27,7 +27,7 @@ public class TournamentSelection implements Selection {
 			swap(array, 0, 1);
 	}
 
-	public void select(List<Chromosome> population, List<Chromosome> offspring) {
+	public void select(List<? extends Chromosome> population, List<Chromosome> offspring) {
 		int size = (population.size() / 3) * 3;
 		for (int r = 0; r < 2; r++) {
 			Collections.shuffle(population);

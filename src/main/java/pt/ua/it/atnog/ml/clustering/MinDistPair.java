@@ -1,4 +1,4 @@
-package pt.ua.it.atnog.clustering;
+package pt.ua.it.atnog.ml.clustering;
 
 public class MinDistPair implements Comparable<MinDistPair> {
 	protected Element e1, e2;

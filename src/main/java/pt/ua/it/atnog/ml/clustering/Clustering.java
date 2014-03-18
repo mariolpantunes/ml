@@ -1,4 +1,4 @@
-package pt.ua.it.atnog.clustering;
+package pt.ua.it.atnog.ml.clustering;
 
 import java.util.ArrayList;
 import java.util.Collections;

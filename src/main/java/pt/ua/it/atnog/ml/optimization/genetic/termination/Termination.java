@@ -15,7 +15,7 @@ public class Termination {
 		generationsCount = 0;
 	}
 
-	public boolean termination(List<Chromosome> population) {
+	public boolean termination(List<? extends Chromosome> population) {
 		boolean ended = false;
 		if (generationsCount == numberGenerations) {
 			ended = true;

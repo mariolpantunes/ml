@@ -1,11 +1,13 @@
-package pt.ua.it.atnog.clustering;
+package pt.ua.it.atnog.ml.clustering;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class Cluster {
+import pt.ua.it.atnog.ml.thresholding.Score;
+
+public abstract class Cluster implements Score {
 	List<Element> elements = new ArrayList<Element>();
 
 	public Cluster(Element e) {
@@ -32,6 +34,10 @@ public abstract class Cluster {
 		return elements.size();
 	}
 
+	public double score() {
+		return size();
+	}
+
 	public Element at(int i) {
 		return elements.get(i);
 	}
@@ -47,9 +53,9 @@ public abstract class Cluster {
 			for (int j = i + 1; j < l.size(); j++)
 				rv += l.get(i).distance(l.get(j));
 
-		if(rv > 0.0)
+		if (rv > 0.0)
 			rv = rv / t(l.size());
-		
+
 		return rv;
 	}
 

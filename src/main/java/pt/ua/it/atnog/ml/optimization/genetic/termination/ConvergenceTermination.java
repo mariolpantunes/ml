@@ -20,7 +20,7 @@ public class ConvergenceTermination extends Termination {
 		convergenceCount = 0;
 	}
 
-	public boolean termination(List<Chromosome> population) {
+	public boolean termination(List<? extends Chromosome> population) {
 		boolean ended = super.termination(population);
 		if (!ended) {
 			Chromosome bestSolution = Collections.min(population);

@@ -1,4 +1,4 @@
-package pt.ua.it.atnog.clustering;
+package pt.ua.it.atnog.ml.clustering;
 
 public abstract class Element {
 	protected Cluster cluster;

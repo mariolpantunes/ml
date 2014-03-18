@@ -15,7 +15,7 @@ public class FitnessTermination extends Termination {
 		this.targetFitness = targetFitness;
 	}
 
-	public boolean termination(List<Chromosome> population) {
+	public boolean termination(List<? extends Chromosome> population) {
 		boolean ended = super.termination(population);
 
 		if (!ended) {
