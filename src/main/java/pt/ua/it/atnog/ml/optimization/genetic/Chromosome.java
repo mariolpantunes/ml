@@ -1,6 +1,8 @@
 package pt.ua.it.atnog.ml.optimization.genetic;
 
-public abstract class Chromosome implements Comparable<Chromosome> {
+import pt.ua.it.atnog.ml.utils.workers.Parallel;
+
+public abstract class Chromosome  extends Parallel implements Comparable<Chromosome> {
 	private double fitness;
 	private boolean computeFitness = false;
 

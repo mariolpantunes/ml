@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import pt.ua.it.atnog.ml.optimization.genetic.selection.Selection;
 import pt.ua.it.atnog.ml.optimization.genetic.termination.Termination;
+import pt.ua.it.atnog.ml.utils.workers.WorkersPoll;
 
 public class GPGA {
 
@@ -18,7 +19,7 @@ public class GPGA {
 	public static List<Chromosome> optimize(List<Chromosome> population,
 			Selection selection, Termination termination,
 			double mutationProbability, int nWorkers, Logger logger) {
-		WorkersPoll workers = new WorkersPoll(nWorkers);
+		WorkersPoll workers = new WorkersPoll(new FitnessWorker(), nWorkers);
 
 		workers.runParallel(population);
 		workers.done();

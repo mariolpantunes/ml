@@ -1,4 +1,4 @@
-package pt.ua.it.atnog.ml.utils;
+package pt.ua.it.atnog.ml.utils.pipeline;
 
 import java.util.ArrayList;
 import java.util.List;

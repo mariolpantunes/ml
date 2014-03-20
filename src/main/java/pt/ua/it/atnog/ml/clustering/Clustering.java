@@ -4,30 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/*
- * else if (c1 != c2) { logger.info("Both points are in a cluster");
- * logger.info(c1.toString()); logger.info(c2.toString());
- * 
- * double ICD = c1.icdWith(c2); logger.info("After ICD...");
- * logger.info(c1.toString()); logger.info(c2.toString());
- * 
- * 
- * if (ICD < t) { logger.info("Merge clusters...");
- * clusters.remove(c2); logger.info("Remove..."); c1.addAll(c2); }
- * 
- * 
- * 
- * else { double ICD_C1 = c1.icd(), ICD_C2 = c2.icd(), ICD_C1_M_E1 =
- * c1 .icdWithout(e1), ICD_C2_M_E2 = c2.icdWithout(e2), ICD_C1_P_E2
- * = c1 .icdWith(e2), ICD_C2_P_E1 = c2.icdWith(e1);
- * 
- * double gainC1 = ICD_C1 - ICD_C1_M_E1 + ICD_C2 - ICD_C2_P_E1,
- * gainC2 = ICD_C2 - ICD_C2_M_E2 + ICD_C1 - ICD_C1_P_E2;
- * 
- * if (gainC1 > gainC2 && gainC1 > 0.0) { c1.remove(e1); c2.add(e1);
- * } else if (gainC2 > 0.0) { c2.remove(e2); c1.add(e2); } }
- */
-
 public class Clustering {
 	public static List<Cluster> minDist(List<? extends Element> elements,
 			double d, double t) {
@@ -51,11 +27,11 @@ public class Clustering {
 				double ICD = c1.icdWith(e2);
 				if (ICD < t)
 					c1.add(e2);
-			} else if(c1 != c2) {
+			} else if (c1 != c2) {
 				double ICD = c1.icdWith(c2);
-				if(ICD < t) {
-					 clusters.remove(c2);
-					 c1.addAll(c2);
+				if (ICD < t) {
+					clusters.remove(c2);
+					c1.addAll(c2);
 				}
 			}
 		}
@@ -77,13 +53,12 @@ public class Clustering {
 			for (int j = i + 1; j < elements.size(); j++) {
 				double distance = elements.get(i).distance(elements.get(j));
 				if (distance < d)
-					pairs.add(new MinDistPair(elements.get(i), elements.get(j),
-							distance));
+					pairs.add(new MinDistPair(elements.get(i), elements.get(j)));
 			}
 
 		return pairs;
 	}
-	
+
 	public static List<Cluster> kMedoid(List<? extends Element> elements, int k) {
 		List<Cluster> clusters = initKMedoidsClusters(elements, k);
 		boolean done = false;
@@ -130,8 +105,8 @@ public class Clustering {
 		return rv;
 	}
 
-	private static List<Cluster> initKMedoidsClusters(List<? extends Element> elements,
-			int k) {
+	private static List<Cluster> initKMedoidsClusters(
+			List<? extends Element> elements, int k) {
 		List<Cluster> clusters = new ArrayList<Cluster>(k);
 		Collections.shuffle(elements);
 

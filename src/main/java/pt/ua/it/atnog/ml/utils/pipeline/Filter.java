@@ -1,4 +1,4 @@
-package pt.ua.it.atnog.ml.utils;
+package pt.ua.it.atnog.ml.utils.pipeline;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class Filter implements Runnable {
 	private AtomicBoolean running;
 	private BlockingQueue<Event> in, out;
-	private Thread t;
+	private Thread thread;
 
 	public Filter() {
 		running = new AtomicBoolean(false);
@@ -23,8 +23,8 @@ public abstract class Filter implements Runnable {
 
 	public void start() {
 		if (!running.getAndSet(true)) {
-			t = new Thread(this);
-			t.start();
+			thread = new Thread(this);
+			thread.start();
 		}
 	}
 
@@ -34,7 +34,7 @@ public abstract class Filter implements Runnable {
 		while (!done) {
 			try {
 				Event eIn = in.take();
-				if (!eIn.done()) {
+				if (!eIn.endOfStream()) {
 					processEvent(eIn, eOut);
 					if (eOut.size() > 0) {
 						for (Event e : eOut)
@@ -53,8 +53,14 @@ public abstract class Filter implements Runnable {
 
 	public void join() throws InterruptedException {
 		if (running.get()) {
-			t.join();
-			running.set(false);
+			try {
+				thread.join();
+				running.set(false);
+			} catch (InterruptedException e) {
+				throw e;
+			} finally {
+				running.set(false);
+			}
 		}
 	}
 
