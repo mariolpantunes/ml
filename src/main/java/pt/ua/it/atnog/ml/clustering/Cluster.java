@@ -7,20 +7,20 @@ import java.util.List;
 
 import pt.ua.it.atnog.ml.thresholding.Score;
 
-public abstract class Cluster implements Score {
-	List<Element> elements = new ArrayList<Element>();
+public abstract class Cluster<T extends Element> implements Score {
+	List<T> elements = new ArrayList<T>();
 
-	public Cluster(Element e) {
+	public Cluster(T e) {
 		e.cluster(this);
 		elements.add(e);
 	}
 
-	public void add(Element e) {
+	public void add(T e) {
 		e.cluster(this);
 		elements.add(e);
 	}
 
-	public void remove(Element e) {
+	public void remove(T e) {
 		elements.remove(e);
 	}
 
@@ -46,7 +46,7 @@ public abstract class Cluster implements Score {
 		return (n * n - 1) / 2.0;
 	}
 
-	protected double icd(List<Element> l) {
+	protected double icd(List<T> l) {
 		double rv = 0.0;
 
 		for (int i = 0; i < l.size() - 1; i++)
@@ -63,7 +63,7 @@ public abstract class Cluster implements Score {
 		return icd(elements);
 	}
 
-	public Element center() {
+	public T center() {
 		Double[] dist = new Double[elements.size()];
 		Arrays.fill(dist, 0.0);
 

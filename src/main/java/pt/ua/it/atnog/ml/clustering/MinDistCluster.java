@@ -3,29 +3,29 @@ package pt.ua.it.atnog.ml.clustering;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MinDistCluster extends Cluster {
+public class MinDistCluster<T extends Element> extends Cluster<T> {
 	private double icd;
 
-	public MinDistCluster(Element e) {
+	public MinDistCluster(T e) {
 		super(e);
 		icd = 0.0;
 	}
 
-	public void add(Element e) {
+	public void add(T e) {
 		icd = icdWith(e);
 		super.add(e);
 	}
 
-	public void addAll(MinDistCluster c) {
+	public void addAll(MinDistCluster<T> c) {
 		icd = icdWith(c);
-		for (Element e : c.elements)
+		for (T e : c.elements)
 			super.add(e);
 	}
 
-	public double icdWith(Element e) {
+	public double icdWith(T e) {
 		double rv = 0.0;
 
-		for (Element el : elements)
+		for (T el : elements)
 			rv += el.distance(e);
 
 		rv = (icd * t(elements.size()) + rv) / t(elements.size() + 1);
@@ -33,18 +33,17 @@ public class MinDistCluster extends Cluster {
 		return rv;
 	}
 
-	public double icdWith(MinDistCluster c) {
-		List<Element> all = new ArrayList<Element>(elements.size()
-				+ c.elements.size());
+	public double icdWith(Cluster<T> c) {
+		List<T> all = new ArrayList<T>(elements.size() + c.elements.size());
 		all.addAll(elements);
 		all.addAll(c.elements);
 		return icd(all);
 	}
 
-	public double icdWithout(Element e) {
+	public double icdWithout(T e) {
 		double rv = 0.0;
 
-		for (Element el : elements)
+		for (T el : elements)
 			if (!el.equals(e))
 				rv += el.distance(e);
 

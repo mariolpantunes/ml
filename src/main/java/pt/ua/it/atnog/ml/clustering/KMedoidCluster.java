@@ -1,18 +1,18 @@
 package pt.ua.it.atnog.ml.clustering;
 
-public class KMedoidCluster extends Cluster {
-	protected Element medoid;
+public class KMedoidCluster<T extends Element> extends Cluster<T> {
+	protected T medoid;
 
-	public KMedoidCluster(Element e) {
+	public KMedoidCluster(T e) {
 		super(e);
 		medoid = e;
 	}
 
-	public double distance(Element e) {
+	public double distance(T e) {
 		return medoid.distance(e);
 	}
 
-	public Element medoid() {
+	public T medoid() {
 		return medoid;
 	}
 
