@@ -37,7 +37,6 @@ public class Thresholding {
 		done = true;
 	    else
 		iT = fT;
-
 	} while (!done);
 
 	return fT;
