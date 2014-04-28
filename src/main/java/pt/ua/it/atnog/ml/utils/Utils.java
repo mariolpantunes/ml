@@ -58,6 +58,18 @@ public class Utils {
     public static int randomBetween(int min, int max) {
 	return min + (int) (Math.random() * ((max - min) + 1));
     }
+    
+    public static long poisonDist(long lambda) {
+	double L = Math.exp(-lambda), p = 1.0;
+	long k = 0;
+
+	do {
+	    k++;
+	    p *= Math.random();
+	} while (p > L);
+
+	return k - 1;
+    }
 
     public static double round(double v, int ndp) {
 	double mf = Math.pow(10, ndp);
