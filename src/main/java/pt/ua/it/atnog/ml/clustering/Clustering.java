@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import pt.ua.it.atnog.ml.utils.Utils;
-import pt.ua.it.atnog.ml.utils.structures.KDTree;
+import pt.ua.it.atnog.utils.Utils;
+import pt.ua.it.atnog.utils.structures.KDTree;
 
 public class Clustering {
     public static <T extends KDElement> List<Cluster<T>> fastMinDist(
