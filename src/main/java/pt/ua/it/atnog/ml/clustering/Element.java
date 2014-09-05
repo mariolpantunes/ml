@@ -1,6 +1,8 @@
 package pt.ua.it.atnog.ml.clustering;
 
-public abstract class Element {
+import pt.ua.it.atnog.utils.structures.Point;
+
+public abstract class Element extends Point{
     protected Cluster<?> cluster;
     protected int votes;
 
