@@ -8,7 +8,7 @@ import pt.ua.it.atnog.utils.Utils;
 import pt.ua.it.atnog.utils.structures.KDTree;
 
 public class Clustering {
-    public static <T extends KDElement> List<Cluster<T>> fastMinDist(
+    public static <T extends Element> List<Cluster<T>> fastMinDist(
 	    List<T> elements, double d, double t) {
 	List<Cluster<T>> clusters = new ArrayList<Cluster<T>>();
 	KDTree<T> tree = KDTree.build(elements);
@@ -16,7 +16,7 @@ public class Clustering {
 	for (int i = 0; i < elements.size() - 1; i++) {
 	    T e1 = elements.get(i);
 	    tree.remove(elements.get(i));
-	    List<T> closer = tree.closer(e1, d);
+	    List<T> closer = tree.atMaxDist(e1, d);
 	    if (e1.cluster == null && closer.size() == 0) {
 		MinDistCluster<T> cluster = new MinDistCluster<T>(e1);
 		clusters.add(cluster);
@@ -59,7 +59,7 @@ public class Clustering {
 
 	for (int i = 0; i < elements.size() - 1; i++) {
 	    for (int j = i + 1; j < elements.size(); j++) {
-		double distance = elements.get(i).distance(elements.get(j));
+		double distance = elements.get(i).euclideanDistance(elements.get(j));
 		if (distance < d) {
 		    T e1 = elements.get(i), e2 = elements.get(j);
 		    MinDistCluster<T> c1 = Utils.cast(e1.cluster), c2 = Utils

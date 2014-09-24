@@ -2,21 +2,24 @@ package pt.ua.it.atnog.ml.clustering;
 
 import pt.ua.it.atnog.utils.structures.Point;
 
-public abstract class Element extends Point{
+public class Element extends Point {
     protected Cluster<?> cluster;
     protected int votes;
 
-    public Element() {
-	cluster = null;
+    public Element(double coor[]) {
+        super(coor);
+        cluster = null;
     }
 
     public Cluster<?> cluster() {
-	return cluster;
+	    return cluster;
     }
 
     public boolean used() {
-	return cluster != null;
+	    return cluster != null;
     }
 
-    public abstract double distance(Element e);
+    public double distance(Element e) {
+        return euclideanDistance(e);
+    }
 }
