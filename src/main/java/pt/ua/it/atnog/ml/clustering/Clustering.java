@@ -59,7 +59,7 @@ public class Clustering {
 
 	for (int i = 0; i < elements.size() - 1; i++) {
 	    for (int j = i + 1; j < elements.size(); j++) {
-		double distance = elements.get(i).euclideanDistance(elements.get(j));
+		double distance = elements.get(i).distance(elements.get(j));
 		if (distance < d) {
 		    T e1 = elements.get(i), e2 = elements.get(j);
 		    MinDistCluster<T> c1 = Utils.cast(e1.cluster), c2 = Utils

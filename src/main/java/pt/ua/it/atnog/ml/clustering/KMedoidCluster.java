@@ -9,7 +9,7 @@ public class KMedoidCluster<T extends Element> extends Cluster<T> {
 	}
 
 	public double distance(T e) {
-		return medoid.euclideanDistance(e);
+		return medoid.distance(e);
 	}
 
 	public T medoid() {
