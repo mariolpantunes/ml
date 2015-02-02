@@ -29,6 +29,7 @@ public class GPGA {
 		List<Chromosome> newGeneration = new ArrayList<Chromosome>(
 				population.size());
 
+		int it = 0;
 		while (!termination.termination(population)) {
 			selection.select(population, offspring);
 			workers.runParallel(offspring);
@@ -48,7 +49,6 @@ public class GPGA {
 					newGeneration.addAll(offspring);
 				}
 			}
-
 			int numberMutations = (int) (newGeneration.size() * mutationProbability);
 			Collections.shuffle(newGeneration);
 			for (int i = 0; i < numberMutations; i++)
@@ -66,8 +66,11 @@ public class GPGA {
 				Chromosome solution = Collections.min(population);
 				logger.info(solution.toString());
 			}
+			it++;
 		}
 		workers.close();
+
+		System.out.println("It: "+it);
 		return population;
 	}
 }

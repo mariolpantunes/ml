@@ -1,6 +1,6 @@
 package pt.it.av.atnog.ml.clustering;
 
-import pt.it.av.atnog.utils.linearAlgebra.Vector;
+import pt.it.av.atnog.utils.bla.Vector;
 
 public class Element extends Vector {
     protected Cluster<?> cluster;

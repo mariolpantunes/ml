@@ -1,6 +1,6 @@
 package pt.it.av.atnog.ml.optimization;
 
-import pt.it.av.atnog.utils.linearAlgebra.Vector;
+import pt.it.av.atnog.utils.bla.Vector;
 
 /**
  * Created by mantunes on 11/27/14.
