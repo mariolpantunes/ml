@@ -7,8 +7,9 @@ import java.util.logging.Logger;
 
 import pt.it.av.atnog.ml.optimization.genetic.selection.Selection;
 import pt.it.av.atnog.ml.optimization.genetic.termination.Termination;
-import pt.it.av.atnog.ml.utils.workers.WorkersPoll;
 
+
+//TODO: use threadpool from utils...
 public class GPGA {
 
 	public static List<Chromosome> optimize(List<Chromosome> population,
@@ -19,10 +20,10 @@ public class GPGA {
 	public static List<Chromosome> optimize(List<Chromosome> population,
 			Selection selection, Termination termination,
 			double mutationProbability, int nWorkers, Logger logger) {
-		WorkersPoll workers = new WorkersPoll(new FitnessWorker(), nWorkers);
+		//WorkersPoll workers = new WorkersPoll(new FitnessWorker(), nWorkers);
 
-		workers.runParallel(population);
-		workers.done();
+		//workers.runParallel(population);
+		//workers.done();
 
 		List<Chromosome> offspring = new ArrayList<Chromosome>(
 				population.size());
@@ -32,8 +33,8 @@ public class GPGA {
 		int it = 0;
 		while (!termination.termination(population)) {
 			selection.select(population, offspring);
-			workers.runParallel(offspring);
-			workers.done();
+			//workers.runParallel(offspring);
+			//workers.done();
 			if (offspring.size() > population.size()) {
 				Collections.sort(offspring);
 				for (int i = 0; i < population.size(); i++)
@@ -54,8 +55,8 @@ public class GPGA {
 			for (int i = 0; i < numberMutations; i++)
 				newGeneration.get(i).mutation();
 
-			workers.runParallel(newGeneration);
-			workers.done();
+			//workers.runParallel(newGeneration);
+			//workers.done();
 
 			population.clear();
 			population.addAll(newGeneration);
@@ -68,8 +69,7 @@ public class GPGA {
 			}
 			it++;
 		}
-		workers.close();
-
+		//workers.close();
 		System.out.println("It: "+it);
 		return population;
 	}
