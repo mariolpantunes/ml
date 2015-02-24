@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>pt.ua.it.atnog</groupId>
+	<groupId>pt.it.av.atnog</groupId>
 	<artifactId>ml</artifactId>
 	<version>1.0</version>
 	<properties>
@@ -32,5 +32,10 @@
             <artifactId>utils</artifactId>
             <version>1.0</version>
         </dependency>
+		<dependency>
+			<groupId>com.eclipsesource.minimal-json</groupId>
+			<artifactId>minimal-json</artifactId>
+			<version>0.9.2</version>
+		</dependency>
     </dependencies>
 </project>
