@@ -19,20 +19,33 @@ public class DP {
         this.profile = profile;
     }
 
+    public void optimize_elbow() {
+        if (profile.size() > 25) {
+            Comparator<Pair<String, Double>> c = (Pair<String, Double> a, Pair<String, Double> b) -> (Double.compare(b.b, a.b));
+            Collections.sort(profile, c);
+            Vector v = new Vector(profile.size());
+            int i = 0;
+            for (Pair<String, Double> p : profile)
+                v.set(i++, p.b);
+            double t = v.elbow();
+            profile.removeIf(p -> p.b < t);
+        }
+    }
+
     public double similarity(DP dp) {
         Comparator<Pair<String, Double>> c = (Pair<String, Double> a, Pair<String, Double> b) -> (a.a.compareTo(b.a));
         Collections.sort(profile, c);
         Collections.sort(dp.profile, c);
-        double dataA[] = new double[profile.size()+dp.profile.size()],
-        dataB[] = new double[profile.size()+dp.profile.size()];
+        double dataA[] = new double[profile.size() + dp.profile.size()],
+                dataB[] = new double[profile.size() + dp.profile.size()];
         int i = 0, j = 0, idx = 0;
-        while(i < profile.size() && j < dp.profile.size()) {
-            if(profile.get(i).a.compareTo(dp.profile.get(j).a) == 0) {
+        while (i < profile.size() && j < dp.profile.size()) {
+            if (profile.get(i).a.compareTo(dp.profile.get(j).a) == 0) {
                 dataA[idx] = profile.get(i).b;
                 dataB[idx] = dp.profile.get(j).b;
                 i++;
                 j++;
-            } else if(profile.get(i).a.compareTo(dp.profile.get(j).a) < 0) {
+            } else if (profile.get(i).a.compareTo(dp.profile.get(j).a) < 0) {
                 dataA[idx] = profile.get(i).b;
                 dataB[idx] = 0.0;
                 i++;
@@ -48,16 +61,15 @@ public class DP {
     }
 
 
-
     public String toString() {
         Comparator<Pair<String, Double>> c = (Pair<String, Double> a, Pair<String, Double> b) -> (Double.compare(b.b, a.b));
         Collections.sort(profile, c);
         StringBuilder sb = new StringBuilder();
-        sb.append(term+" [");
+        sb.append(term + " [");
         int i = 0;
-        for(int t = profile.size()-1; i < t; i++)
-            sb.append(profile.get(i).toString()+"; ");
-        sb.append(profile.get(i).toString()+"]");
+        for (int t = profile.size() - 1; i < t; i++)
+            sb.append(profile.get(i).toString() + "; ");
+        sb.append(profile.get(i).toString() + "]");
         return sb.toString();
     }
 }
