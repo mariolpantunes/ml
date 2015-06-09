@@ -11,21 +11,21 @@ import java.util.List;
  * Created by mantunes on 3/20/15.
  */
 public class DP {
-    private final String term;
-    private final List<Pair<String, Double>> profile;
+    private final NGram term;
+    private final List<Pair<NGram, Double>> profile;
 
-    public DP(String term, List<Pair<String, Double>> profile) {
+    public DP(NGram term, List<Pair<NGram, Double>> profile) {
         this.term = term;
         this.profile = profile;
     }
 
     public void optimize_elbow() {
         if (profile.size() > 25) {
-            Comparator<Pair<String, Double>> c = (Pair<String, Double> a, Pair<String, Double> b) -> (Double.compare(b.b, a.b));
+            Comparator<Pair<NGram, Double>> c = (Pair<NGram, Double> a, Pair<NGram, Double> b) -> (Double.compare(b.b, a.b));
             Collections.sort(profile, c);
             Vector v = new Vector(profile.size());
             int i = 0;
-            for (Pair<String, Double> p : profile)
+            for (Pair<NGram, Double> p : profile)
                 v.set(i++, p.b);
             double t = v.elbow();
             profile.removeIf(p -> p.b < t);
@@ -33,7 +33,7 @@ public class DP {
     }
 
     public double similarity(DP dp) {
-        Comparator<Pair<String, Double>> c = (Pair<String, Double> a, Pair<String, Double> b) -> (a.a.compareTo(b.a));
+        Comparator<Pair<NGram, Double>> c = (Pair<NGram, Double> a, Pair<NGram, Double> b) -> (a.a.compareTo(b.a));
         Collections.sort(profile, c);
         Collections.sort(dp.profile, c);
         double dataA[] = new double[profile.size() + dp.profile.size()],
@@ -62,7 +62,7 @@ public class DP {
 
 
     public String toString() {
-        Comparator<Pair<String, Double>> c = (Pair<String, Double> a, Pair<String, Double> b) -> (Double.compare(b.b, a.b));
+        Comparator<Pair<NGram, Double>> c = (Pair<NGram, Double> a, Pair<NGram, Double> b) -> (Double.compare(b.b, a.b));
         Collections.sort(profile, c);
         StringBuilder sb = new StringBuilder();
         sb.append(term + " [");

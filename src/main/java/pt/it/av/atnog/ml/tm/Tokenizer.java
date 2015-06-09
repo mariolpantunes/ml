@@ -27,7 +27,6 @@ public class Tokenizer {
         return rv;
     }
 
-
     public static List<String> text(String input, Locale locale) {
         List<String> rv = new ArrayList<String>();
         input = Normalizer.normalize(input.toLowerCase(), Normalizer.Form.NFD)
