@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * Created by mantunes on 3/30/15.
  */
 public class TM {
-    public static double tdp_snippet_stemmer(String term1, String term2, List<String> stopWords, int minWord, int maxWord, int k, SearchEngine engine) {
+    /*public static double tdp_snippet_stemmer(String term1, String term2, List<String> stopWords, int minWord, int maxWord, int k, SearchEngine engine) {
         Locale locale = new Locale("en", "US");
         Stemmer stemmer = new Stemmer();
         //Stemm terms
@@ -281,5 +281,5 @@ public class TM {
         stemmer.add(st, st.length);
         stemmer.stem();
         return stemmer.toString();
-    }
+    }*/
 }
