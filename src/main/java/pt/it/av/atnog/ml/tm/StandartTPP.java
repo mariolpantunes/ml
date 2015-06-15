@@ -22,6 +22,8 @@ public class StandartTPP implements TPPipeline{
 
     @Override
     public Pipeline build(NGram term, Map<NGram, NGramStats> m) {
+        Stemmer stemmer = new Stemmer();
+        NGram termStemmed = stemmer.stem(term);
         Pipeline pipeline = new Pipeline();
         Locale locale = new Locale("en", "US");
 
@@ -35,9 +37,6 @@ public class StandartTPP implements TPPipeline{
         pipeline.add((Object o, List<Object> l) -> {
             String input = (String) o;
             List<String> tokens = Tokenizer.text(input, locale);
-            //System.out.println("Input: "+input);
-            //System.out.println(PrintUtils.list(tokens));
-            //System.out.println();
             if (!tokens.isEmpty())
                 l.add(tokens);
         });
@@ -56,32 +55,25 @@ public class StandartTPP implements TPPipeline{
             tokens.removeIf(x -> x.length() < min || x.length() > max);
             if (tokens.size() > 0)
                 l.add(tokens);
-            //System.out.println(PrintUtils.list(tokens));
-            //System.out.println();
         });
 
         pipeline.add((Object o, List<Object> l) -> {
             List<String> tokens = (List<String>) o;
-            //System.out.println("Input: "+PrintUtils.list(tokens));
 
             int t = tokens.size() - term.size() + 1;
             String buffer[] = new String[term.size()];
-            //System.out.println("Total: "+t+" Buffer Size: "+buffer.length);
 
             List<NGram> used = new ArrayList<>();
             for (int i = 0; i < t; i++) {
                 for(int j = 0; j < term.size(); j++)
-                    buffer[j] = tokens.get(i+j);
-                if(term.equals(buffer)) {
+                    buffer[j] = stemmer.stem(tokens.get(i + j));
+                if(termStemmed.equals(buffer)) {
                     int min = (i - k >= 0) ? i - k : 0,
                         max = (i + k + term.size() <= tokens.size()) ? i + k + term.size() : tokens.size();
-                    //System.out.println("Term found i: "+i+" Min: "+min+" Max: "+max);
                     findCloseNGrams(tokens, min, i, n, m, used);
                     findCloseNGrams(tokens, i+term.size(), max, n, m, used);
                 }
             }
-            //System.out.println(PrintUtils.map(m));
-            //System.out.println();
         });
 
         return pipeline;

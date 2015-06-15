@@ -495,9 +495,12 @@ class Stemmer {
         return toString();
     }
 
-    /*private NGram stem(NGram n) {
-        NGram
-    }*/
+    public NGram stem(NGram n) {
+        NGram ngramStemmed = new NGram(n.size());
+        for(int i = 0; i < n.size(); i++)
+            ngramStemmed.array[i] = stem(n.array[i]);
+        return ngramStemmed;
+    }
 
     /**
      * Test program for demonstrating the Stemmer.  It reads text from a

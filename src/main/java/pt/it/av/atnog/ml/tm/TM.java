@@ -17,20 +17,19 @@ import java.util.stream.Collectors;
 public class TM {
 
     public static DP learnDP(NGram term, SearchEngine se, List<String> stopWords) {
-        return learnDP(term, se, new StandartTPP(3, 12, stopWords, 7, 3), new ElbowOptmizer(15));
+        return learnDP(term, se, new StandartTPP(3, 15, stopWords, 7, 3), new ElbowOptmizer(35));
     }
 
     public static DP learnDP(NGram term, SearchEngine se, TPPipeline tpp, DPOptimizer o) {
         Map<NGram, NGramStats> m = new HashMap<>();
         Pipeline p = tpp.build(term, m);
         BlockingQueue<Object> source = p.source(), sink = p.sink();
-        List<String> corpus = se.snippets("what is "+term.toString());
+        List<String> corpus = se.snippets(term.toString());
         p.start();
 
-        for (String s : corpus) {
-            //System.out.println(s);
+        for (String s : corpus)
             sink.add(s);
-        }
+
         try {
             p.join();
             boolean done = false;
@@ -50,7 +49,6 @@ public class TM {
     }
 
     private static List<Pair<NGram, Double>> map2DP(Map<NGram, NGramStats> m, int n) {
-        System.out.println("N: "+n);
         List<Pair<NGram, Double>> profile = new ArrayList<>();
         Iterator<Map.Entry<NGram, NGramStats>> iter = m.entrySet().iterator();
         while (iter.hasNext()) {
@@ -58,7 +56,6 @@ public class TM {
             NGramStats stats = entry.getValue();
             double tf = Math.log(1.0 + stats.rawFrequency),
                    idf = Math.log(n / (1.0 + stats.documentFrequency));
-            System.out.println("NGram: "+entry.getKey()+" "+stats+" -> "+tf*idf);
             profile.add(new Pair<>(entry.getKey(), tf*idf));
         }
         return profile;
