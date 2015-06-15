@@ -20,6 +20,13 @@ public class NGram implements Comparable<NGram> {
         return array.length;
     }
 
+    public int length() {
+        int rv = 0;
+        for (String s : array)
+            rv += s.length();
+        return rv;
+    }
+
     public int levenshtein(NGram ngram) {
         int rv = 0;
         String first[], second[];
@@ -31,11 +38,23 @@ public class NGram implements Comparable<NGram> {
             second = ngram.array;
         }
 
-        for(int i = 0; i < second.length; i++)
+        for (int i = 0; i < second.length; i++)
             rv += StringUtils.levenshtein(first[i], second[i]);
 
-        for(int i = second.length; i < first.length; i++)
+        for (int i = second.length; i < first.length; i++)
             rv += StringUtils.levenshtein(first[i], "");
+
+        return rv;
+    }
+
+    public boolean equals(String buffer[]) {
+        boolean rv = false;
+
+        if (buffer.length == this.array.length) {
+            rv = true;
+            for (int i = 0; i < this.array.length && rv; i++)
+                rv = this.array[i].equals(buffer[i]);
+        }
 
         return rv;
     }
@@ -61,11 +80,11 @@ public class NGram implements Comparable<NGram> {
 
     @Override
     public String toString() {
-       StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < array.length-1; i++)
-            sb.append(array[i]+" ");
-        if(array.length > 0)
-            sb.append(array[array.length-1]);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < array.length - 1; i++)
+            sb.append(array[i] + " ");
+        if (array.length > 0)
+            sb.append(array[array.length - 1]);
         return sb.toString();
     }
 
@@ -77,16 +96,23 @@ public class NGram implements Comparable<NGram> {
         else
             t = ngram.array.length;
 
-        for(int i = 0; i < t && rv == 0; i++)
+        for (int i = 0; i < t && rv == 0; i++)
             rv = array[i].compareTo(ngram.array[i]);
 
-        if(rv == 0) {
+        if (rv == 0) {
             if (array.length < ngram.array.length)
                 rv = 1;
             else
                 rv = -1;
         }
-
         return 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int rv = 0;
+        for (int i = 0; i < this.array.length; i++)
+            rv += array[i].hashCode();
+        return rv;
     }
 }

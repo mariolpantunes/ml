@@ -11,6 +11,7 @@ import java.util.List;
  * Created by mantunes on 3/20/15.
  */
 public class DP {
+    private static final int MIN_DIM = 30;
     private final NGram term;
     private final List<Pair<NGram, Double>> profile;
 
@@ -19,19 +20,7 @@ public class DP {
         this.profile = profile;
     }
 
-    public void optimize_elbow() {
-        if (profile.size() > 25) {
-            Comparator<Pair<NGram, Double>> c = (Pair<NGram, Double> a, Pair<NGram, Double> b) -> (Double.compare(b.b, a.b));
-            Collections.sort(profile, c);
-            Vector v = new Vector(profile.size());
-            int i = 0;
-            for (Pair<NGram, Double> p : profile)
-                v.set(i++, p.b);
-            double t = v.elbow();
-            profile.removeIf(p -> p.b < t);
-        }
-    }
-
+    //TODO: finish this function
     public double similarity(DP dp) {
         Comparator<Pair<NGram, Double>> c = (Pair<NGram, Double> a, Pair<NGram, Double> b) -> (a.a.compareTo(b.a));
         Collections.sort(profile, c);
@@ -69,7 +58,9 @@ public class DP {
         int i = 0;
         for (int t = profile.size() - 1; i < t; i++)
             sb.append(profile.get(i).toString() + "; ");
-        sb.append(profile.get(i).toString() + "]");
+        if(!profile.isEmpty())
+            sb.append(profile.get(i).toString());
+        sb.append(']');
         return sb.toString();
     }
 }

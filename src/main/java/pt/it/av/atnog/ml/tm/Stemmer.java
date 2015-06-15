@@ -483,6 +483,23 @@ class Stemmer {
     }
 
     /**
+     *
+     * @param stemmer
+     * @param word
+     * @return
+     */
+    public String stem(String word) {
+        char st[] = word.toCharArray();
+        add(st, st.length);
+        stem();
+        return toString();
+    }
+
+    /*private NGram stem(NGram n) {
+        NGram
+    }*/
+
+    /**
      * Test program for demonstrating the Stemmer.  It reads text from a
      * a list of files, stems each word, and writes the result to standard
      * output. Note that the word stemmed is expected to be in lower case:

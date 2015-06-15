@@ -15,7 +15,7 @@ import java.util.Locale;
 //TODO: Locale as a parameter
 public class Tokenizer {
     public static List<String> twitter(String input) {
-        List<String> rv = new ArrayList<String>();
+        List<String> rv = new ArrayList<>();
         input = Normalizer.normalize(input.toLowerCase(), Normalizer.Form.NFD)
                 .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
         String words[] = input.split("\\s+");
@@ -28,7 +28,7 @@ public class Tokenizer {
     }
 
     public static List<String> text(String input, Locale locale) {
-        List<String> rv = new ArrayList<String>();
+        List<String> rv = new ArrayList<>();
         input = Normalizer.normalize(input.toLowerCase(), Normalizer.Form.NFD)
                 .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
         BreakIterator it = BreakIterator.getWordInstance(locale);
