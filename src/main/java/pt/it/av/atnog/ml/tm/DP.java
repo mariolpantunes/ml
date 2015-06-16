@@ -11,7 +11,6 @@ import java.util.List;
  * Created by mantunes on 3/20/15.
  */
 public class DP {
-    private static final int MIN_DIM = 30;
     private final NGram term;
     private final List<Pair<NGram, Double>> profile;
 
@@ -20,7 +19,6 @@ public class DP {
         this.profile = profile;
     }
 
-    //TODO: finish this function
     public double similarity(DP dp) {
         Comparator<Pair<NGram, Double>> c = (Pair<NGram, Double> a, Pair<NGram, Double> b) -> (a.a.compareTo(b.a));
         Collections.sort(profile, c);
@@ -30,21 +28,30 @@ public class DP {
         int i = 0, j = 0, idx = 0;
         while (i < profile.size() && j < dp.profile.size()) {
             if (profile.get(i).a.compareTo(dp.profile.get(j).a) == 0) {
-                dataA[idx] = profile.get(i).b;
-                dataB[idx] = dp.profile.get(j).b;
-                i++;
-                j++;
+                dataA[idx] = profile.get(i++).b;
+                dataB[idx] = dp.profile.get(j++).b;
             } else if (profile.get(i).a.compareTo(dp.profile.get(j).a) < 0) {
-                dataA[idx] = profile.get(i).b;
+                dataA[idx] = profile.get(i++).b;
                 dataB[idx] = 0.0;
-                i++;
             } else {
                 dataA[idx] = 0.0;
-                dataB[idx] = dp.profile.get(j).b;
-                j++;
+                dataB[idx] = dp.profile.get(j++).b;
             }
             idx++;
         }
+
+        while(i < profile.size()) {
+            dataA[idx] = profile.get(i++).b;
+            dataB[idx] = 0.0;
+            idx++;
+        }
+
+        while(j < dp.profile.size()) {
+            dataA[idx] = 0.0;
+            dataB[idx] = dp.profile.get(j++).b;
+            idx++;
+        }
+
         Vector a = new Vector(dataA, 0, idx), b = new Vector(dataB, 0, idx);
         return a.cosine(b);
     }
