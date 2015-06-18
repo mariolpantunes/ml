@@ -24,6 +24,7 @@ public class StandartTPP implements TPPipeline{
     public Pipeline build(NGram term, Map<NGram, NGramStats> m) {
         Stemmer stemmer = new Stemmer();
         NGram termStemmed = stemmer.stem(term);
+        //System.out.println("Term Stemmed:" + termStemmed);
         Pipeline pipeline = new Pipeline();
         Locale locale = new Locale("en", "US");
 
@@ -36,9 +37,11 @@ public class StandartTPP implements TPPipeline{
         //Clean snippet and convert it to tokens
         pipeline.add((Object o, List<Object> l) -> {
             String input = (String) o;
+            //System.err.println("Input: "+input);
             List<String> tokens = Tokenizer.text(input, locale);
             if (!tokens.isEmpty())
                 l.add(tokens);
+            //System.err.println("Output: "+PrintUtils.list(tokens));
         });
 
         //Remove stop words
@@ -67,7 +70,9 @@ public class StandartTPP implements TPPipeline{
             for (int i = 0; i < t; i++) {
                 for(int j = 0; j < term.size(); j++)
                     buffer[j] = stemmer.stem(tokens.get(i + j));
+                //System.err.println("Buffer: " + PrintUtils.array(buffer));
                 if(termStemmed.equals(buffer)) {
+                    //System.err.println("Found term: "+termStemmed);
                     int min = (i - k >= 0) ? i - k : 0,
                         max = (i + k + term.size() <= tokens.size()) ? i + k + term.size() : tokens.size();
                     findCloseNGrams(tokens, min, i, n, m, used);
