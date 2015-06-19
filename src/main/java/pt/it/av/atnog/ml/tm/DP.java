@@ -20,40 +20,46 @@ public class DP {
     }
 
     public double similarity(DP dp) {
-        Comparator<Pair<NGram, Double>> c = (Pair<NGram, Double> a, Pair<NGram, Double> b) -> (a.a.compareTo(b.a));
-        Collections.sort(profile, c);
-        Collections.sort(dp.profile, c);
-        double dataA[] = new double[profile.size() + dp.profile.size()],
-                dataB[] = new double[profile.size() + dp.profile.size()];
-        int i = 0, j = 0, idx = 0;
-        while (i < profile.size() && j < dp.profile.size()) {
-            if (profile.get(i).a.compareTo(dp.profile.get(j).a) == 0) {
-                dataA[idx] = profile.get(i++).b;
-                dataB[idx] = dp.profile.get(j++).b;
-            } else if (profile.get(i).a.compareTo(dp.profile.get(j).a) < 0) {
+        double rv = 0.0;
+        if(term.equals(dp.term))
+            rv = 1.0;
+        else {
+            Comparator<Pair<NGram, Double>> c = (Pair<NGram, Double> a, Pair<NGram, Double> b) -> (a.a.compareTo(b.a));
+            Collections.sort(profile, c);
+            Collections.sort(dp.profile, c);
+            double dataA[] = new double[profile.size() + dp.profile.size()],
+                    dataB[] = new double[profile.size() + dp.profile.size()];
+            int i = 0, j = 0, idx = 0;
+            while (i < profile.size() && j < dp.profile.size()) {
+                if (profile.get(i).a.compareTo(dp.profile.get(j).a) == 0) {
+                    dataA[idx] = profile.get(i++).b;
+                    dataB[idx] = dp.profile.get(j++).b;
+                } else if (profile.get(i).a.compareTo(dp.profile.get(j).a) < 0) {
+                    dataA[idx] = profile.get(i++).b;
+                    dataB[idx] = 0.0;
+                } else {
+                    dataA[idx] = 0.0;
+                    dataB[idx] = dp.profile.get(j++).b;
+                }
+                idx++;
+            }
+
+            while (i < profile.size()) {
                 dataA[idx] = profile.get(i++).b;
                 dataB[idx] = 0.0;
-            } else {
+                idx++;
+            }
+
+            while (j < dp.profile.size()) {
                 dataA[idx] = 0.0;
                 dataB[idx] = dp.profile.get(j++).b;
+                idx++;
             }
-            idx++;
-        }
 
-        while(i < profile.size()) {
-            dataA[idx] = profile.get(i++).b;
-            dataB[idx] = 0.0;
-            idx++;
+            Vector a = new Vector(dataA, 0, idx), b = new Vector(dataB, 0, idx);
+            rv = a.cosine(b);
         }
-
-        while(j < dp.profile.size()) {
-            dataA[idx] = 0.0;
-            dataB[idx] = dp.profile.get(j++).b;
-            idx++;
-        }
-
-        Vector a = new Vector(dataA, 0, idx), b = new Vector(dataB, 0, idx);
-        return a.cosine(b);
+        return rv;
     }
 
 
