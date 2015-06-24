@@ -1,44 +1,35 @@
 package pt.it.av.atnog.ml.optimization.genetic.termination;
 
+import pt.it.av.atnog.ml.optimization.genetic.Chromosome;
+
 import java.util.Collections;
 import java.util.List;
 
-import pt.it.av.atnog.ml.optimization.genetic.Chromosome;
 
+public class ConvergenceTermination implements Termination {
+    private double fitness;
+    private int convergenceCount;
+    private final int convergenceGenerations;
 
-public class ConvergenceTermination extends Termination {
+    public ConvergenceTermination(int convergenceGenerations) {
+        this.convergenceGenerations = convergenceGenerations;
+        fitness = 0.0;
+        convergenceCount = 0;
+    }
 
-	private double fitness;
-	private int convergenceCount;
-	private final int convergenceGenerations;
+    public boolean finished(int iteration, List<Chromosome> population) {
+        Chromosome bs = Collections.max(population);
 
-	public ConvergenceTermination(int convergenceGenerations,
-			int numberGenerations) {
-		super(numberGenerations);
-		this.convergenceGenerations = convergenceGenerations;
-		fitness = 0.0;
-		convergenceCount = 0;
-	}
+        if(bs.fitness() != fitness) {
+            fitness = bs.fitness();
+            convergenceCount = 0;
+        }
 
-	public boolean termination(List<? extends Chromosome> population) {
-		boolean ended = super.termination(population);
-		if (!ended) {
-			Chromosome bestSolution = Collections.min(population);
+        if (fitness == bs.fitness())
+            convergenceCount += 1;
+        else
+            convergenceCount = 0;
 
-			if (fitness == bestSolution.fitness()) {
-				convergenceCount++;
-			} else if (bestSolution.fitness() > fitness) {
-				convergenceCount = 0;
-				fitness = bestSolution.fitness();
-			} else {
-				convergenceCount = 0;
-			}
-
-			if (convergenceCount == convergenceGenerations) {
-				ended = true;
-			}
-		}
-
-		return ended;
-	}
+        return convergenceCount == convergenceGenerations;
+    }
 }

@@ -6,26 +6,15 @@ import java.util.List;
 import pt.it.av.atnog.ml.optimization.genetic.Chromosome;
 
 
-public class FitnessTermination extends Termination {
-
+public class FitnessTermination implements Termination {
 	private final double targetFitness;
 
-	public FitnessTermination(double targetFitness, int numberGenerations) {
-		super(numberGenerations);
+	public FitnessTermination(double targetFitness) {
 		this.targetFitness = targetFitness;
 	}
 
-	public boolean termination(List<? extends Chromosome> population) {
-		boolean ended = super.termination(population);
-
-		if (!ended) {
-
-			Chromosome bestSolution = Collections.min(population);
-
-			if (bestSolution.fitness() >= targetFitness) {
-				ended = true;
-			}
-		}
-		return ended;
+	public boolean finished(int iteration, List<Chromosome> population) {
+		Chromosome bs = Collections.min(population);
+		return bs.fitness() >= targetFitness;
 	}
 }

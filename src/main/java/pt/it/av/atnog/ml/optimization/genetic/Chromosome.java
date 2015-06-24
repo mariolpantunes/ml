@@ -1,6 +1,6 @@
 package pt.it.av.atnog.ml.optimization.genetic;
 
-public abstract class Chromosome  implements Comparable<Chromosome> {
+public abstract class Chromosome implements Comparable<Chromosome> {
 	private double fitness;
 	private boolean computeFitness = false;
 

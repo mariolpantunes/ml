@@ -5,28 +5,6 @@ import java.util.List;
 import pt.it.av.atnog.ml.optimization.genetic.Chromosome;
 
 
-public class Termination {
-
-	private int generationsCount;
-	private final int numberGenerations;
-
-	public Termination(int numberGenerations) {
-		this.numberGenerations = numberGenerations;
-		generationsCount = 0;
-	}
-
-	public boolean termination(List<? extends Chromosome> population) {
-		boolean ended = false;
-		if (generationsCount == numberGenerations) {
-			ended = true;
-		} else {
-			generationsCount++;
-		}
-
-		return ended;
-	}
-
-	public int numberGenerations() {
-		return generationsCount;
-	}
+public interface Termination {
+	boolean finished(int iteration, List<Chromosome> population);
 }

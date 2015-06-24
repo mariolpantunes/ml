@@ -17,7 +17,11 @@ import java.util.stream.Collectors;
 public class TM {
 
     public static DP learnDP(NGram term, SearchEngine se, List<String> stopWords) {
-        return learnDP(term, se, new StandartTPP(3, 15, stopWords, 5, 3), new ElbowOptmizer(30));
+        return learnDP(term, se, new StandartTPP(3, 15, stopWords, 5, 3), new ElbowOptmizer(35));
+    }
+
+    public static DP learnDP(NGram term, SearchEngine se, List<String> stopWords, int min, int max, int k, int n) {
+        return learnDP(term, se, new StandartTPP(min, max, stopWords, k, n), new ElbowOptmizer(35));
     }
 
     public static DP learnDP(NGram term, SearchEngine se, TPPipeline tpp, DPOptimizer o) {
