@@ -27,6 +27,10 @@ public class Tokenizer {
         return rv;
     }
 
+    public static List<String> text(String input) {
+        return text(input, Locale.getDefault());
+    }
+
     public static List<String> text(String input, Locale locale) {
         List<String> rv = new ArrayList<>();
         input = Normalizer.normalize(input.toLowerCase(), Normalizer.Form.NFD)
@@ -47,6 +51,10 @@ public class Tokenizer {
             end = it.next();
         }
         return rv;
+    }
+
+    public static List<String> setences(String input) {
+        return setences(input, Locale.getDefault());
     }
 
     public static List<String> setences(String input, Locale locale) {

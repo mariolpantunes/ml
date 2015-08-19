@@ -1,6 +1,5 @@
 package pt.it.av.atnog.ml.tm;
 
-import pt.it.av.atnog.utils.Utils;
 import pt.it.av.atnog.utils.parallel.Pipeline;
 import pt.it.av.atnog.utils.parallel.Stop;
 import pt.it.av.atnog.utils.structures.tuple.Pair;
@@ -8,7 +7,6 @@ import pt.it.av.atnog.utils.ws.search.SearchEngine;
 
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
-import java.util.stream.Collectors;
 
 /**
  * Created by mantunes on 3/30/15.
@@ -16,17 +14,17 @@ import java.util.stream.Collectors;
 //TODO: STEM term
 public class TM {
 
-    public static DP learnDP(NGram term, SearchEngine se, List<String> stopWords) {
+    /*public static DP learnDP(NGram term, SearchEngine se, List<String> stopWords) {
         return learnDP(term, se, new StandartTPP(3, 15, stopWords, 5, 3), new ElbowOptmizer(35));
     }
 
     public static DP learnDP(NGram term, SearchEngine se, List<String> stopWords, int min, int max, int k, int n) {
         return learnDP(term, se, new StandartTPP(min, max, stopWords, k, n), new ElbowOptmizer(35));
-    }
+    }*/
 
-    public static DP learnDP(NGram term, SearchEngine se, TPPipeline tpp, DPOptimizer o) {
-        Map<NGram, NGramStats> m = new HashMap<>();
-        Pipeline p = tpp.build(term, m);
+    public static DP learnDP(NGram term, SearchEngine se, DPOptimizer o) {
+        Map<NGram, Count> m = new HashMap<>();
+        Pipeline p = standartTPP(new EnglishStopWords(), 3, 15);
         BlockingQueue<Object> source = p.source(), sink = p.sink();
         List<String> corpus = se.snippets(term.toString());
         p.start();
@@ -52,16 +50,71 @@ public class TM {
         return new DP(term, profile);
     }
 
-    private static List<Pair<NGram, Double>> map2DP(Map<NGram, NGramStats> m, int n) {
+    private static List<Pair<NGram, Double>> map2DP(Map<NGram, Count> m, int n) {
         List<Pair<NGram, Double>> profile = new ArrayList<>();
-        Iterator<Map.Entry<NGram, NGramStats>> iter = m.entrySet().iterator();
+        Iterator<Map.Entry<NGram, Count>> iter = m.entrySet().iterator();
         while (iter.hasNext()) {
-            Map.Entry<NGram, NGramStats> entry = iter.next();
-            NGramStats stats = entry.getValue();
-            double tf = Math.log(1.0 + stats.rawFrequency),
-                   idf = Math.log(n / (1.0 + stats.documentFrequency));
+            Map.Entry<NGram, Count> entry = iter.next();
+            Count stats = entry.getValue();
+            double tf = Math.log(1.0 + stats.rawFreq),
+                   idf = Math.log(n / (1.0 + stats.invFreq));
             profile.add(new Pair<>(entry.getKey(), tf*idf));
         }
         return profile;
+    }
+
+    public static List<NGram> extractNGrams(List<String> tokens, int idx, int n) {
+        List<NGram> rv = new ArrayList<>();
+        for(int i = 1; i <= n; i++) {
+            for (int j = 0; j < tokens.size() - i + 1; j++) {
+                String buffer[] = new String[i];
+                for(int k = 0; k < i; k++)
+                    buffer[k] = tokens.get(j+k);
+                rv.add(new NGram(buffer));
+            }
+        }
+        return rv;
+    }
+
+    public static Pipeline standartTPP(StopWords sw, int min, int max) {
+        return standartTPP(new Locale("en", "US"), sw, min, max);
+    }
+
+    public static Pipeline standartTPP(Locale locale, StopWords sw, int min, int max) {
+        Pipeline pipeline = new Pipeline();
+        List<String> stopWords = sw.stopWords();
+
+        // Clean the text  and convert it to tokens
+        pipeline.add((Object o, List<Object> l) -> {
+            String input = (String) o;
+            List<String> stences = Tokenizer.setences(input, locale);
+            for(String s : stences) {
+                List<String> tokens = Tokenizer.text(s, locale);
+                if (!tokens.isEmpty())
+                    l.add(tokens);
+            }
+        });
+
+        // Remove stop words
+        pipeline.add((Object o, List<Object> l) -> {
+            List<String> tokens = (List<String>) o;
+            tokens.removeIf(x -> Collections.binarySearch(stopWords, x) >= 0);
+            if (tokens.size() > 0)
+                l.add(tokens);
+        });
+
+        // Remove tokens that are too small or too big
+        pipeline.add((Object o, List<Object> l) -> {
+            List<String> tokens = (List<String>) o;
+            tokens.removeIf(x -> x.length() < min || x.length() > max);
+            if (tokens.size() > 0)
+                l.add(tokens);
+        });
+
+        return pipeline;
+    }
+
+    private class Count {
+        public int rawFreq = 0, invFreq = 0;
     }
 }

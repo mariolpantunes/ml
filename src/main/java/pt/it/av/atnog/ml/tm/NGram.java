@@ -59,6 +59,14 @@ public class NGram implements Comparable<NGram> {
         return rv;
     }
 
+    //TODO: add locale, add toUpperCase...
+    public NGram toLowerCase() {
+        NGram rv = new NGram(array.length);
+        for(int i = 0; i < array.length; i++)
+            rv.array[i] = array[i].toLowerCase();
+        return rv;
+    }
+
     @Override
     public boolean equals(Object o) {
         boolean rv = false;
