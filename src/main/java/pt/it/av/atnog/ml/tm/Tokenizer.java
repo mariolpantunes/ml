@@ -1,6 +1,6 @@
 package pt.it.av.atnog.ml.tm;
 
-import pt.it.av.atnog.utils.Utils;
+import pt.it.av.atnog.utils.StringUtils;
 
 import java.text.BreakIterator;
 import java.text.Normalizer;
@@ -19,8 +19,8 @@ public class Tokenizer {
         input = Normalizer.normalize(input.toLowerCase(), Normalizer.Form.NFD)
                 .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
         String words[] = input.split("\\s+");
-        for(String w : words) {
-            if(!w.startsWith("#") && !w.startsWith("@") && !w.startsWith("http"))
+        for (String w : words) {
+            if (!w.startsWith("#") && !w.startsWith("@") && !w.startsWith("http"))
                 rv.addAll(Arrays.asList(w.replaceAll("[^a-zA-Z\\s]", " ")
                         .replaceAll("\\s+", " ").split("\\s+")));
         }
@@ -37,14 +37,14 @@ public class Tokenizer {
                 .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
         BreakIterator it = BreakIterator.getWordInstance(locale);
         it.setText(input);
-        int start = it.first(),end = it.next();
+        int start = it.first(), end = it.next();
         while (end != BreakIterator.DONE) {
-            String word = input.substring(start,end);
+            String word = input.substring(start, end);
             if (Character.isLetterOrDigit(word.charAt(0))) {
                 //TODO: can be improved...
-                word = word.replace("'s","");
+                word = word.replace("'s", "");
                 word = word.replaceAll("[^a-zA-Z\\s]", "");
-                if(word.length() > 0)
+                if (word.length() > 0)
                     rv.add(word);
             }
             start = end;
@@ -53,7 +53,7 @@ public class Tokenizer {
         return rv;
     }
 
-    public static List<String> setences(String input) {
+    public static List<String> sentences(String input) {
         return setences(input, Locale.getDefault());
     }
 
@@ -68,6 +68,32 @@ public class Tokenizer {
             if (lastIndex != BreakIterator.DONE)
                 rv.add(input.substring(firstIndex, lastIndex));
         }
+        return rv;
+    }
+
+    public static List<String> clauses(String input) {
+        return clauses(input, Locale.getDefault());
+    }
+
+
+    public static List<String> clauses(String input, Locale locale) {
+        List<String> rv = new ArrayList<>();
+        List<Integer> idx = StringUtils.indexOf(input, ',');
+
+        switch (idx.size()) {
+            case 1:
+                rv.add(input.substring(0, idx.get(0)));
+                rv.add(input.substring(idx.get(0)+1, input.length()).trim());
+                break;
+            case 2:
+                rv.add(input.substring(0, idx.get(0)) + input.substring(idx.get(1)+1, input.length()));
+                rv.add(input.substring(idx.get(0)+1, idx.get(1)).trim());
+                break;
+            default:
+                rv.add(input);
+                break;
+        }
+
         return rv;
     }
 }

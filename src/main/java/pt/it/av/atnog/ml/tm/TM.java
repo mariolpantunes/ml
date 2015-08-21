@@ -85,7 +85,7 @@ public class TM {
         List<String> stopWords = sw.stopWords();
 
         // Clean the text  and convert it to tokens
-        pipeline.add((Object o, List<Object> l) -> {
+        pipeline.addLast((Object o, List<Object> l) -> {
             String input = (String) o;
             List<String> stences = Tokenizer.setences(input, locale);
             for(String s : stences) {
@@ -96,7 +96,7 @@ public class TM {
         });
 
         // Remove stop words
-        pipeline.add((Object o, List<Object> l) -> {
+        pipeline.addLast((Object o, List<Object> l) -> {
             List<String> tokens = (List<String>) o;
             tokens.removeIf(x -> Collections.binarySearch(stopWords, x) >= 0);
             if (tokens.size() > 0)
@@ -104,7 +104,7 @@ public class TM {
         });
 
         // Remove tokens that are too small or too big
-        pipeline.add((Object o, List<Object> l) -> {
+        pipeline.addLast((Object o, List<Object> l) -> {
             List<String> tokens = (List<String>) o;
             tokens.removeIf(x -> x.length() < min || x.length() > max);
             if (tokens.size() > 0)

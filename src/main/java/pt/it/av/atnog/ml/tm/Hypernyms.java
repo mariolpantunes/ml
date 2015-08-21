@@ -14,7 +14,7 @@ import java.util.concurrent.BlockingQueue;
  * Created by mantunes on 7/28/15.
  */
 public class Hypernyms {
-    private static final int MAX = 3, N = 2, NN = 3;
+    private static final int MAX = 5, N = 2, NN = 7;
     private final SearchEngine s;
     private List<String> blacklist = new ArrayList<>();
 
@@ -34,7 +34,7 @@ public class Hypernyms {
         Pipeline pipeline = TM.standartTPP(new BlacklistStopWords(new EnglishStopWords(), blacklist), 2, 15);
 
         //
-        pipeline.add((Object o, List<Object> l) -> {
+        pipeline.addLast((Object o, List<Object> l) -> {
             List<String> tokens = (List<String>) o;
             for (int i = 0, s = tokens.size() - n; i < s; i++) {
                 for (int j = 0; j < n; j++)
@@ -58,8 +58,9 @@ public class Hypernyms {
         });
 
         //
-        pipeline.add((Object o, List<Object> l) -> {
+        pipeline.addLast((Object o, List<Object> l) -> {
             List<String> tokens = (List<String>) o;
+            boolean used[] = new boolean[N];
             for (int i = 0; i < tokens.size(); i++) {
                 for (int j = 1; j <= N && i < tokens.size() - j + 1; j++) {
                     String ngramBuffer[] = new String[j];
@@ -69,14 +70,13 @@ public class Hypernyms {
                         NGram ngram = new NGram(ngramBuffer);
                         if (!m.containsKey(ngram)) {
                             m.put(ngram, new Count());
-                            if (j == 1)
-                                p.vocabulary += 1.0;
+                            p.vocabulary[ngram.size() - 1] += 1.0;
                         }
                         m.get(ngram).rawFreq += 1;
                     }
                 }
             }
-            p.partitions += 1.0;
+            p.partitions[0] += 1.0;
         });
 
         BlockingQueue<Object> source = pipeline.source(),
@@ -105,18 +105,18 @@ public class Hypernyms {
         Comparator<Pair<NGram, Double>> c = (Pair<NGram, Double> a, Pair<NGram, Double> b) -> (Double.compare(a.b, b.b));
         Collections.sort(vector, c);
         System.out.println("Vector: " + PrintUtils.list(vector));
-        System.out.println("Parameters (" + p.vocabulary + "/" + p.partitions + ")");
+        System.out.println("Parameters (" + PrintUtils.array(p.vocabulary) + "/" + PrintUtils.array(p.partitions)+ ")");
 
         return null;
     }
 
-    private int countUnigram(Map<NGram, Count> m) {
+    private int countNGram(Map<NGram, Count> m, int n) {
         int rv = 0;
         Iterator<Map.Entry<NGram, Count>> iter = m.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry<NGram, Count> entry = iter.next();
-            NGram n = entry.getKey();
-            if (n.size() == 1)
+            NGram ngram = entry.getKey();
+            if (ngram.size() == n)
                 rv += 1;
         }
         return rv;
@@ -127,19 +127,22 @@ public class Hypernyms {
         Iterator<Map.Entry<NGram, Count>> iter = m.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry<NGram, Count> entry = iter.next();
+            System.err.print(entry.getKey()+" -> prob("+entry.getValue().rawFreq+"; "+p.partitions[entry.getKey().size() - 1]+"; "+p.vocabulary[entry.getKey().size()-1]+") = ");
             profile.add(new Pair<>(entry.getKey(), probs(entry.getValue().rawFreq,
-                    p.partitions, p.vocabulary, entry.getKey().size())));
+                    p.partitions[0], p.vocabulary[entry.getKey().size()-1])));
         }
         return profile;
     }
 
-    private double probs(int freq, double partitions, double vocabulary, int n) {
-        //return (MathUtils.combination(partitions, freq) * Math.pow(MathUtils.permutation(vocabulary, n) - 1, partitions - freq)) / Math.pow(MathUtils.permutation(vocabulary, n), partitions);
-        return MathUtils.combination(partitions, freq) / Math.pow(MathUtils.permutation(vocabulary, n), freq);
+    private double probs(int freq, double partitions, double vocabulary) {
+        double C = MathUtils.combination(partitions, freq);
+        double D = Math.pow(vocabulary, freq);
+        System.err.println("C("+partitions+" "+freq+") = "+C+" D("+vocabulary+"^"+freq+") = "+D+" C/D = "+C/D);
+        return C/D;
     }
 
     private class Parameters {
-        public double partitions = 0.0, vocabulary = 0.0;
+        public double partitions[] = new double[N], vocabulary[] = new double[N];
     }
 
     private class Count {
