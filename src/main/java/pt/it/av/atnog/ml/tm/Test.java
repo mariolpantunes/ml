@@ -9,6 +9,6 @@ import pt.it.av.atnog.utils.ws.search.Bing;
 public class Test {
     public static void main(String[] args) {
         Hypernyms h = new Hypernyms(new Bing("ZctQ1GPgFid1k72ZUBlKmB/CWfWXiPoFZj3IlChOV1g"));
-        h.hypernym(new Unigram("pineapple"));
+        h.hypernym(new Unigram("linux"));
     }
 }

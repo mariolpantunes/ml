@@ -84,12 +84,29 @@ public class TM {
         Pipeline pipeline = new Pipeline();
         List<String> stopWords = sw.stopWords();
 
-        // Clean the text  and convert it to tokens
+        // Setences
         pipeline.addLast((Object o, List<Object> l) -> {
             String input = (String) o;
-            List<String> stences = Tokenizer.setences(input, locale);
-            for(String s : stences) {
-                List<String> tokens = Tokenizer.text(s, locale);
+            List<String> tokens = Tokenizer.sentences(input);
+            if (!tokens.isEmpty())
+                l.add(tokens);
+        });
+
+        // Clauses
+        pipeline.addLast((Object o, List<Object> l) -> {
+            List<String> setences = (List<String>) o;
+            for(String s : setences) {
+                List<String> tokens = Tokenizer.clauses(s);
+                if (!tokens.isEmpty())
+                    l.add(tokens);
+            }
+        });
+
+        // Clean the text  and convert it to tokens
+        pipeline.addLast((Object o, List<Object> l) -> {
+            List<String> clauses = (List<String>) o;
+            for(String c : clauses) {
+                List<String> tokens = Tokenizer.text(c, locale);
                 if (!tokens.isEmpty())
                     l.add(tokens);
             }
