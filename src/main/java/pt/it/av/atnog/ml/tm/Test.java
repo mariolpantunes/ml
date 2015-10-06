@@ -1,6 +1,6 @@
 package pt.it.av.atnog.ml.tm;
 
-import pt.it.av.atnog.utils.bla.Matrix;
+import pt.it.av.atnog.ml.tm.ngrams.Unigram;
 import pt.it.av.atnog.utils.ws.search.Bing;
 
 /**

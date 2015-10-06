@@ -1,6 +1,8 @@
-package pt.it.av.atnog.ml.tm;
+package pt.it.av.atnog.ml.tm.ngrams;
 
 import pt.it.av.atnog.utils.StringUtils;
+
+import java.util.List;
 
 /**
  * Created by mantunes on 6/1/15.
@@ -14,6 +16,13 @@ public class NGram implements Comparable<NGram> {
 
     public NGram(int size) {
         this.array = new String[size];
+    }
+
+    public NGram(List<String> list) {
+        array = new String[list.size()];
+        int i = 0;
+        for(String s : list)
+            array[i++] = s;
     }
 
     public int size() {

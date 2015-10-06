@@ -1,8 +1,6 @@
-package pt.it.av.atnog.ml.tm;
+package pt.it.av.atnog.ml.tm.stemmer;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import pt.it.av.atnog.ml.tm.ngrams.NGram;
 
 /**
  * Stemmer, implementing the Porter Stemming Algorithm
@@ -11,7 +9,7 @@ import java.io.IOException;
  * word can be provided a character at time (by calling add()), or at once
  * by calling one of the various stem(something) methods.
  */
-class Stemmer {
+class PorterStemmer {
     private char[] b;
     private int i,     /* offset into b */
             i_end, /* offset to end of stemmed word */
@@ -19,7 +17,7 @@ class Stemmer {
     private static final int INC = 50;
 
     /* unit of size whereby b is increased */
-    public Stemmer() {
+    public PorterStemmer() {
         b = new char[INC];
         i = 0;
         i_end = 0;
@@ -175,8 +173,7 @@ class Stemmer {
         return true;
     }
 
-   /* setto(s) sets (j+1),...k to the characters in the string s, readjusting
-      k. */
+   /* setto(s) sets (j+1),...k to the characters in the string s, readjusting k. */
 
     private final void setto(String s) {
         int l = s.length();
@@ -484,83 +481,25 @@ class Stemmer {
 
     /**
      *
-     * @param stemmer
-     * @param word
+     * @param term
      * @return
      */
-    public String stem(String word) {
-        char st[] = word.toCharArray();
+    public String stem(String term) {
+        char st[] = term.toCharArray();
         add(st, st.length);
         stem();
         return toString();
     }
 
-    public NGram stem(NGram n) {
-        NGram ngramStemmed = new NGram(n.size());
-        for(int i = 0; i < n.size(); i++)
-            ngramStemmed.array[i] = stem(n.array[i]);
-        return ngramStemmed;
-    }
-
     /**
-     * Test program for demonstrating the Stemmer.  It reads text from a
-     * a list of files, stems each word, and writes the result to standard
-     * output. Note that the word stemmed is expected to be in lower case:
-     * forcing lower case must be done outside the Stemmer class.
-     * Usage: Stemmer file-name file-name ...
+     *
+     * @param term
+     * @return
      */
-    public static void main(String[] args) {
-        char[] w = new char[501];
-        Stemmer s = new Stemmer();
-        for (int i = 0; i < args.length; i++)
-            try {
-                FileInputStream in = new FileInputStream(args[i]);
-
-                try {
-                    while (true)
-
-                    {
-                        int ch = in.read();
-                        if (Character.isLetter((char) ch)) {
-                            int j = 0;
-                            while (true) {
-                                ch = Character.toLowerCase((char) ch);
-                                w[j] = (char) ch;
-                                if (j < 500) j++;
-                                ch = in.read();
-                                if (!Character.isLetter((char) ch)) {
-                       /* to test add(char ch) */
-                                    for (int c = 0; c < j; c++) s.add(w[c]);
-
-                       /* or, to test add(char[] w, int j) */
-                       /* s.add(w, j); */
-
-                                    s.stem();
-                                    {
-                                        String u;
-
-                          /* and now, to test toString() : */
-                                        u = s.toString();
-
-                          /* to test getResultBuffer(), getResultLength() : */
-                          /* u = new String(s.getResultBuffer(), 0, s.getResultLength()); */
-
-                                        System.out.print(u);
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                        if (ch < 0) break;
-                        System.out.print((char) ch);
-                    }
-                } catch (IOException e) {
-                    System.out.println("error reading " + args[i]);
-                    break;
-                }
-            } catch (FileNotFoundException e) {
-                System.out.println("file " + args[i] + " not found");
-                break;
-            }
+    public NGram stem(NGram term) {
+        NGram ngramStemmed = new NGram(term.size());
+        for(int i = 0; i < term.size(); i++)
+            ngramStemmed.array[i] = stem(term.array[i]);
+        return ngramStemmed;
     }
 }

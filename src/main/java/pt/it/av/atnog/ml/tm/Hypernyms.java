@@ -1,5 +1,6 @@
 package pt.it.av.atnog.ml.tm;
 
+import pt.it.av.atnog.ml.tm.ngrams.NGram;
 import pt.it.av.atnog.utils.MathUtils;
 import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.parallel.Pipeline;
@@ -27,7 +28,7 @@ public class Hypernyms {
     public NGram hypernym(NGram term) {
         NGram t = term.toLowerCase();
         int n = t.size();
-        String buffer[] = new String[t.size()];
+
         Parameters p = new Parameters();
 
         HashMap<NGram, Count> m = new HashMap();
@@ -36,25 +37,7 @@ public class Hypernyms {
         //
         pipeline.addLast((Object o, List<Object> l) -> {
             List<String> tokens = (List<String>) o;
-            for (int i = 0, s = tokens.size() - n; i < s; i++) {
-                for (int j = 0; j < n; j++)
-                    buffer[j] = tokens.get(i + j);
-                if (t.equals(buffer)) {
-                    boolean done = false;
-                    int total = i + n + MAX < tokens.size() ? i + n + MAX : tokens.size();
-                    for (int j = i + n; j < total && !done; j++) {
-                        if (tokens.get(j).equals("is") || tokens.get(j).equals("are")) {
-                            //if (tokens.get(j).equals("is")) {
-                            int size = j + 1 + NN < tokens.size() ? j + 1 + NN : tokens.size();
-                            List<String> output = new ArrayList<String>(tokens.subList(j + 1, size));
-                            output.removeIf(x -> Collections.binarySearch(blacklist, x) >= 0);
-                            if (output.size() > 0)
-                                l.add(output);
-                            done = true;
-                        }
-                    }
-                }
-            }
+
         });
 
         //

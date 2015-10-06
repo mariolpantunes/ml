@@ -1,5 +1,6 @@
 package pt.it.av.atnog.ml.tm;
 
+import pt.it.av.atnog.ml.tm.ngrams.NGram;
 import pt.it.av.atnog.utils.parallel.Pipeline;
 import pt.it.av.atnog.utils.parallel.Stop;
 import pt.it.av.atnog.utils.structures.tuple.Pair;

@@ -1,4 +1,4 @@
-package pt.it.av.atnog.ml.tm;
+package pt.it.av.atnog.ml.tm.ngrams;
 
 /**
  * Created by mantunes on 08/06/2015.
