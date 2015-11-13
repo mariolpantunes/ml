@@ -3,6 +3,7 @@ package pt.it.av.atnog.ml.optimization;
 import pt.it.av.atnog.ml.optimization.genetic.Chromosome;
 import pt.it.av.atnog.ml.optimization.genetic.selection.Selection;
 import pt.it.av.atnog.ml.optimization.genetic.termination.Termination;
+import pt.it.av.atnog.ml.optimization.gradienDescent.Gradient;
 import pt.it.av.atnog.utils.bla.Vector;
 
 import java.util.ArrayList;

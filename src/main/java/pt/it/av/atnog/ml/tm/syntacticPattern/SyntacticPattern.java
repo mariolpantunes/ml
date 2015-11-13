@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by mantunes on 10/5/15.
- */
 public abstract class SyntacticPattern {
     final protected NGram term, stem;
     final protected Stemmer stemmer;
@@ -27,23 +24,17 @@ public abstract class SyntacticPattern {
 
     protected abstract List<String> match(List<String> tokens, int i, int w);
 
-    //TODO: remove self term
+    //TODO: try to remove self term
     public List<NGram> extract(List<String> tokens, int n) {
         List<NGram> rv = new ArrayList<>();
         List<String> match = null;
-        String buffer[] = new String[term.size()];
-        for (int i = 0, s = tokens.size() - term.size(); i < s && match == null; i++) {
-            for (int j = 0; j < term.size(); j++)
-                buffer[j] = stemmer.stem(tokens.get(i + j));
-            if (stem.equals(buffer))
+        for (int i = 0, s = tokens.size() - term.size(); i < s && match == null; i++)
+            if (stem.equals(tokens, i, stemmer))
                 match = match(tokens, i, n);
-        }
         match.removeIf(x -> Collections.binarySearch(blacklist, x) >= 0);
-        for(int i = 1; i <= n; i++) {
-            for(int j = 0, t = tokens.size() - i + 1; j < t; j++) {
-                rv.add(new NGram(tokens.subList(j,j+i)));
-            }
-        }
+        for(int i = 1; i <= n; i++)
+            for(int j = 0, t = match.size() - i + 1; j < t; j++)
+                rv.add(new NGram(match.subList(j,j+i)));
         return rv;
     }
 }

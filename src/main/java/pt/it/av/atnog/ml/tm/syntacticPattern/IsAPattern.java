@@ -7,9 +7,7 @@ import pt.it.av.atnog.utils.structures.tuple.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by mantunes on 10/6/15.
- */
+
 public class IsAPattern extends SyntacticPattern {
 
     public IsAPattern(final NGram term, final Stemmer stemmer) {

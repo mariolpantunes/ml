@@ -1,13 +1,15 @@
 package pt.it.av.atnog.ml.tm.ngrams;
 
+import pt.it.av.atnog.ml.tm.stemmer.Stemmer;
 import pt.it.av.atnog.utils.StringUtils;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by mantunes on 6/1/15.
  */
-public class NGram implements Comparable<NGram> {
+public class NGram implements Comparable<NGram>, Iterable<String> {
     protected final String array[];
 
     public NGram(String array[]) {
@@ -56,13 +58,25 @@ public class NGram implements Comparable<NGram> {
         return rv;
     }
 
-    public boolean equals(String buffer[]) {
+    public boolean equals(String tokens[]) {
         boolean rv = false;
 
-        if (buffer.length == this.array.length) {
+        if (tokens.length == this.array.length) {
             rv = true;
             for (int i = 0; i < this.array.length && rv; i++)
-                rv = this.array[i].equals(buffer[i]);
+                rv = this.array[i].equals(tokens[i]);
+        }
+
+        return rv;
+    }
+
+    public boolean equals(List<String> tokens, int b, Stemmer stemmer) {
+        boolean rv = false;
+
+        if(b + size() <= tokens.size()) {
+            rv = true;
+            for(int i = 0, t = size(); i < t && rv; i++)
+                rv = array[i].equals(stemmer.stem(tokens.get(i+b)));
         }
 
         return rv;
@@ -131,5 +145,24 @@ public class NGram implements Comparable<NGram> {
         for (int i = 0; i < this.array.length; i++)
             rv += array[i].hashCode();
         return rv;
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+        return new NGramIterator();
+    }
+
+    private class NGramIterator implements Iterator<String> {
+        int idx = 0;
+
+        @Override
+        public boolean hasNext() {
+            return idx < array.length;
+        }
+
+        @Override
+        public String next() {
+            return array[idx++];
+        }
     }
 }

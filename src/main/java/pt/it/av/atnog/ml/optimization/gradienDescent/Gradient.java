@@ -1,4 +1,4 @@
-package pt.it.av.atnog.ml.optimization;
+package pt.it.av.atnog.ml.optimization.gradienDescent;
 
 import pt.it.av.atnog.utils.bla.Vector;
 

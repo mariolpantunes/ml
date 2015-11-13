@@ -9,7 +9,7 @@ import pt.it.av.atnog.ml.tm.ngrams.NGram;
  * word can be provided a character at time (by calling add()), or at once
  * by calling one of the various stem(something) methods.
  */
-class PorterStemmer {
+public class PorterStemmer implements Stemmer {
     private char[] b;
     private int i,     /* offset into b */
             i_end, /* offset to end of stemmed word */
@@ -497,9 +497,10 @@ class PorterStemmer {
      * @return
      */
     public NGram stem(NGram term) {
-        NGram ngramStemmed = new NGram(term.size());
-        for(int i = 0; i < term.size(); i++)
-            ngramStemmed.array[i] = stem(term.array[i]);
-        return ngramStemmed;
+        String buffer[] = new String[term.size()];
+        int i = 0;
+        for(String s : term)
+            buffer[i++] = stem(s);
+        return new NGram(buffer);
     }
 }
