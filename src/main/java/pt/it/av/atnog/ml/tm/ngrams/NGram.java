@@ -16,10 +16,6 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
         this.array = array;
     }
 
-    public NGram(int size) {
-        this.array = new String[size];
-    }
-
     public NGram(List<String> list) {
         array = new String[list.size()];
         int i = 0;
@@ -58,35 +54,42 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
         return rv;
     }
 
+    //TODO: add locale
+    public NGram toLowerCase() {
+        String buffer[] = new String[array.length];
+        for(int i = 0; i < array.length; i++)
+            buffer[i] = array[i].toLowerCase();
+        return new NGram(buffer);
+    }
+
+    public NGram toUpperCase() {
+        String buffer[] = new String[array.length];
+        for(int i = 0; i < array.length; i++)
+            buffer[i] = array[i].toUpperCase();
+        return new NGram(buffer);
+    }
+
     public boolean equals(String tokens[]) {
         boolean rv = false;
 
-        if (tokens.length == this.array.length) {
+        if (tokens.length == array.length) {
             rv = true;
-            for (int i = 0; i < this.array.length && rv; i++)
-                rv = this.array[i].equals(tokens[i]);
+            for (int i = 0; i < array.length && rv; i++)
+                rv = array[i].equals(tokens[i]);
         }
 
         return rv;
     }
 
-    public boolean equals(List<String> tokens, int b, Stemmer stemmer) {
+    public boolean equals(List<String> tokens) {
         boolean rv = false;
 
-        if(b + size() <= tokens.size()) {
+        if (tokens.size() == array.length) {
             rv = true;
-            for(int i = 0, t = size(); i < t && rv; i++)
-                rv = array[i].equals(stemmer.stem(tokens.get(i+b)));
+            for (int i = 0; i < array.length && rv; i++)
+                rv = array[i].equals(tokens.get(i));
         }
 
-        return rv;
-    }
-
-    //TODO: add locale, add toUpperCase...
-    public NGram toLowerCase() {
-        NGram rv = new NGram(array.length);
-        for(int i = 0; i < array.length; i++)
-            rv.array[i] = array[i].toLowerCase();
         return rv;
     }
 
@@ -164,5 +167,26 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
         public String next() {
             return array[idx++];
         }
+    }
+
+    public static NGram Trigram(String a, String b, String c) {
+        String buffer[] = new String[3];
+        buffer[0] = a;
+        buffer[1] = b;
+        buffer[2] = c;
+        return new NGram(buffer);
+    }
+
+    public static NGram Bigram(String a, String b) {
+        String buffer[] = new String[2];
+        buffer[0] = a;
+        buffer[1] = b;
+        return new NGram(buffer);
+    }
+
+    public static NGram Unigram(String a) {
+        String buffer[] = new String[1];
+        buffer[0] = a;
+        return new NGram(buffer);
     }
 }
