@@ -1,6 +1,7 @@
 package pt.it.av.atnog.ml.tm;
 
 import pt.it.av.atnog.ml.tm.ngrams.NGram;
+import pt.it.av.atnog.ml.tm.tokenizer.TokenizerOld;
 import pt.it.av.atnog.utils.parallel.Pipeline;
 import pt.it.av.atnog.utils.parallel.Stop;
 import pt.it.av.atnog.utils.structures.tuple.Pair;
@@ -88,7 +89,7 @@ public class TM {
         // Setences
         pipeline.addLast((Object o, List<Object> l) -> {
             String input = (String) o;
-            List<String> tokens = Tokenizer.sentences(input);
+            List<String> tokens = TokenizerOld.sentences(input);
             if (!tokens.isEmpty())
                 l.add(tokens);
         });
@@ -97,7 +98,7 @@ public class TM {
         pipeline.addLast((Object o, List<Object> l) -> {
             List<String> setences = (List<String>) o;
             for(String s : setences) {
-                List<String> tokens = Tokenizer.clauses(s);
+                List<String> tokens = TokenizerOld.clauses(s);
                 if (!tokens.isEmpty())
                     l.add(tokens);
             }
@@ -107,7 +108,7 @@ public class TM {
         pipeline.addLast((Object o, List<Object> l) -> {
             List<String> clauses = (List<String>) o;
             for(String c : clauses) {
-                List<String> tokens = Tokenizer.text(c, locale);
+                List<String> tokens = TokenizerOld.text(c, locale);
                 if (!tokens.isEmpty())
                     l.add(tokens);
             }

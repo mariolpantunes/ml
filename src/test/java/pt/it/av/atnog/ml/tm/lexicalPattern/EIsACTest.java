@@ -2,7 +2,7 @@ package pt.it.av.atnog.ml.tm.lexicalPattern;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import pt.it.av.atnog.ml.tm.Tokenizer;
+import pt.it.av.atnog.ml.tm.tokenizer.TokenizerOld;
 import pt.it.av.atnog.ml.tm.ngrams.NGram;
 import pt.it.av.atnog.ml.tm.stemmer.PorterStemmer;
 import pt.it.av.atnog.ml.tm.stemmer.Stemmer;
@@ -44,7 +44,7 @@ public class EIsACTest {
         rv.add(NGram.Bigram("an","edible"));
         rv.add(NGram.Bigram("edible","fruit"));
         rv.add(NGram.Trigram("an","edible", "fruit"));
-        assertTrue(eIsAC.extract(Tokenizer.text(snippet), 3).equals(rv));
+        assertTrue(eIsAC.extract(TokenizerOld.text(snippet), 3).equals(rv));
 
         snippet = "Linux is an operating system.";
         eIsAC = new EIsAC(NGram.Unigram("linux"), stemmer);
@@ -55,6 +55,6 @@ public class EIsACTest {
         rv.add(NGram.Bigram("an","operating"));
         rv.add(NGram.Bigram("operating","system"));
         rv.add(NGram.Trigram("an","operating", "system"));
-        assertTrue(eIsAC.extract(Tokenizer.text(snippet), 3).equals(rv));
+        assertTrue(eIsAC.extract(TokenizerOld.text(snippet), 3).equals(rv));
     }
 }

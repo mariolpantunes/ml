@@ -1,4 +1,4 @@
-package pt.it.av.atnog.ml.tm;
+package pt.it.av.atnog.ml.tm.tokenizer;
 
 import pt.it.av.atnog.utils.StringUtils;
 
@@ -13,7 +13,7 @@ import java.util.Locale;
  * Created by mantunes on 2/2/15.
  */
 //TODO: Locale as a parameter
-public class Tokenizer {
+public class TokenizerOld {
     public static List<String> twitter(String input) {
         List<String> rv = new ArrayList<>();
         input = Normalizer.normalize(input.toLowerCase(), Normalizer.Form.NFD)
