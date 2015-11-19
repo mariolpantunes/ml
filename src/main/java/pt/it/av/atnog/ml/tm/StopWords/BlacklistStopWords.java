@@ -1,11 +1,13 @@
-package pt.it.av.atnog.ml.tm;
+package pt.it.av.atnog.ml.tm.StopWords;
+
+import pt.it.av.atnog.ml.tm.StopWords.StopWords;
 
 import java.util.List;
 
 /**
  * Created by mantunes on 8/6/15.
  */
-public class BlacklistStopWords implements StopWords{
+public class BlacklistStopWords implements StopWords {
     private final StopWords sw;
     private final List<String> blacklist;
 

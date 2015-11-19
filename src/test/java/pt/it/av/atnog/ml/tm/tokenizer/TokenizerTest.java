@@ -15,8 +15,8 @@ public class TokenizerTest {
     @Test
     public void test_text() {
         Tokenizer tk = new TextTokenizer();
-        String s = "My estate goesçç to my husb5466and, son, daughter-in-law, and nephew.";
-        Iterator it = tk.tokenize(s);
+        String s = "My estate goes to my husband, son, daughter-in-law, and nephew.";
+        Iterator it = tk.tokenize(s,2);
         int i = 0;
         while(it.hasNext()) {
             System.out.println(i+":"+it.next());

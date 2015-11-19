@@ -1,4 +1,4 @@
-package pt.it.av.atnog.ml.tm;
+package pt.it.av.atnog.ml.tm.StopWords;
 
 import java.util.List;
 

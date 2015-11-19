@@ -27,50 +27,6 @@ public class TokenizerOld {
         return rv;
     }
 
-    public static List<String> text(String input) {
-        return text(input, Locale.getDefault());
-    }
-
-    public static List<String> text(String input, Locale locale) {
-        List<String> rv = new ArrayList<>();
-        input = Normalizer.normalize(input.toLowerCase(), Normalizer.Form.NFD)
-                .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
-        BreakIterator it = BreakIterator.getWordInstance(locale);
-        it.setText(input);
-        int start = it.first(), end = it.next();
-        while (end != BreakIterator.DONE) {
-            String word = input.substring(start, end);
-            if (Character.isLetterOrDigit(word.charAt(0))) {
-                //TODO: can be improved...
-                word = word.replace("'s", "");
-                word = word.replaceAll("[^a-zA-Z\\s]", "");
-                if (word.length() > 0)
-                    rv.add(word);
-            }
-            start = end;
-            end = it.next();
-        }
-        return rv;
-    }
-
-    public static List<String> sentences(String input) {
-        return setences(input, Locale.getDefault());
-    }
-
-    public static List<String> setences(String input, Locale locale) {
-        List<String> rv = new ArrayList<String>();
-        BreakIterator it = BreakIterator.getSentenceInstance(locale);
-        it.setText(input);
-        int lastIndex = it.first();
-        while (lastIndex != BreakIterator.DONE) {
-            int firstIndex = lastIndex;
-            lastIndex = it.next();
-            if (lastIndex != BreakIterator.DONE)
-                rv.add(input.substring(firstIndex, lastIndex));
-        }
-        return rv;
-    }
-
     public static List<String> clauses(String input) {
         return clauses(input, Locale.getDefault());
     }

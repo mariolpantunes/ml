@@ -1,5 +1,8 @@
 package pt.it.av.atnog.ml.tm;
 
+import pt.it.av.atnog.ml.tm.StopWords.BlacklistStopWords;
+import pt.it.av.atnog.ml.tm.StopWords.EnglishStopWords;
+import pt.it.av.atnog.ml.tm.StopWords.StopWords;
 import pt.it.av.atnog.ml.tm.ngrams.NGram;
 import pt.it.av.atnog.utils.MathUtils;
 import pt.it.av.atnog.utils.PrintUtils;
@@ -14,6 +17,7 @@ import java.util.concurrent.BlockingQueue;
 /**
  * Created by mantunes on 7/28/15.
  */
+//TODO: implement with lexical patterns
 public class Hypernyms {
     private static final int MAX = 5, N = 2, NN = 7, MIN_SIZE = 50;
     private final SearchEngine s;

@@ -1,5 +1,7 @@
 package pt.it.av.atnog.ml.tm;
 
+import pt.it.av.atnog.ml.tm.StopWords.EnglishStopWords;
+import pt.it.av.atnog.ml.tm.StopWords.StopWords;
 import pt.it.av.atnog.ml.tm.ngrams.NGram;
 import pt.it.av.atnog.ml.tm.tokenizer.TokenizerOld;
 import pt.it.av.atnog.utils.parallel.Pipeline;
@@ -87,7 +89,7 @@ public class TM {
         List<String> stopWords = sw.stopWords();
 
         // Setences
-        pipeline.addLast((Object o, List<Object> l) -> {
+        /*pipeline.addLast((Object o, List<Object> l) -> {
             String input = (String) o;
             List<String> tokens = TokenizerOld.sentences(input);
             if (!tokens.isEmpty())
@@ -112,7 +114,7 @@ public class TM {
                 if (!tokens.isEmpty())
                     l.add(tokens);
             }
-        });
+        });*/
 
         // Remove stop words
         pipeline.addLast((Object o, List<Object> l) -> {
