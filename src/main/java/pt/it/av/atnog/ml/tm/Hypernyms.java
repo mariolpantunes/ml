@@ -3,6 +3,7 @@ package pt.it.av.atnog.ml.tm;
 import pt.it.av.atnog.ml.tm.StopWords.BlacklistStopWords;
 import pt.it.av.atnog.ml.tm.StopWords.EnglishStopWords;
 import pt.it.av.atnog.ml.tm.StopWords.StopWords;
+import pt.it.av.atnog.ml.tm.lexicalPattern.LexicalPattern;
 import pt.it.av.atnog.ml.tm.ngrams.NGram;
 import pt.it.av.atnog.utils.MathUtils;
 import pt.it.av.atnog.utils.PrintUtils;
@@ -21,72 +22,74 @@ import java.util.concurrent.BlockingQueue;
 public class Hypernyms {
     private static final int MAX = 5, N = 2, NN = 7, MIN_SIZE = 50;
     private final SearchEngine s;
-    private List<String> blacklist = new ArrayList<>();
+    private final List<LexicalPattern> patterns;
 
-    public Hypernyms(SearchEngine s) {
+    public Hypernyms(SearchEngine s, List<LexicalPattern> patterns) {
         this.s = s;
-        blacklist.add("are");
-        blacklist.add("is");
+        this.patterns = patterns;
     }
 
     public NGram hypernym(NGram term) {
         NGram t = term.toLowerCase();
         int n = t.size();
-
+        HashMap<NGram, Count> m = new HashMap();
         Parameters p = new Parameters();
 
-        HashMap<NGram, Count> m = new HashMap();
-        Pipeline pipeline = TM.standartTPP(new BlacklistStopWords(new EnglishStopWords(), blacklist), 2, 15);
+        for(LexicalPattern pattern : patterns) {
+            pattern.ngram(t);
+            List<String> blacklist = pattern.blacklist();
+            Pipeline pipeline = TM.standartTPP(new BlacklistStopWords(new EnglishStopWords(), blacklist), 2, 15);
 
-        //
-        pipeline.addLast((Object o, List<Object> l) -> {
-            List<String> tokens = (List<String>) o;
+            //
+            pipeline.addLast((Object o, List<Object> l) -> {
+                List<String> tokens = (List<String>) o;
 
-        });
+            });
 
-        //
-        pipeline.addLast((Object o, List<Object> l) -> {
-            List<String> tokens = (List<String>) o;
-            boolean used[] = new boolean[N];
-            for (int i = 0; i < tokens.size(); i++) {
-                for (int j = 1; j <= N && i < tokens.size() - j + 1; j++) {
-                    String ngramBuffer[] = new String[j];
-                    for (int k = 0; k < j; k++)
-                        ngramBuffer[k] = tokens.get(i + k);
-                    if (!term.equals(ngramBuffer)) {
-                        NGram ngram = new NGram(ngramBuffer);
-                        if (!m.containsKey(ngram)) {
-                            m.put(ngram, new Count());
-                            if(j == 1)
-                                p.vocabulary += 1.0;
+            //
+            pipeline.addLast((Object o, List<Object> l) -> {
+                List<String> tokens = (List<String>) o;
+                boolean used[] = new boolean[N];
+                for (int i = 0; i < tokens.size(); i++) {
+                    for (int j = 1; j <= N && i < tokens.size() - j + 1; j++) {
+                        String ngramBuffer[] = new String[j];
+                        for (int k = 0; k < j; k++)
+                            ngramBuffer[k] = tokens.get(i + k);
+                        if (!term.equals(ngramBuffer)) {
+                            NGram ngram = new NGram(ngramBuffer);
+                            if (!m.containsKey(ngram)) {
+                                m.put(ngram, new Count());
+                                if (j == 1)
+                                    p.vocabulary += 1.0;
+                            }
+                            m.get(ngram).rawFreq += 1;
                         }
-                        m.get(ngram).rawFreq += 1;
                     }
                 }
+                p.partitions += 1.0;
+            });
+
+            BlockingQueue<Object> source = pipeline.source(),
+                    sink = pipeline.sink();
+            List<String> corpus = s.snippets(term + " is a");
+            pipeline.start();
+            int size = corpus.size() > MIN_SIZE ? (int) (corpus.size() * 0.2) : corpus.size();
+            System.err.println("Corpus size (" + corpus.size() + ";" + size + ")");
+
+            for (int i = 0; i < size; i++)
+                sink.add(corpus.get(i));
+
+            try {
+                pipeline.join();
+                boolean done = false;
+                while (!source.isEmpty()) {
+                    Object ob = source.take();
+                    if ((ob instanceof Stop))
+                        done = true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            p.partitions += 1.0;
-        });
-
-        BlockingQueue<Object> source = pipeline.source(),
-                sink = pipeline.sink();
-        List<String> corpus = s.snippets(term + " is a");
-        pipeline.start();
-        int size = corpus.size() > MIN_SIZE ? (int) (corpus.size() * 0.2) : corpus.size();
-        System.err.println("Corpus size ("+corpus.size()+";"+size+")");
-
-        for(int i = 0; i < size; i++)
-            sink.add(corpus.get(i));
-
-        try {
-            pipeline.join();
-            boolean done = false;
-            while (!source.isEmpty()) {
-                Object ob = source.take();
-                if ((ob instanceof Stop))
-                    done = true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         // System.out.println(PrintUtils.map(m));

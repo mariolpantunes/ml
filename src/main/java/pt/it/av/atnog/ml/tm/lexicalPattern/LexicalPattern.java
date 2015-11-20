@@ -8,16 +8,24 @@ import java.util.Collections;
 import java.util.List;
 
 //TODO: finish the other lexical patterns
+//TODO: for now we can set the ngram at any time, this allows me to develop a loop in the hyernym class
 public abstract class LexicalPattern {
-    final protected NGram term, stem;
+    protected NGram term, stem;
     final protected Stemmer stemmer;
-    protected final List<String> blacklist;
+    final protected  List<String> blacklist;
 
-    public LexicalPattern(final NGram term, final Stemmer stemmer, final List<String> blacklist) {
-        this.term = term;
+    public LexicalPattern(final Stemmer stemmer, final List<String> blacklist) {
         this.stemmer = stemmer;
         this.blacklist = blacklist;
+    }
+
+    public void ngram(final NGram term) {
+        this.term = term;
         stem = stemmer.stem(term);
+    }
+
+    public List<String> blacklist() {
+        return blacklist;
     }
 
     public abstract String query();
