@@ -9,8 +9,8 @@ import java.util.List;
 
 public class EIsAC extends LexicalPattern {
 
-    public EIsAC(final NGram term, final Stemmer stemmer) {
-        super(term, stemmer, new ArrayList<>());
+    public EIsAC(final Stemmer stemmer) {
+        super(stemmer, new ArrayList<>());
         blacklist.add("are");
         blacklist.add("is");
     }
@@ -23,11 +23,11 @@ public class EIsAC extends LexicalPattern {
     @Override
     public List<String> match(List<String> tokens, int i, int w) {
         List<String> rv = null;
-        if(i+term.size() < tokens.size()
-                        && (tokens.get(i + term.size()).equals("is")
-                        || tokens.get(i + term.size()).equals("are"))) {
-                    int total = i + term.size() + 1 + w < tokens.size() ? i + term.size() + 1 + w : tokens.size();
-                    rv = tokens.subList(i + term.size() + 1, total);
+        if(i < tokens.size()
+                        && (tokens.get(i).equals("is")
+                        || tokens.get(i).equals("are"))) {
+                    int total = i + 1 + w < tokens.size() ? i + 1 + w : tokens.size();
+                    rv = tokens.subList(i + 1, total);
                 }
         return rv;
     }

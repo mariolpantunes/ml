@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class CSuchAsE extends LexicalPattern {
 
-    public CSuchAsE(NGram term, Stemmer stemmer, List<String> blacklist) {
-        super(term, stemmer, new ArrayList<>());
+    public CSuchAsE(Stemmer stemmer, List<String> blacklist) {
+        super(stemmer, new ArrayList<>());
         blacklist.add("such");
     }
 

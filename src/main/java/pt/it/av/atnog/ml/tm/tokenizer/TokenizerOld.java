@@ -26,30 +26,4 @@ public class TokenizerOld {
         }
         return rv;
     }
-
-    public static List<String> clauses(String input) {
-        return clauses(input, Locale.getDefault());
-    }
-
-
-    public static List<String> clauses(String input, Locale locale) {
-        List<String> rv = new ArrayList<>();
-        List<Integer> idx = StringUtils.indexOf(input, ',');
-
-        switch (idx.size()) {
-            case 1:
-                rv.add(input.substring(0, idx.get(0)));
-                rv.add(input.substring(idx.get(0)+1, input.length()).trim());
-                break;
-            case 2:
-                rv.add(input.substring(0, idx.get(0)) + input.substring(idx.get(1)+1, input.length()));
-                rv.add(input.substring(idx.get(0)+1, idx.get(1)).trim());
-                break;
-            default:
-                rv.add(input);
-                break;
-        }
-
-        return rv;
-    }
 }

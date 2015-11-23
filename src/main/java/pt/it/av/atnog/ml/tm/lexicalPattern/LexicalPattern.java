@@ -37,16 +37,24 @@ public abstract class LexicalPattern {
     public List<NGram> extract(List<String> tokens, int n) {
         List<NGram> rv = new ArrayList<>();
         List<String> match = null;
-        String buffer[] = new String[stem.size()];
-        for (int i = 0, s = tokens.size() - stem.size(); i < s && match == null; i++) {
-            for(int j = 0; j < stem.size(); j++)
-                buffer[j] = stemmer.stem(tokens.get(i+j));
+        List<String> buffer = new ArrayList<>(stem.size());
+
+        int i = 0;
+        for(;i < stem.size() && i < tokens.size(); i++)
+            buffer.add(stemmer.stem(tokens.get(i)));
+        if (stem.equals(buffer))
+            match = match(tokens, 0, n);
+
+        for (int s = tokens.size(); i < s && match == null; i++) {
+            buffer.remove(0);
+            buffer.add(stemmer.stem(tokens.get(i)));
             if (stem.equals(buffer))
-                match = match(tokens, i, n);
+                match = match(tokens, i+stem.size(), n);
         }
+
         if(match != null) {
             match.removeIf(x -> Collections.binarySearch(blacklist, x) >= 0);
-            for (int i = 1; i <= n; i++)
+            for (i = 1; i <= n; i++)
                 for (int j = 0, t = match.size() - i + 1; j < t; j++)
                     rv.add(new NGram(match.subList(j, j + i)));
         }

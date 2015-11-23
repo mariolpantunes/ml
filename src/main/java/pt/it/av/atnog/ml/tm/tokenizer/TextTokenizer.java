@@ -39,11 +39,19 @@ public class TextTokenizer implements Tokenizer {
         return sb.toString();
     }
 
-    public Iterator<String> tokenize(String input) {
+    public Iterator<String> tokenizeIterator(String input) {
         return new TextTokenizerIteratorString(normalize(input));
     }
 
-    public Iterator<NGram> tokenize(String input, int n) {
+    public List<String> tokenizeList(String input) {
+        Iterator<String> it = this.tokenizeIterator(input);
+        List<String> rv = new ArrayList<>();
+        while(it.hasNext())
+            rv.add(it.next());
+        return rv;
+    }
+
+    public Iterator<NGram> tokenizeIterator(String input, int n) {
         return new TextTokenizerIteratorNGram(normalize(input), n);
     }
 

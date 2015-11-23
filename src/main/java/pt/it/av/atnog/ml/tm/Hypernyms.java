@@ -5,6 +5,9 @@ import pt.it.av.atnog.ml.tm.StopWords.EnglishStopWords;
 import pt.it.av.atnog.ml.tm.StopWords.StopWords;
 import pt.it.av.atnog.ml.tm.lexicalPattern.LexicalPattern;
 import pt.it.av.atnog.ml.tm.ngrams.NGram;
+import pt.it.av.atnog.ml.tm.stemmer.PorterStemmer;
+import pt.it.av.atnog.ml.tm.stemmer.Stemmer;
+import pt.it.av.atnog.ml.tm.tokenizer.TextTokenizer;
 import pt.it.av.atnog.utils.MathUtils;
 import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.parallel.Pipeline;
@@ -12,15 +15,16 @@ import pt.it.av.atnog.utils.parallel.Stop;
 import pt.it.av.atnog.utils.structures.tuple.Pair;
 import pt.it.av.atnog.utils.ws.search.SearchEngine;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by mantunes on 7/28/15.
  */
-//TODO: implement with lexical patterns
 public class Hypernyms {
-    private static final int MAX = 5, N = 2, NN = 7, MIN_SIZE = 50;
+    private static final int MAX = 5, N = 2, NN = 7, MIN_SIZE = 100;
     private final SearchEngine s;
     private final List<LexicalPattern> patterns;
 
@@ -31,49 +35,43 @@ public class Hypernyms {
 
     public NGram hypernym(NGram term) {
         NGram t = term.toLowerCase();
-        int n = t.size();
         HashMap<NGram, Count> m = new HashMap();
-        Parameters p = new Parameters();
+        Parameters param = new Parameters();
+        Stemmer stemmer = new PorterStemmer();
 
-        for(LexicalPattern pattern : patterns) {
-            pattern.ngram(t);
-            List<String> blacklist = pattern.blacklist();
-            Pipeline pipeline = TM.standartTPP(new BlacklistStopWords(new EnglishStopWords(), blacklist), 2, 15);
+        for (LexicalPattern p : patterns) {
+            p.ngram(t);
+            List<String> blacklist = p.blacklist();
+            Pipeline pipeline = TM.standartTPP(new BlacklistStopWords(new EnglishStopWords(), blacklist),
+                    new TextTokenizer(), 2, 15);
 
-            //
+            // Use Lexical Pattern p to extract relevant candidate Classe c
             pipeline.addLast((Object o, List<Object> l) -> {
                 List<String> tokens = (List<String>) o;
-
+                List<NGram> c = p.extract(tokens, N);
+                l.add(c);
             });
 
-            //
+            // Count candidate Classe c
             pipeline.addLast((Object o, List<Object> l) -> {
-                List<String> tokens = (List<String>) o;
-                boolean used[] = new boolean[N];
-                for (int i = 0; i < tokens.size(); i++) {
-                    for (int j = 1; j <= N && i < tokens.size() - j + 1; j++) {
-                        String ngramBuffer[] = new String[j];
-                        for (int k = 0; k < j; k++)
-                            ngramBuffer[k] = tokens.get(i + k);
-                        if (!term.equals(ngramBuffer)) {
-                            NGram ngram = new NGram(ngramBuffer);
-                            if (!m.containsKey(ngram)) {
-                                m.put(ngram, new Count());
-                                if (j == 1)
-                                    p.vocabulary += 1.0;
-                            }
-                            m.get(ngram).rawFreq += 1;
-                        }
+                List<NGram> candidates = (List<NGram>) o;
+                for(NGram c : candidates) {
+                    NGram stemmed = stemmer.stem(c);
+                    if (!m.containsKey(stemmed)) {
+                        m.put(stemmed, new Count());
+                        //if(stemmed.size() == 1)
+                            param.vocabulary += 1.0;
                     }
+                    m.get(stemmed).rawFreq += 1;
                 }
-                p.partitions += 1.0;
+                param.partitions += 1.0;
             });
 
             BlockingQueue<Object> source = pipeline.source(),
                     sink = pipeline.sink();
             List<String> corpus = s.snippets(term + " is a");
             pipeline.start();
-            int size = corpus.size() > MIN_SIZE ? (int) (corpus.size() * 0.2) : corpus.size();
+            int size = corpus.size() > MIN_SIZE ? (int) (corpus.size() * 0.3) : corpus.size();
             System.err.println("Corpus size (" + corpus.size() + ";" + size + ")");
 
             for (int i = 0; i < size; i++)
@@ -95,18 +93,21 @@ public class Hypernyms {
         // System.out.println(PrintUtils.map(m));
         //p.vocabulary = (int)(p.vocabulary / NN);
         //p.partitions *= NN;
-        List<Pair<NGram, Double>> v = map2Vector(m, p);
+        List<Pair<NGram, Double>> v = map2Vector(m, param);
         Comparator<Pair<NGram, Double>> c = (Pair<NGram, Double> a, Pair<NGram, Double> b) -> (Double.compare(a.b, b.b));
         Collections.sort(v, c);
-        printStats(v,m,p,10);
+        printStats(v, m, param, 10);
         System.out.println("Vector: " + PrintUtils.list(v));
-        return null;
+        if(!v.isEmpty() && v.get(0).b < 0.05)
+            return v.get(0).a;
+        else
+            return null;
     }
 
     private void printStats(List<Pair<NGram, Double>> v, Map<NGram, Count> m, Parameters p, int k) {
         int total = k < v.size() ? k : v.size();
-        for(int i = 0; i < total; i++)
-            System.err.println(v.get(i).a+" ("+m.get(v.get(i).a).rawFreq+"; "+p.partitions+"; "+p.vocabulary+") -> C = "+MathUtils.combination(p.partitions, m.get(v.get(i).a).rawFreq));
+        for (int i = 0; i < total; i++)
+            System.err.println(v.get(i).a + " (" + m.get(v.get(i).a).rawFreq + "; " + p.partitions + "; " + p.vocabulary + ") -> Pr = " + probs(m.get(v.get(i).a).rawFreq,p.partitions,p.vocabulary));
     }
 
     private int countNGram(Map<NGram, Count> m, int n) {
@@ -126,20 +127,42 @@ public class Hypernyms {
         Iterator<Map.Entry<NGram, Count>> iter = m.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry<NGram, Count> entry = iter.next();
-            profile.add(new Pair<>(entry.getKey(), probs(entry.getValue().rawFreq, p.partitions, p.vocabulary, entry.getKey().size())));
+            profile.add(new Pair<>(entry.getKey(), probs(entry.getValue().rawFreq, p.partitions, p.vocabulary)));
+            //profile.add(new Pair<>(entry.getKey(), new Double(entry.getValue().rawFreq)));
         }
         return profile;
     }
 
-    private double probs(int freq, double partitions, double vocabulary, int n) {
-        double C = MathUtils.combination(partitions, freq),
-                //P = vocabulary;
-                P = MathUtils.permutation(vocabulary,n);
-        return C/Math.pow(P, freq);
+    private double probs(int freq, int partitions, int vocabulary) {
+        double pr = 0.0;
+        for(int i = 0; i < freq; i++)
+            pr += tprobs(i,partitions,vocabulary);
+        return 1.0 - pr;
+    }
+
+    private double tprobs(int freq, int partitions, int vocabulary) {
+        //System.err.println("("+freq+"; "+partitions+"; "+vocabulary+")");
+        BigDecimal C = new BigDecimal(MathUtils.combination(partitions, freq));
+        //System.err.println("C = "+C);
+
+        BigDecimal bd1 = new BigDecimal(vocabulary-1);
+        bd1 = bd1.pow(partitions-freq);
+        //System.err.println("(V-1)^(P-F) = "+bd1);
+
+        BigDecimal bd2 = new BigDecimal(vocabulary);
+        bd2 = bd2.pow(partitions);
+        //System.err.println("V^P = "+bd2);
+
+        bd1 = bd1.divide(bd2, 100, RoundingMode.HALF_UP);
+        //System.err.println("(V-1)^(P-F) / V^P = "+bd1);
+
+        double pr = C.multiply(bd1).doubleValue();
+        //System.err.println("Pr = "+pr);
+        return pr;
     }
 
     private class Parameters {
-        public double partitions, vocabulary;
+        public int partitions, vocabulary;
     }
 
     private class Count {

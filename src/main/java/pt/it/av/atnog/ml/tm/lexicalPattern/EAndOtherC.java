@@ -14,15 +14,15 @@ public class EAndOtherC extends LexicalPattern {
     private static final int DEFAULT_LIMIT = 5;
     private final int limit;
 
-    public EAndOtherC(final NGram term, final Stemmer stemmer, int limit) {
-        super(term, stemmer, new ArrayList<>());
+    public EAndOtherC(final Stemmer stemmer, int limit) {
+        super(stemmer, new ArrayList<>());
         blacklist.add("and");
         blacklist.add("other");
         this.limit = limit;
     }
 
-    public EAndOtherC(final NGram term, final Stemmer stemmer) {
-        this(term, stemmer, DEFAULT_LIMIT);
+    public EAndOtherC(final Stemmer stemmer) {
+        this(stemmer, DEFAULT_LIMIT);
     }
 
     @Override

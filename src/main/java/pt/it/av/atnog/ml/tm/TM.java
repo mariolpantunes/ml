@@ -3,7 +3,9 @@ package pt.it.av.atnog.ml.tm;
 import pt.it.av.atnog.ml.tm.StopWords.EnglishStopWords;
 import pt.it.av.atnog.ml.tm.StopWords.StopWords;
 import pt.it.av.atnog.ml.tm.ngrams.NGram;
-import pt.it.av.atnog.ml.tm.tokenizer.TokenizerOld;
+import pt.it.av.atnog.ml.tm.tokenizer.TextTokenizer;
+import pt.it.av.atnog.ml.tm.tokenizer.Tokenizer;
+import pt.it.av.atnog.utils.StringUtils;
 import pt.it.av.atnog.utils.parallel.Pipeline;
 import pt.it.av.atnog.utils.parallel.Stop;
 import pt.it.av.atnog.utils.structures.tuple.Pair;
@@ -28,7 +30,7 @@ public class TM {
 
     public static DP learnDP(NGram term, SearchEngine se, DPOptimizer o) {
         Map<NGram, Count> m = new HashMap<>();
-        Pipeline p = standartTPP(new EnglishStopWords(), 3, 15);
+        Pipeline p = standartTPP(new EnglishStopWords(), new TextTokenizer(), 3, 15);
         BlockingQueue<Object> source = p.source(), sink = p.sink();
         List<String> corpus = se.snippets(term.toString());
         p.start();
@@ -80,41 +82,31 @@ public class TM {
         return rv;
     }
 
-    public static Pipeline standartTPP(StopWords sw, int min, int max) {
-        return standartTPP(new Locale("en", "US"), sw, min, max);
+    public static Pipeline standartTPP(StopWords sw, Tokenizer t, int min, int max) {
+        return standartTPP(Locale.getDefault(), sw, t, min, max);
     }
 
-    public static Pipeline standartTPP(Locale locale, StopWords sw, int min, int max) {
+    public static Pipeline standartTPP(Locale locale, StopWords sw, Tokenizer t, int min, int max) {
         Pipeline pipeline = new Pipeline();
         List<String> stopWords = sw.stopWords();
 
-        // Setences
-        /*pipeline.addLast((Object o, List<Object> l) -> {
-            String input = (String) o;
-            List<String> tokens = TokenizerOld.sentences(input);
-            if (!tokens.isEmpty())
-                l.add(tokens);
-        });
-
-        // Clauses
+        // Setences and clauses
         pipeline.addLast((Object o, List<Object> l) -> {
-            List<String> setences = (List<String>) o;
-            for(String s : setences) {
-                List<String> tokens = TokenizerOld.clauses(s);
-                if (!tokens.isEmpty())
-                    l.add(tokens);
-            }
+            String input = (String) o;
+            Iterator<String> it = StringUtils.splitSetences(input,locale);
+            while(it.hasNext())
+                l.add(StringUtils.clauses(it.next()));
         });
 
         // Clean the text  and convert it to tokens
         pipeline.addLast((Object o, List<Object> l) -> {
             List<String> clauses = (List<String>) o;
             for(String c : clauses) {
-                List<String> tokens = TokenizerOld.text(c, locale);
+                List<String> tokens = t.tokenizeList(c);
                 if (!tokens.isEmpty())
                     l.add(tokens);
             }
-        });*/
+        });
 
         // Remove stop words
         pipeline.addLast((Object o, List<Object> l) -> {
