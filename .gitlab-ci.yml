@@ -1,0 +1,17 @@
+stages:
+    - test
+    - deploy
+
+unit_test:
+    stage: test
+    script:
+        - mvn test
+    tags:
+        - maven
+
+install:
+    stage: deploy
+    script:
+        - mvn install
+    tags:
+        - maven
