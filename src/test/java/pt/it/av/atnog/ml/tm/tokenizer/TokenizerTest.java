@@ -10,13 +10,15 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by mantunes on 8/21/15.
  */
+
+//TODO: Finish this test
 public class TokenizerTest {
 
     @Test
     public void test_text() {
         Tokenizer tk = new TextTokenizer();
         String s = "My estate goes to my husband, son, daughter-in-law, and nephew.";
-        Iterator it = tk.tokenizeIterator(s,2);
+        Iterator it = tk.tokenizeIt(s,2);
         int i = 0;
         while(it.hasNext()) {
             System.out.println(i+":"+it.next());

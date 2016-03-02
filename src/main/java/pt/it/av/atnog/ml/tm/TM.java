@@ -15,47 +15,11 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * Created by mantunes on 3/30/15.
+ * Not sure about this class. For now holds text mining useful functions.
+ * Should be divided into several classes that better express the functionality
  */
-//TODO: STEM term
 public class TM {
-
-    /*public static DP learnDP(NGram term, SearchEngine se, List<String> stopWords) {
-        return learnDP(term, se, new StandartTPP(3, 15, stopWords, 5, 3), new ElbowOptmizer(35));
-    }
-
-    public static DP learnDP(NGram term, SearchEngine se, List<String> stopWords, int min, int max, int k, int n) {
-        return learnDP(term, se, new StandartTPP(min, max, stopWords, k, n), new ElbowOptmizer(35));
-    }*/
-
-    public static DP learnDP(NGram term, SearchEngine se, DPOptimizer o) {
-        Map<NGram, Count> m = new HashMap<>();
-        Pipeline p = standartTPP(new EnglishStopWords(), new TextTokenizer(), 3, 15);
-        BlockingQueue<Object> source = p.source(), sink = p.sink();
-        List<String> corpus = se.snippets(term.toString());
-        p.start();
-
-        for (String s : corpus)
-            sink.add(s);
-
-        try {
-            p.join();
-            boolean done = false;
-            while (!source.isEmpty()) {
-                Object ob = source.take();
-                if ((ob instanceof Stop))
-                    done = true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        List<Pair<NGram,Double>> profile = map2DP(m, corpus.size());
-        profile = o.optimize(profile);
-
-        return new DP(term, profile);
-    }
-
+    /*
     private static List<Pair<NGram, Double>> map2DP(Map<NGram, Count> m, int n) {
         List<Pair<NGram, Double>> profile = new ArrayList<>();
         Iterator<Map.Entry<NGram, Count>> iter = m.entrySet().iterator();
@@ -67,9 +31,15 @@ public class TM {
             profile.add(new Pair<>(entry.getKey(), tf*idf));
         }
         return profile;
-    }
+    }*/
 
-    public static List<NGram> extractNGrams(List<String> tokens, int idx, int n) {
+    /**
+     * Returns the possible ngrams (until n) from the tokens.
+     * @param tokens list of tokens
+     * @param n maximum number of tokens in a ngram
+     * @return list of ngrams extracted from the tokens
+     */
+    public static List<NGram> extractNGrams(List<String> tokens, int n) {
         List<NGram> rv = new ArrayList<>();
         for(int i = 1; i <= n; i++) {
             for (int j = 0; j < tokens.size() - i + 1; j++) {
@@ -82,52 +52,24 @@ public class TM {
         return rv;
     }
 
-    public static Pipeline standartTPP(StopWords sw, Tokenizer t, int min, int max) {
-        return standartTPP(Locale.getDefault(), sw, t, min, max);
-    }
-
-    public static Pipeline standartTPP(Locale locale, StopWords sw, Tokenizer t, int min, int max) {
-        Pipeline pipeline = new Pipeline();
-        List<String> stopWords = sw.stopWords();
-
-        // Setences and clauses
-        pipeline.addLast((Object o, List<Object> l) -> {
-            String input = (String) o;
-            Iterator<String> it = StringUtils.splitSetences(input,locale);
-            while(it.hasNext())
-                l.add(StringUtils.clauses(it.next()));
-        });
-
-        // Clean the text  and convert it to tokens
-        pipeline.addLast((Object o, List<Object> l) -> {
-            List<String> clauses = (List<String>) o;
-            for(String c : clauses) {
-                List<String> tokens = t.tokenizeList(c);
-                if (!tokens.isEmpty())
-                    l.add(tokens);
+    /**
+     * Returns the possible ngrams (until n) from the tokens.
+     * @param tokens array of tokens
+     * @param begin the index of the first element (inclusive)
+     * @param end the index of the last element (exclusive)
+     * @param n maximum number of tokens in a ngram
+     * @return list of ngrams extracted from the tokens
+     */
+    public static List<NGram> extractNGrams(String[] tokens, int begin, int end, int n) {
+        List<NGram> rv = new ArrayList<>();
+        for(int i = 1; i <= n; i++) {
+            for (int j = begin; j < end - i + 1; j++) {
+                String buffer[] = new String[i];
+                for(int k = 0; k < i; k++)
+                    buffer[k] = tokens[j+k];
+                rv.add(new NGram(buffer));
             }
-        });
-
-        // Remove stop words
-        pipeline.addLast((Object o, List<Object> l) -> {
-            List<String> tokens = (List<String>) o;
-            tokens.removeIf(x -> Collections.binarySearch(stopWords, x) >= 0);
-            if (tokens.size() > 0)
-                l.add(tokens);
-        });
-
-        // Remove tokens that are too small or too big
-        pipeline.addLast((Object o, List<Object> l) -> {
-            List<String> tokens = (List<String>) o;
-            tokens.removeIf(x -> x.length() < min || x.length() > max);
-            if (tokens.size() > 0)
-                l.add(tokens);
-        });
-
-        return pipeline;
-    }
-
-    private class Count {
-        public int rawFreq = 0, invFreq = 0;
+        }
+        return rv;
     }
 }

@@ -8,6 +8,7 @@ import pt.it.av.atnog.ml.tm.tokenizer.TokenizerOld;
 import pt.it.av.atnog.ml.tm.ngrams.NGram;
 import pt.it.av.atnog.ml.tm.stemmer.PorterStemmer;
 import pt.it.av.atnog.ml.tm.stemmer.Stemmer;
+import pt.it.av.atnog.utils.PrintUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +32,10 @@ public class EIsACTest {
     @Test
     public void test_query() {
         LexicalPattern eIsAC = new EIsAC(stemmer);
+
         eIsAC.ngram(NGram.Unigram("banana"));
         assertTrue(eIsAC.query().equals("banana is a"));
-        eIsAC = new EIsAC(stemmer);
+
         eIsAC.ngram(NGram.Unigram("linux"));
         assertTrue(eIsAC.query().equals("linux is a"));
     }
@@ -51,9 +53,9 @@ public class EIsACTest {
         rv.add(NGram.Bigram("an","edible"));
         rv.add(NGram.Bigram("edible","fruit"));
         rv.add(NGram.Trigram("an","edible", "fruit"));
-        assertTrue(eIsAC.extract(tokenizer.tokenizeList(snippet), 3).equals(rv));
+        assertTrue(eIsAC.extract(tokenizer.tokenize(snippet), 3).equals(rv));
 
-        snippet = "Linux is an operating system.";
+        snippet = "linux is an operating system.";
         eIsAC.ngram(NGram.Unigram("linux"));
         rv.clear();
         rv.add(NGram.Unigram("an"));
@@ -62,6 +64,6 @@ public class EIsACTest {
         rv.add(NGram.Bigram("an","operating"));
         rv.add(NGram.Bigram("operating","system"));
         rv.add(NGram.Trigram("an","operating", "system"));
-        assertTrue(eIsAC.extract(tokenizer.tokenizeList(snippet), 3).equals(rv));
+        assertTrue(eIsAC.extract(tokenizer.tokenize(snippet), 3).equals(rv));
     }
 }

@@ -33,19 +33,22 @@ public abstract class LexicalPattern {
     protected abstract List<String> match(List<String> tokens, int i, int w);
 
     //TODO: try to remove self term
-    //TODO: improve code, should use more classes and interfaces
     public List<NGram> extract(List<String> tokens, int n) {
         List<NGram> rv = new ArrayList<>();
         List<String> match = null;
         List<String> buffer = new ArrayList<>(stem.size());
 
+        // initialize the buffer with the first stemmed tokens
         int i = 0;
-        for(;i < stem.size() && i < tokens.size(); i++)
+        for(; i < stem.size() && i < tokens.size(); i++)
             buffer.add(stemmer.stem(tokens.get(i)));
-        if (stem.equals(buffer))
-            match = match(tokens, 0, n);
 
-        for (int s = tokens.size(); i < s && match == null; i++) {
+        // search for the first match
+        if (stem.equals(buffer))
+            match = match(tokens, stem.size(), n);
+
+        // continues to search for matches
+        for (; i < tokens.size() && match == null; i++) {
             buffer.remove(0);
             buffer.add(stemmer.stem(tokens.get(i)));
             if (stem.equals(buffer))
@@ -58,6 +61,7 @@ public abstract class LexicalPattern {
                 for (int j = 0, t = match.size() - i + 1; j < t; j++)
                     rv.add(new NGram(match.subList(j, j + i)));
         }
+
         return rv;
     }
 }

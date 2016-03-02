@@ -2,6 +2,7 @@ package pt.it.av.atnog.ml.tm.StopWords;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,5 +14,13 @@ public class EnglishStopWords implements StopWords {
     @Override
     public List<String> stopWords() {
         return new ArrayList<>(Arrays.asList(stopWords));
+    }
+
+    @Override
+    public boolean isStopWord(String token) {
+        boolean rv = false;
+        if(Arrays.binarySearch(stopWords,token) >= 0)
+            rv = true;
+        return rv;
     }
 }

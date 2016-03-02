@@ -7,4 +7,5 @@ import java.util.List;
  */
 public interface StopWords {
     List<String> stopWords();
+    boolean isStopWord(String token);
 }

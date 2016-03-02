@@ -2,6 +2,9 @@ package pt.it.av.atnog.ml.tm.StopWords;
 
 import pt.it.av.atnog.ml.tm.StopWords.StopWords;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,5 +24,14 @@ public class BlacklistStopWords implements StopWords {
         List<String> stopwords = sw.stopWords();
         stopwords.removeAll(blacklist);
         return stopwords;
+    }
+
+    @Override
+    public boolean isStopWord(String token) {
+        boolean rv = false;
+        if(Collections.binarySearch(blacklist, token) < 0)
+            if(sw.isStopWord(token))
+                rv = true;
+        return rv;
     }
 }

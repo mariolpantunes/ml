@@ -39,20 +39,23 @@ public class TextTokenizer implements Tokenizer {
         return sb.toString();
     }
 
-    public Iterator<String> tokenizeIterator(String input) {
+    @Override
+    public Iterator<String> tokenizeIt(String input) {
         return new TextTokenizerIteratorString(normalize(input));
     }
 
-    public List<String> tokenizeList(String input) {
-        Iterator<String> it = this.tokenizeIterator(input);
+    @Override
+    public Iterator<NGram> tokenizeIt(String input, int n) {
+        return new TextTokenizerIteratorNGram(normalize(input), n);
+    }
+
+    @Override
+    public List<String> tokenize(String input) {
+        Iterator<String> it = this.tokenizeIt(input);
         List<String> rv = new ArrayList<>();
         while(it.hasNext())
             rv.add(it.next());
         return rv;
-    }
-
-    public Iterator<NGram> tokenizeIterator(String input, int n) {
-        return new TextTokenizerIteratorNGram(normalize(input), n);
     }
 
     private class TextTokenizerIteratorString implements Iterator<String> {
@@ -100,7 +103,6 @@ public class TextTokenizer implements Tokenizer {
                 else
                     hasNext = false;
             }
-
         }
 
         public boolean hasNext() {

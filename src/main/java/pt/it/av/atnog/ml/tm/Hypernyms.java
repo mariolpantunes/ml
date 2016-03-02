@@ -8,8 +8,10 @@ import pt.it.av.atnog.ml.tm.ngrams.NGram;
 import pt.it.av.atnog.ml.tm.stemmer.PorterStemmer;
 import pt.it.av.atnog.ml.tm.stemmer.Stemmer;
 import pt.it.av.atnog.ml.tm.tokenizer.TextTokenizer;
+import pt.it.av.atnog.ml.tm.tokenizer.Tokenizer;
 import pt.it.av.atnog.utils.MathUtils;
 import pt.it.av.atnog.utils.PrintUtils;
+import pt.it.av.atnog.utils.StringUtils;
 import pt.it.av.atnog.utils.parallel.Pipeline;
 import pt.it.av.atnog.utils.parallel.Stop;
 import pt.it.av.atnog.utils.structures.tuple.Pair;
@@ -35,15 +37,43 @@ public class Hypernyms {
 
     public NGram hypernym(NGram term) {
         NGram t = term.toLowerCase();
-        HashMap<NGram, Count> m = new HashMap();
+        Map<NGram, Count> m = new HashMap();
         Parameters param = new Parameters();
         Stemmer stemmer = new PorterStemmer();
+
+        int min = 3, max = 7;
+        Tokenizer tokenizer = new TextTokenizer();
+        List<String> sw = new EnglishStopWords().stopWords();
 
         for (LexicalPattern p : patterns) {
             p.ngram(t);
             List<String> blacklist = p.blacklist();
-            Pipeline pipeline = TM.standartTPP(new BlacklistStopWords(new EnglishStopWords(), blacklist),
-                    new TextTokenizer(), 2, 15);
+            Pipeline pipeline = new Pipeline();
+
+            // Setences
+            pipeline.addLast((Object o, List<Object> l) -> {
+                String input = (String) o;
+                Iterator<String> setences = StringUtils.splitSetences(input);
+                while(setences.hasNext())
+                    l.add(setences.next());
+            });
+
+            // Clean the text  and convert it to tokens
+            pipeline.addLast((Object o, List<Object> l) -> {
+                String setence = (String) o;
+                List<String> tokens = tokenizer.tokenize(setence);
+                l.add(tokens);
+            });
+
+            // Remove stop words and words that are too small or too big
+            pipeline.addLast((Object o, List<Object> l) -> {
+                List<String> tokens = (List<String>) o;
+
+                tokens.removeIf(x -> Collections.binarySearch(sw, x) >= 0);
+                tokens.removeIf(x -> x.length() < min || x.length() > max);
+                if (tokens.size() > 0)
+                        l.add(tokens);
+            });
 
             // Use Lexical Pattern p to extract relevant candidate Classe c
             pipeline.addLast((Object o, List<Object> l) -> {
@@ -69,7 +99,7 @@ public class Hypernyms {
 
             BlockingQueue<Object> source = pipeline.source(),
                     sink = pipeline.sink();
-            List<String> corpus = s.snippets(term + " is a");
+            List<SearchEngine.Result> corpus = s.search(term + " is a");
             pipeline.start();
             int size = corpus.size() > MIN_SIZE ? (int) (corpus.size() * 0.3) : corpus.size();
             System.err.println("Corpus size (" + corpus.size() + ";" + size + ")");
