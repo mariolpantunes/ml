@@ -6,10 +6,36 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by mantunes on 11/17/15.
+ *
  */
 public interface Tokenizer {
+    /**
+     *
+     * @param input
+     * @return
+     */
     Iterator<String> tokenizeIt(String input);
+
+    /**
+     *
+     * @param input
+     * @param n
+     * @return
+     */
     Iterator<NGram> tokenizeIt(String input, int n);
+
+    /**
+     *
+     * @param input
+     * @return
+     */
     List<String> tokenize(String input);
+
+    /**
+     *
+     * @param input
+     * @param n
+     * @return
+     */
+    List<NGram> tokenize(String input, int n);
 }

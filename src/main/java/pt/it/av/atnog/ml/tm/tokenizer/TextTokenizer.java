@@ -12,22 +12,34 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by mantunes on 11/17/15.
+ *
  */
 public class TextTokenizer implements Tokenizer {
     private final Locale locale;
     private final Pattern norm, text;
 
+    /**
+     *
+     * @param locale
+     */
     public TextTokenizer(Locale locale) {
         this.locale = locale;
         norm = Pattern.compile("[\\p{InCombiningDiacriticalMarks}]");
         text = Pattern.compile("('s|[^a-zA-Z-]+)");
     }
 
+    /**
+     *
+     */
     public TextTokenizer() {
         this(Locale.getDefault());
     }
 
+    /**
+     *
+     * @param input
+     * @return
+     */
     private String normalize(String input) {
         String lowerCase = input.toLowerCase(locale);
         String normalize = Normalizer.normalize(lowerCase, Normalizer.Form.NFD);
@@ -58,6 +70,18 @@ public class TextTokenizer implements Tokenizer {
         return rv;
     }
 
+    @Override
+    public List<NGram> tokenize(String input, int n) {
+        Iterator<NGram> it = this.tokenizeIt(input, n);
+        List<NGram> rv = new ArrayList<>();
+        while(it.hasNext())
+            rv.add(it.next());
+        return rv;
+    }
+
+    /**
+     *
+     */
     private class TextTokenizerIteratorString implements Iterator<String> {
         private final String input;
         private final IteratorParameters p;
@@ -71,10 +95,12 @@ public class TextTokenizer implements Tokenizer {
                 hasNext = false;
         }
 
+        @Override
         public boolean hasNext() {
             return hasNext;
         }
 
+        @Override
         public String next() {
             String rv = p.token;
             findNext(input, p);
@@ -84,6 +110,9 @@ public class TextTokenizer implements Tokenizer {
         }
     }
 
+    /**
+     *
+     */
     private class TextTokenizerIteratorNGram implements Iterator<NGram> {
         private final String input;
         private final IteratorParameters p;
@@ -105,10 +134,12 @@ public class TextTokenizer implements Tokenizer {
             }
         }
 
+        @Override
         public boolean hasNext() {
             return hasNext;
         }
 
+        @Override
         public NGram next() {
             NGram rv = null;
             if (idx < n) {
@@ -129,6 +160,11 @@ public class TextTokenizer implements Tokenizer {
         }
     }
 
+    /**
+     *
+     * @param input
+     * @param p
+     */
     private void findNext(String input, IteratorParameters p) {
         p.token = null;
         boolean done = false;
@@ -151,6 +187,9 @@ public class TextTokenizer implements Tokenizer {
         }
     }
 
+    /**
+     *
+     */
     private class IteratorParameters {
         protected BreakIterator it;
         protected int start, end;

@@ -64,6 +64,7 @@ public class DP {
     }
 
 
+    @Override
     public String toString() {
         Comparator<Pair<NGram, Double>> c = (Pair<NGram, Double> a, Pair<NGram, Double> b) -> (Double.compare(b.b, a.b));
         Collections.sort(profile, c);

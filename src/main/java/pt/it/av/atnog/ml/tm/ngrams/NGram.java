@@ -7,15 +7,23 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by mantunes on 6/1/15.
+ * NGram class, represents a contiguous sequence of n items from a given sequence of text.
  */
 public class NGram implements Comparable<NGram>, Iterable<String> {
     protected final String array[];
 
+    /**
+     * NGra constructor, creates a NGram from an array of Strings.
+     * @param array of Strings
+     */
     public NGram(String array[]) {
         this.array = array;
     }
 
+    /**
+     * NGram constructor, creates a NGram from a List of Strings.
+     * @param list of Strings
+     */
     public NGram(List<String> list) {
         array = new String[list.size()];
         int i = 0;
@@ -23,10 +31,18 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
             array[i++] = s;
     }
 
+    /**
+     * Returns the number of items in this NGram.
+     * @return number of items in this NGram.
+     */
     public int size() {
         return array.length;
     }
 
+    /**
+     * Returns the length of this character sequence (total number of characters).
+     * @return ength of this character sequence
+     */
     public int length() {
         int rv = 0;
         for (String s : array)
@@ -34,6 +50,11 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
         return rv;
     }
 
+    /**
+     * Returns the Levenshtein distance between two NGrams.
+     * @param ngram the second NGram
+     * @return Levenshtein distance between two NGrams
+     */
     public int levenshtein(NGram ngram) {
         int rv = 0;
         String first[], second[];
@@ -54,7 +75,10 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
         return rv;
     }
 
-    //TODO: add locale
+    /**
+     *
+     * @return
+     */
     public NGram toLowerCase() {
         String buffer[] = new String[array.length];
         for(int i = 0; i < array.length; i++)
@@ -62,6 +86,10 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
         return new NGram(buffer);
     }
 
+    /**
+     *
+     * @return
+     */
     public NGram toUpperCase() {
         String buffer[] = new String[array.length];
         for(int i = 0; i < array.length; i++)
@@ -69,6 +97,11 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
         return new NGram(buffer);
     }
 
+    /**
+     *
+     * @param tokens
+     * @return
+     */
     public boolean equals(String tokens[]) {
         boolean rv = false;
 
@@ -133,13 +166,13 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
         for (int i = 0; i < t && rv == 0; i++)
             rv = array[i].compareTo(ngram.array[i]);
 
-        if (rv == 0) {
+        if (rv == 0 && array.length != ngram.array.length)
             if (array.length < ngram.array.length)
-                rv = 1;
-            else
                 rv = -1;
-        }
-        return 0;
+            else
+                rv = 1;
+
+        return rv;
     }
 
     @Override
@@ -155,6 +188,9 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
         return new NGramIterator();
     }
 
+    /**
+     *
+     */
     private class NGramIterator implements Iterator<String> {
         int idx = 0;
 
@@ -169,6 +205,13 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
         }
     }
 
+    /**
+     *
+     * @param a
+     * @param b
+     * @param c
+     * @return
+     */
     public static NGram Trigram(String a, String b, String c) {
         String buffer[] = new String[3];
         buffer[0] = a;
@@ -177,6 +220,12 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
         return new NGram(buffer);
     }
 
+    /**
+     *
+     * @param a
+     * @param b
+     * @return
+     */
     public static NGram Bigram(String a, String b) {
         String buffer[] = new String[2];
         buffer[0] = a;
@@ -184,6 +233,11 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
         return new NGram(buffer);
     }
 
+    /**
+     *
+     * @param a
+     * @return
+     */
     public static NGram Unigram(String a) {
         String buffer[] = new String[1];
         buffer[0] = a;
