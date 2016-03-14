@@ -1,51 +1,25 @@
 package pt.it.av.atnog.ml.clustering;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-import pt.it.av.atnog.ml.thresholding.Score;
 
-public abstract class Cluster<T extends Element> implements Score {
-    List<T> elements = new ArrayList<T>();
+/**
+ * Cluster represents a set of elements that are similiar in some way.
+ * TODO: Make this class abstract, let each implementation choose a data structure that suit their needs
+ */
+public interface Cluster<T extends Element> extends Collection<T> {
 
-    public Cluster(T e) {
-        elements.add(e);
-        e.cluster = this;
-    }
+    /*/**
+     * Constructs a new cluster with the first element.
+     *
+     * @param e the first element of the cluster
+     */
+   /* public Cluster(T e) {
+        add(e);
+    }*/
 
-    public void add(T e) {
-        elements.add(e);
-        e.cluster = this;
-    }
+/**
 
-    public void remove(T e) {
-        elements.remove(e);
-        e.cluster = null;
-    }
-
-    public void remove(int i) {
-        if (i >= 0 && i < elements.size()) {
-            elements.remove(i);
-        }
-    }
-
-    public int size() {
-        return elements.size();
-    }
-
-    public double score() {
-        return size();
-    }
-
-    public Element at(int i) {
-        return elements.get(i);
-    }
-
-    protected double t(int n) {
-        return (n * n - 1) / 2.0;
-    }
 
     protected double icd(List<T> l) {
         double rv = 0.0;
@@ -64,6 +38,7 @@ public abstract class Cluster<T extends Element> implements Score {
         return icd(elements);
     }
 
+
     public T center() {
         Double[] dist = new Double[elements.size()];
         Arrays.fill(dist, 0.0);
@@ -78,17 +53,28 @@ public abstract class Cluster<T extends Element> implements Score {
         List<Double> values = Arrays.asList(dist);
         int minIndex = values.indexOf(Collections.min(values));
         return elements.get(minIndex);
-    }
+    }*/
 
-    public boolean valid() {
-        boolean valid = true;
 
-        for (T e : elements)
-            if (e.cluster != this) {
-                valid = false;
-                break;
-            }
+    /**
+     * TODO:
+     * @return
+     */
+    double distortion();
 
-        return valid;
-    }
+    /*@Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        Iterator it = iterator();
+
+        sb.append("{");
+        while (it.hasNext()) {
+            sb.append(it.next().toString());
+            if (it.hasNext())
+                sb.append("; ");
+        }
+        sb.append("}");
+
+        return sb.toString();
+    }*/
 }

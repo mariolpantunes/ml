@@ -1,25 +1,38 @@
 package pt.it.av.atnog.ml.clustering;
 
-import pt.it.av.atnog.utils.bla.Vector;
+/**
+ * Thin wrapper for elements used in clustering algorithms.
+ */
+public class Element<T extends Distance> implements Distance {
+    private final Distance d;
+    private Cluster c = null;
 
-public class Element extends Vector {
-    protected Cluster<?> cluster;
-    protected int votes;
-
-    public Element(double coor[]) {
-        super(coor);
-        cluster = null;
+    public Element(Distance d) {
+        this.d = d;
     }
 
-    public Cluster<?> cluster() {
-	    return cluster;
+    public void setCluster(Cluster c) {
+        this.c = c;
     }
 
     public boolean used() {
-	    return cluster != null;
+        return c != null;
     }
 
-    public double distance(Element e) {
-        return euclideanDistance(e);
+    public Cluster cluster() {
+        return c;
+    }
+
+    @Override
+    public double distance(Distance d) {
+        double rv = 0;
+        if(d instanceof Element)
+            rv = this.d.distance(((Element)d).d);
+        return rv;
+    }
+
+    @Override
+    public String toString() {
+        return d.toString();
     }
 }

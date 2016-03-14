@@ -3,67 +3,80 @@ package pt.it.av.atnog.ml.clustering;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MinDistCluster<T extends Element> extends Cluster<T> {
+/**
+ * TODO: MinDist uses a KD-Tree, this algorithm requires the position of the object and not only the Distance between elements
+ *
+ * @param <E>
+ */
+/*public class MinDistCluster<E extends Element> extends Cluster<E> {
     private double icd;
 
-    public MinDistCluster(T e) {
-	super(e);
-	icd = 0.0;
+    public MinDistCluster(E e) {
+        super(e);
+        icd = 0.0;
     }
 
-    public void add(T e) {
-	super.add(e);
-	icd = icdWith(e);
+    @Override
+    public boolean add(E e) {
+        super.add(e);
+        icd = icdWith(e);
+        return false;
     }
 
-    public void addAll(MinDistCluster<T> c) {
-	for (T e : c.elements)
-	    super.add(e);
-	
-	icd = icdWith(c);
+    public void addAll(MinDistCluster<E> c) {
+        for (E e : c.elements)
+            super.add(e);
+
+        icd = icdWith(c);
     }
 
-    public double icdWith(T e) {
-	double rv = 0.0;
+    public double icdWith(E e) {
+        double rv = 0.0;
 
-	for (T el : elements)
-	    rv += el.distance(e);
+        for (E el : elements)
+            rv += el.distance(e);
 
-	rv = (icd * t(elements.size()) + rv) / t(elements.size() + 1);
+        rv = (icd * t(elements.size()) + rv) / t(elements.size() + 1);
 
-	return rv;
+        return rv;
     }
 
-    public double icdWith(Cluster<T> c) {
-	List<T> all = new ArrayList<T>(elements.size() + c.elements.size());
-	all.addAll(elements);
-	all.addAll(c.elements);
-	return icd(all);
+    public double icdWith(Cluster<E> c) {
+        List<E> all = new ArrayList<E>(elements.size() + c.elements.size());
+        all.addAll(elements);
+        all.addAll(c.elements);
+        //return distortion(all);
+        return 0.0;
     }
 
-    public double icdWithout(T e) {
-	double rv = 0.0;
+    public double icdWithout(E e) {
+        double rv = 0.0;
 
-	for (T el : elements)
-	    if (!el.equals(e))
-		rv += el.distance(e);
+        for (E el : elements)
+            if (!el.equals(e))
+                rv += el.distance(e);
 
-	rv = (icd * t(elements.size()) + rv) / t(elements.size() + 1);
+        rv = (icd * t(elements.size()) + rv) / t(elements.size() + 1);
 
-	return rv;
+        return rv;
     }
 
     public double icd() {
-	return icd;
+        return icd;
     }
 
+    @Override
     public String toString() {
-	StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
-	sb.append("Cluster with " + elements.size() + " elements:\n");
-	for (Element e : elements)
-	    sb.append(" -> " + e + "\n");
+        sb.append("Cluster with " + elements.size() + " elements:\n");
+        for (Distance d : elements)
+            sb.append(" -> " + d + "\n");
 
-	return sb.toString();
+        return sb.toString();
     }
-}
+
+    protected double t(int n) {
+        return (n * n - 1) / 2.0;
+    }
+}*/

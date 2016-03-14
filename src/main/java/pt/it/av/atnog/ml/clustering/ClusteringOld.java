@@ -7,8 +7,8 @@ import java.util.List;
 import pt.it.av.atnog.utils.Utils;
 import pt.it.av.atnog.utils.structures.KDTree;
 
-public class Clustering {
-    public static <T extends Element> List<Cluster<T>> fastMinDist(
+public class ClusteringOld {
+    /*public static <T extends Element> List<Cluster<T>> fastMinDist(
 	    List<T> elements, double d, double t) {
 	List<Cluster<T>> clusters = new ArrayList<Cluster<T>>();
 	KDTree<T> tree = KDTree.build(elements);
@@ -166,5 +166,5 @@ public class Clustering {
 	    ((KMedoidCluster<T>) c).updateMedoid();
 
 	return clusters;
-    }
+    }*/
 }
