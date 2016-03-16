@@ -1,28 +1,23 @@
 package pt.it.av.atnog.ml.tm.tokenizer;
 
 import org.junit.Test;
-import pt.it.av.atnog.ml.tm.tokenizer.TokenizerOld;
 
 import java.util.Iterator;
-import java.util.List;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by mantunes on 8/21/15.
+ * Unit tests for the Tokenizer class.
  */
-
-//TODO: Finish this test
 public class TokenizerTest {
+    private static final String Sample1 = "My estate goes to my husband, son, daughter-in-law, and nephew.";
+    private static final String Sample1_unigram[] = {"my", "estate", "goes", "to", "my", "husband", "son", "daughter-in-law", "and", "nephew"};
 
     @Test
-    public void test_text() {
+    public void test_unigram() {
         Tokenizer tk = new TextTokenizer();
-        String s = "My estate goes to my husband, son, daughter-in-law, and nephew.";
-        Iterator it = tk.tokenizeIt(s,2);
+        Iterator<String> it = tk.tokenizeIt(Sample1);
         int i = 0;
-        while(it.hasNext()) {
-            System.out.println(i+":"+it.next());
-            i++;
-        }
+        while (it.hasNext())
+            assertTrue(Sample1_unigram[i++].equals(it.next()));
     }
 }
