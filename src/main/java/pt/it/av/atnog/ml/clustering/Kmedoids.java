@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * K-medoid algorithm
+ * K-medoid algorithm implementation
  */
 public class Kmedoids implements Kmeans {
     /**

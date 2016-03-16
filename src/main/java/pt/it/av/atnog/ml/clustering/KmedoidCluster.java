@@ -73,4 +73,20 @@ public class KmedoidCluster<E extends Element> extends ArrayList<E> implements C
             rv += Math.pow(medoid.distance(e), 2.0);
         return rv;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        Iterator it = iterator();
+
+        sb.append("{");
+        while (it.hasNext()) {
+            sb.append(it.next().toString());
+            if (it.hasNext())
+                sb.append("; ");
+        }
+        sb.append("}");
+
+        return sb.toString();
+    }
 }
