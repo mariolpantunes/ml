@@ -15,6 +15,7 @@ public class KmedoidCluster<E extends Element> extends ArrayList<E> implements C
      */
     public KmedoidCluster(E e) {
         medoid = e;
+        add(e);
     }
 
     @Override
@@ -46,22 +47,24 @@ public class KmedoidCluster<E extends Element> extends ArrayList<E> implements C
      *
      */
     public void updateMedoid() {
-        E optimalMedoid = null;
-        double distortion = 0.0;
+        if(size() > 2) {
+            E optimalMedoid = null;
+            double distortion = 0.0;
 
-        Iterator<E> it = iterator();
-        if (it.hasNext()) {
-            optimalMedoid = it.next();
-            medoid = optimalMedoid;
-            distortion = 0;
-        }
+            Iterator<E> it = iterator();
+            if (it.hasNext()) {
+                optimalMedoid = it.next();
+                medoid = optimalMedoid;
+                distortion = 0;
+            }
 
-        while (it.hasNext()) {
-            medoid = it.next();
-            double tmp = 0;
-            if (tmp < distortion) {
-                optimalMedoid = medoid;
-                distortion = tmp;
+            while (it.hasNext()) {
+                medoid = it.next();
+                double tmp = 0;
+                if (tmp < distortion) {
+                    optimalMedoid = medoid;
+                    distortion = tmp;
+                }
             }
         }
     }
@@ -77,11 +80,14 @@ public class KmedoidCluster<E extends Element> extends ArrayList<E> implements C
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        Iterator it = iterator();
+        Iterator<E> it = iterator();
 
         sb.append("{");
         while (it.hasNext()) {
-            sb.append(it.next().toString());
+            E e = it.next();
+            if(e == medoid)
+                sb.append("*");
+            sb.append(e.toString());
             if (it.hasNext())
                 sb.append("; ");
         }

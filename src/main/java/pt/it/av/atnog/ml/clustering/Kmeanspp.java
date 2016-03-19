@@ -1,6 +1,7 @@
 package pt.it.av.atnog.ml.clustering;
 
 import pt.it.av.atnog.utils.MathUtils;
+import pt.it.av.atnog.utils.PrintUtils;
 import sun.nio.cs.ext.MacThai;
 
 import java.util.ArrayList;

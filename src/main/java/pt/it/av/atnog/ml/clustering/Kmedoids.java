@@ -1,5 +1,7 @@
 package pt.it.av.atnog.ml.clustering;
 
+import pt.it.av.atnog.utils.PrintUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -46,22 +48,31 @@ public class Kmedoids implements Kmeans {
 
     @Override
     public <D extends Distance> List<? extends Cluster<Element<D>>> clustering(List<D> objects, int k) {
-        // convert list of elements into list of elements
+        // convert list of Distance objects into Elements
         List<Element<D>> elements = objects.stream().map(u -> new Element<D>(u)).collect(Collectors.toList());
+        //System.err.println("Convert list of Distance objects into Elements");
 
         // init step
         List<KmedoidCluster<Element<D>>> clusters = init(elements, k);
+        //System.err.println("Init Step");
+        //System.err.println("Clusters: "+ PrintUtils.list(clusters));
 
         // assignment step
         assignment(elements, clusters);
+        //System.err.println("Assignemnt Step");
+        //System.err.println("Clusters: "+ PrintUtils.list(clusters));
 
         boolean done = false;
         while (!done) {
             // update step
             for(KmedoidCluster c : clusters)
                 c.updateMedoid();
+            //System.err.println("Update Step");
+            //System.err.println("Clusters: "+ PrintUtils.list(clusters));
             // assignment step
             done = !assignment(elements, clusters);
+            //System.err.println("Assignemnt Step -> "+done);
+            //System.err.println("Clusters: "+ PrintUtils.list(clusters));
         }
 
         return clusters;
