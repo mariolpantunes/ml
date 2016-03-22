@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
  * Unit tests for K-means++ algorithm.
  */
 public class KmeansppTest {
-    //@org.junit.Test
+    @org.junit.Test
     public void test_clustering() {
         List<Point1D> points = new ArrayList<Point1D>();
         points.add(new Point1D(10.0));

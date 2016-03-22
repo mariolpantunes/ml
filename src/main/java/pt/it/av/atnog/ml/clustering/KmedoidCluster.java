@@ -1,11 +1,12 @@
 package pt.it.av.atnog.ml.clustering;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
- * Created by mantunes on 3/10/16.
+ * @param <E>
  */
-public class KmedoidCluster<E extends Element> extends ArrayList<E> implements Cluster<E>  {
+public class KmedoidCluster<E extends Element> extends ArrayList<E> implements Cluster<E> {
     private E medoid;
 
     /**
@@ -21,7 +22,7 @@ public class KmedoidCluster<E extends Element> extends ArrayList<E> implements C
     @Override
     public boolean add(E e) {
         boolean rv = super.add(e);
-        if(rv)
+        if (rv)
             e.setCluster(this);
         return rv;
     }
@@ -29,14 +30,13 @@ public class KmedoidCluster<E extends Element> extends ArrayList<E> implements C
     @Override
     public boolean remove(Object o) {
         boolean rv = super.remove(o);
-        if(rv)
-            ((E)o).setCluster(null);
+        if (rv)
+            ((E) o).setCluster(null);
         return rv;
     }
 
 
     /**
-     *
      * @return
      */
     public E medoid() {
@@ -47,33 +47,29 @@ public class KmedoidCluster<E extends Element> extends ArrayList<E> implements C
      *
      */
     public void updateMedoid() {
-        if(size() > 2) {
-            E optimalMedoid = null;
-            double distortion = 0.0;
+        if (size() > 2) {
+            E optimalMedoid = get(0);
+            medoid = optimalMedoid;
+            double distortion = distortion();
 
-            Iterator<E> it = iterator();
-            if (it.hasNext()) {
-                optimalMedoid = it.next();
-                medoid = optimalMedoid;
-                distortion = 0;
-            }
-
-            while (it.hasNext()) {
-                medoid = it.next();
-                double tmp = 0;
+            for (int i = 1; i < size(); i++) {
+                medoid = get(i);
+                double tmp = distortion();
                 if (tmp < distortion) {
                     optimalMedoid = medoid;
                     distortion = tmp;
                 }
             }
+
+            medoid = optimalMedoid;
         }
     }
 
     @Override
-    public double distortion(){
+    public double distortion() {
         double rv = 0.0;
-        for(Element e : this)
-            rv += Math.pow(medoid.distance(e), 2.0);
+        for (int i = 0; i < size(); i++)
+            rv += Math.pow(medoid.distance(get(i)), 2.0);
         return rv;
     }
 
@@ -83,15 +79,17 @@ public class KmedoidCluster<E extends Element> extends ArrayList<E> implements C
         Iterator<E> it = iterator();
 
         sb.append("{");
-        while (it.hasNext()) {
-            E e = it.next();
-            if(e == medoid)
+        for (int i = 0; i < size() - 1; i++) {
+            E e = get(i);
+            if (e == medoid)
                 sb.append("*");
-            sb.append(e.toString());
-            if (it.hasNext())
-                sb.append("; ");
+            sb.append(e.toString() + "; ");
         }
-        sb.append("}");
+
+        E e = get(size() - 1);
+        if (e == medoid)
+            sb.append("*");
+        sb.append(e.toString() + "}");
 
         return sb.toString();
     }
