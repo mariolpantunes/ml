@@ -15,7 +15,7 @@ public class OptimalClustering {
      * @param min
      * @param max
      */
-    public static <T extends Distance<T>> void optimalClustering(Kmeans alg, List<T> objs, int min, int max) {
+    public static <T extends Distance<T>> void optimalClustering(Kmeans alg, List<T> objs, int min, int max, int Nd) {
         System.out.println("Size: "+((max-min)+1));
 
         double fk[] = new double[(max - min) + 1];
@@ -27,7 +27,7 @@ public class OptimalClustering {
         for (int k = min, i = 0; k <= max; k++, i++) {
             List<? extends Cluster<Element<T>>> clusters = alg.clustering(objs, i);
             Sk[i] = distortion(clusters);
-            fk[i] = f(i, Sk[i], Sk, ak);
+            fk[i] = f(i, Sk[i], Sk, ak, Nd);
         }
 
         System.out.println("SK: " + PrintUtils.array(Sk));
@@ -55,14 +55,14 @@ public class OptimalClustering {
      * @param ak
      * @return
      */
-    private static double f(int k, double S, double Sk[], double ak[]) {
+    private static double f(int k, double S, double Sk[], double ak[], int Nd) {
         System.out.println("K: "+(k+1));
         double rv = 0.0;
 
         if (k == 0)
             rv = 1.0;
         else if (Sk[k - 1] != 0) {
-            ak[k] = a(k, 1, ak[k - 1]);
+            ak[k] = a(k, Nd, ak[k - 1]);
             rv = S / (ak[k] * Sk[k - 1]);
         } else
             rv = 1.0;

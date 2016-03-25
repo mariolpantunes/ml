@@ -172,7 +172,7 @@ public class Hypernyms {
 
     private double tprobs(int freq, int partitions, int vocabulary) {
         //System.err.println("("+freq+"; "+partitions+"; "+vocabulary+")");
-        BigDecimal C = new BigDecimal(MathUtils.combination(partitions, freq));
+        BigDecimal C = new BigDecimal(MathUtils.binomial(partitions, freq));
         //System.err.println("C = "+C);
 
         BigDecimal bd1 = new BigDecimal(vocabulary-1);

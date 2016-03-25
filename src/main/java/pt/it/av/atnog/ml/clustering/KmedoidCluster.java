@@ -91,6 +91,7 @@ public class KmedoidCluster<E extends Element> extends ArrayList<E> implements C
             sb.append("*");
         sb.append(e.toString() + "}");
 
+
         return sb.toString();
     }
 }

@@ -2,6 +2,9 @@ package pt.it.av.atnog.ml.thresholding;
 
 import java.util.List;
 
+/**
+ *
+ */
 public class Thresholding {
     public static double isoData(List<? extends Score> elements) {
         double iT = 0.0, fT = 0.0;
