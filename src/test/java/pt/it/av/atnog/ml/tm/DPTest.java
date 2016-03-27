@@ -16,13 +16,13 @@ public class DPTest {
     @org.junit.Test
     public void test_similarity() {
         List<DP.Coordinate> profile1 = new ArrayList<>(), profile2 = new ArrayList<>();
-        profile1.add(new DP.Coordinate(NGram.Unigram("engine"), 6.0));
-        profile1.add(new DP.Coordinate(NGram.Unigram("wheels"), 4.0));
-        profile1.add(new DP.Coordinate(NGram.Unigram("door"), 3.0));
+        profile1.add(new DP.Coordinate(NGram.Unigram("engine"), NGram.Unigram("engine"), 6.0));
+        profile1.add(new DP.Coordinate(NGram.Unigram("wheels"), NGram.Unigram("wheels"), 4.0));
+        profile1.add(new DP.Coordinate(NGram.Unigram("door"), NGram.Unigram("door"), 3.0));
 
-        profile2.add(new DP.Coordinate(NGram.Unigram("engine"), 4.0));
-        profile2.add(new DP.Coordinate(NGram.Unigram("wheels"), 6.0));
-        profile2.add(new DP.Coordinate(NGram.Unigram("driver"), 4.0));
+        profile2.add(new DP.Coordinate(NGram.Unigram("engine"), NGram.Unigram("engine"), 4.0));
+        profile2.add(new DP.Coordinate(NGram.Unigram("wheels"), NGram.Unigram("wheels"), 6.0));
+        profile2.add(new DP.Coordinate(NGram.Unigram("driver"), NGram.Unigram("driver"), 4.0));
         DP dp1 = new DP(NGram.Unigram("car"), profile1), dp2 = new DP(NGram.Unigram("bike"), profile2);
 
 

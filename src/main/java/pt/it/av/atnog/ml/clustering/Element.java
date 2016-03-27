@@ -52,4 +52,18 @@ public class Element<T extends Distance> implements Distance<Element<T>> {
     public String toString() {
         return d.toString();
     }
+
+    @Override
+    public final boolean equals (Object o) {
+        boolean rv = false;
+        if (o != null)
+            if (o == this)
+                rv = true;
+        return rv;
+    }
+
+    @Override
+    public final int hashCode() {
+        return System.identityHashCode(this);
+    }
 }

@@ -89,16 +89,39 @@ public class DP {
 
     public static class Coordinate {
         protected final NGram term;
+        protected final NGram stemm;
         protected final double value;
 
-        public Coordinate(final NGram term, final double value) {
+        public Coordinate(final NGram term, final NGram stemm, final double value) {
             this.term = term;
+            this.stemm = stemm;
             this.value = value;
         }
 
         @Override
         public String toString() {
-            return "("+term.toString()+"; "+value+")";
+            return "("+term.toString()+"["+stemm+"]; "+value+")";
+        }
+
+        @Override
+        public int hashCode() {
+            return term.hashCode() ^ stemm.hashCode() ^ Double.valueOf(value).hashCode();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            boolean rv = false;
+            if (o != null) {
+                if (o == this)
+                    rv = true;
+                else if (o instanceof Coordinate) {
+                    Coordinate c = (Coordinate) o;
+                    rv = this.term.equals(c.term) &&
+                            this.stemm.equals(c.stemm) &&
+                    this.value == c.value;
+                }
+            }
+            return rv;
         }
     }
 }
