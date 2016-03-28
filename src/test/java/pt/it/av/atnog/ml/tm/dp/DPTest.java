@@ -1,4 +1,4 @@
-package pt.it.av.atnog.ml.tm;
+package pt.it.av.atnog.ml.tm.dp;
 
 import java.util.ArrayList;
 import java.util.List;

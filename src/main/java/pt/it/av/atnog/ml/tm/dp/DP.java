@@ -20,6 +20,14 @@ public class DP {
         this.coordinates = coordinates;
     }
 
+    public int size() {
+        return coordinates.size();
+    }
+
+    public List<Coordinate> coordinates() {
+        return coordinates;
+    }
+
     public double similarity(DP dp) {
         double rv = 0.0;
         if(term.equals(dp.term))
