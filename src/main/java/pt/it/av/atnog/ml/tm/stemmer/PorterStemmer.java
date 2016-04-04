@@ -503,4 +503,15 @@ public class PorterStemmer implements Stemmer {
             buffer[i++] = stem(s);
         return new NGram(buffer);
     }
+
+    /**
+     *
+     * @param term
+     * @return
+     */
+    public String[] stem(String term[]) {
+        for(int i = 0; i < term.length; i++)
+            term[i] = stem(term[i]);
+        return term;
+    }
 }

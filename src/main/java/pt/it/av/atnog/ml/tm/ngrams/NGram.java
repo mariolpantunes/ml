@@ -8,12 +8,16 @@ import java.util.List;
 
 /**
  * NGram class, represents a contiguous sequence of n items from a given sequence of text.
+ *
+ * @author Mário Antunes
+ * @version 1.0
  */
 public class NGram implements Comparable<NGram>, Iterable<String> {
     protected final String array[];
 
     /**
      * NGra constructor, creates a NGram from an array of Strings.
+     *
      * @param array of Strings
      */
     public NGram(String array[]) {
@@ -22,6 +26,7 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
 
     /**
      * NGram constructor, creates a NGram from a List of Strings.
+     *
      * @param list of Strings
      */
     public NGram(List<String> list) {
@@ -33,6 +38,7 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
 
     /**
      * Returns the number of items in this NGram.
+     *
      * @return number of items in this NGram.
      */
     public int size() {
@@ -41,6 +47,7 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
 
     /**
      * Returns the length of this character sequence (total number of characters).
+     *
      * @return ength of this character sequence
      */
     public int length() {
@@ -52,6 +59,7 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
 
     /**
      * Returns the Levenshtein distance between two NGrams.
+     *
      * @param ngram the second NGram
      * @return Levenshtein distance between two NGrams
      */
@@ -104,25 +112,26 @@ public class NGram implements Comparable<NGram>, Iterable<String> {
      */
     public boolean equals(String tokens[]) {
         boolean rv = false;
-
         if (tokens.length == array.length) {
             rv = true;
             for (int i = 0; i < array.length && rv; i++)
                 rv = array[i].equals(tokens[i]);
         }
-
         return rv;
     }
 
+    /**
+     *
+     * @param tokens
+     * @return
+     */
     public boolean equals(List<String> tokens) {
         boolean rv = false;
-
         if (tokens.size() == array.length) {
             rv = true;
             for (int i = 0; i < array.length && rv; i++)
                 rv = array[i].equals(tokens.get(i));
         }
-
         return rv;
     }
 

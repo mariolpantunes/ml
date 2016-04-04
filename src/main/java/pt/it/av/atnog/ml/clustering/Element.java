@@ -2,6 +2,9 @@ package pt.it.av.atnog.ml.clustering;
 
 /**
  * Thin wrapper for elements used in clustering algorithms.
+ *
+ * @author Mário Antunes
+ * @version 1.0
  */
 public class Element<T extends Distance> implements Distance<Element<T>> {
     private final T d;

@@ -8,4 +8,5 @@ import pt.it.av.atnog.ml.tm.ngrams.NGram;
 public interface Stemmer {
     String stem(String term);
     NGram stem(NGram term);
+    String[] stem(String term[]);
 }

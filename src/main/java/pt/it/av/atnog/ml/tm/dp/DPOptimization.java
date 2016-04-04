@@ -3,7 +3,8 @@ package pt.it.av.atnog.ml.tm.dp;
 import java.util.List;
 
 /**
- * Created by mantunes on 6/15/15.
+ * @author Mário Antunes
+ * @version 1.0
  */
 public interface DPOptimization {
     List<DP.Coordinate> optimize(List<DP.Coordinate> coordinates);

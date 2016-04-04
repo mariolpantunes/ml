@@ -96,9 +96,9 @@ public class DP {
     }
 
     public static class Coordinate {
-        protected final NGram term;
-        protected final NGram stemm;
-        protected final double value;
+        public final NGram term;
+        public final NGram stemm;
+        public final double value;
 
         public Coordinate(final NGram term, final NGram stemm, final double value) {
             this.term = term;

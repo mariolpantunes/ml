@@ -5,6 +5,7 @@ import pt.it.av.atnog.utils.MathUtils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implements a Distributional Profile optimizer based on P-value statistical significance.
@@ -24,14 +25,17 @@ public class DPStatisticOptimization implements DPOptimization {
 
     @Override
     public List<DP.Coordinate> optimize(List<DP.Coordinate> coordinates) {
+        List<DP.Coordinate> rv = coordinates;
         if (coordinates.size() > min) {
             int vocabulary = coordinates.size(), total = 0;
             for (DP.Coordinate c : coordinates)
                 total += c.value;
             int partitions = total / neighborhood;
-            coordinates.removeIf(p -> probs((int) p.value, partitions, vocabulary) >= alpha);
+            //coordinates.removeIf(p -> probs((int) p.value, partitions, vocabulary) >= alpha);
+            rv = coordinates.parallelStream().filter(p -> probs((int) p.value, partitions, vocabulary) < alpha).
+                    collect(Collectors.toList());
         }
-        return coordinates;
+        return rv;
     }
 
     private double probs(int freq, int partitions, int vocabulary) {

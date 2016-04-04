@@ -8,7 +8,8 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by mantunes on 3/28/16.
+ * @author Mário Antunes
+ * @version 1.0
  */
 public class DPStemmOptimizationTest {
     @org.junit.Test

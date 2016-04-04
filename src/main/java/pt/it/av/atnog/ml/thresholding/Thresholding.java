@@ -4,6 +4,8 @@ import java.util.List;
 
 /**
  *
+ * @author Mário Antunes
+ * @version 1.0
  */
 public class Thresholding {
     public static double isoData(List<? extends Score> elements) {

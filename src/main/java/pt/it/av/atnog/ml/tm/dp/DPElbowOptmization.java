@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * Implements a Distributional Profile optimizer based on Elbow method.
+ *
  * @author Mário Antunes
  * @version 1.0
  */

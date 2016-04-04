@@ -23,7 +23,8 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * Created by mantunes on 7/28/15.
+ * @author Mário Antunes
+ * @version 1.0
  */
 public class Hypernyms {
     private static final int MAX = 5, N = 2, NN = 7, MIN_SIZE = 100;
