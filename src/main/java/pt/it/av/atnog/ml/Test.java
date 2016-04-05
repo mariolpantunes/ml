@@ -4,6 +4,8 @@ import pt.it.av.atnog.ml.optimization.Optimization;
 import pt.it.av.atnog.ml.optimization.genetic.Chromosome;
 import pt.it.av.atnog.ml.optimization.genetic.selection.TournamentSelection;
 import pt.it.av.atnog.ml.optimization.genetic.termination.ConvergenceTermination;
+import pt.it.av.atnog.ml.tm.StopWords.BlacklistStopWords;
+import pt.it.av.atnog.ml.tm.StopWords.EnglishStopWords;
 import pt.it.av.atnog.utils.bla.Matrix;
 import pt.it.av.atnog.utils.bla.Vector;
 

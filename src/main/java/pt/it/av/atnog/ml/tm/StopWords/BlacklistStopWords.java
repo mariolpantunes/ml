@@ -8,12 +8,26 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by mantunes on 8/6/15.
+ * StopWords class that supports blacklisting some terms.
+ * <p>
+ * Enables to control and blacklist some terms of the StopWord list.
+ * Can be used to process a set of tokens, but keeping special terms tipically known as stop words.
+ * The keeped terms can be used to detect patterns or other relevant information.
+ * </p>
+ *
+ * @author Mário Antunes
+ * @version 1.0
  */
 public class BlacklistStopWords implements StopWords {
     private final StopWords sw;
     private final List<String> blacklist;
 
+    /**
+     * BlacklistStopWords constructor.
+     *
+     * @param sw another StopWord class, not {@code null}
+     * @param blacklist list of stop words to be ignored, not {@code null}
+     */
     public BlacklistStopWords(final StopWords sw, final List<String> blacklist) {
         this.sw = sw;
         this.blacklist = blacklist;

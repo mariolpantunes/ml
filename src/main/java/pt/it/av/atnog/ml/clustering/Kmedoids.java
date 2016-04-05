@@ -9,7 +9,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * K-medoid algorithm implementation
+ * K-medoid algorithm implementation.
+ *
+ * @author Mário Antunes
+ * @version 1.0
  */
 public class Kmedoids implements Kmeans {
     /**

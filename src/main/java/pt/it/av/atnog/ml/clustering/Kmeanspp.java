@@ -10,7 +10,10 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Kmeans++ implementation
+ * Kmeans++ implementation.
+ *
+ * @author Mário Antunes
+ * @version 1.0
  */
 public class Kmeanspp extends Kmedoids {
     @Override
@@ -38,9 +41,9 @@ public class Kmeanspp extends Kmedoids {
 
             int idx = -1;
             for(j = 0; j < array.length && idx < 0; j++) {
+                rnd -= array[j];
                 if(rnd < array[j])
                     idx = j;
-                rnd -= array[j];
             }
 
             clusters.add(new KmedoidCluster<Element<D>>(elements.get(idx)));

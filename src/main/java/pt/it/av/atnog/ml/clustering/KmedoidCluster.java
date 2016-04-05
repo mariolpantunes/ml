@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
+ * @author Mário Antunes
+ * @version 1.0
  * @param <E>
  */
 public class KmedoidCluster<E extends Element> extends ArrayList<E> implements Cluster<E> {
