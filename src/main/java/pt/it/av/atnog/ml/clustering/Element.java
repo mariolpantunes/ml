@@ -1,5 +1,7 @@
 package pt.it.av.atnog.ml.clustering;
 
+import pt.it.av.atnog.utils.structures.Distance;
+
 /**
  * Thin wrapper for elements used in clustering algorithms.
  *
@@ -47,8 +49,8 @@ public class Element<T extends Distance> implements Distance<Element<T>> {
     }
 
     @Override
-    public double distance(Element<T> e) {
-        return d.distance(e.d);
+    public double distanceTo(Element<T> e) {
+        return d.distanceTo(e.d);
     }
 
     @Override

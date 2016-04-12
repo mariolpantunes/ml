@@ -12,25 +12,25 @@ import java.util.List;
  * @author Mário Antunes
  * @version 1.0
  */
-public class DPElbowOptmization implements DPOptimization {
+public class DPWElbowOptmization implements DPWOptimization {
     private final int min;
 
     /**
      *
      * @param min
      */
-    public DPElbowOptmization(final int min) {
+    public DPWElbowOptmization(final int min) {
         this.min = min;
     }
 
     @Override
-    public List<DP.Coordinate> optimize(List<DP.Coordinate> coordinates) {
+    public List<DPW.Coordinate> optimize(List<DPW.Coordinate> coordinates) {
         if (coordinates.size() > min) {
-            Comparator<DP.Coordinate> c = (DP.Coordinate a, DP.Coordinate b) -> (Double.compare(b.value, a.value));
+            Comparator<DPW.Coordinate> c = (DPW.Coordinate a, DPW.Coordinate b) -> (Double.compare(b.value, a.value));
             Collections.sort(coordinates, c);
             Vector v = new Vector(coordinates.size());
             int i = 0;
-            for (DP.Coordinate p : coordinates)
+            for (DPW.Coordinate p : coordinates)
                 v.set(i++, p.value);
             double t = v.elbow();
             coordinates.removeIf(p -> p.value < t);

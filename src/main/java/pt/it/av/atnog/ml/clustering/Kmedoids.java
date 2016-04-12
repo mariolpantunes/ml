@@ -1,6 +1,6 @@
 package pt.it.av.atnog.ml.clustering;
 
-import pt.it.av.atnog.utils.PrintUtils;
+import pt.it.av.atnog.utils.structures.Distance;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,12 +94,12 @@ public class Kmedoids implements Kmeans {
         Iterator<KmedoidCluster<E>> it = clusters.iterator();
         if (it.hasNext()) {
             rv = it.next();
-            d = rv.medoid().distance(o);
+            d = rv.medoid().distanceTo(o);
         }
 
         while (it.hasNext()) {
             KmedoidCluster c = it.next();
-            double tmp = c.medoid().distance(o);
+            double tmp = c.medoid().distanceTo(o);
             if (tmp < d) {
                 d = tmp;
                 rv = c;

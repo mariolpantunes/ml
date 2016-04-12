@@ -1,6 +1,7 @@
 package pt.it.av.atnog.ml.clustering;
 
-import pt.it.av.atnog.utils.MathUtils;
+import pt.it.av.atnog.utils.structures.Point1D;
+import pt.it.av.atnog.utils.structures.Point2D;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,6 +11,9 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for K-medoids algorithm.
+ *
+ * @author Mário Antunes
+ * @version 1.0
  */
 public class KmedoidsTest {
     @org.junit.Test
@@ -42,12 +46,12 @@ public class KmedoidsTest {
         boolean c1SameSign = true;
         int sign = 0;
         if (it.hasNext()) {
-            double x = it.next().element().x;
+            double x = it.next().element().x();
             sign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
         }
 
         while (it.hasNext()) {
-            double x = it.next().element().x;
+            double x = it.next().element().x();
             int tmpSign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
             if (tmpSign != sign)
                 c1SameSign = false;
@@ -58,12 +62,12 @@ public class KmedoidsTest {
         boolean c2SameSign = true;
         sign = 0;
         if (it.hasNext()) {
-            double x = it.next().element().x;
+            double x = it.next().element().x();
             sign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
         }
 
         while (it.hasNext()) {
-            double x = it.next().element().x;
+            double x = it.next().element().x();
             int tmpSign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
             if (tmpSign != sign)
                 c2SameSign = false;

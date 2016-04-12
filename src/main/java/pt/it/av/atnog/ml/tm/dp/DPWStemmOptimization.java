@@ -6,19 +6,19 @@ import java.util.List;
  * @author Mário Antunes
  * @version 1.0
  */
-public class DPStemmOptimization implements DPOptimization {
+public class DPWStemmOptimization implements DPWOptimization {
     @Override
-    public List<DP.Coordinate> optimize(List<DP.Coordinate> coordinates) {
+    public List<DPW.Coordinate> optimize(List<DPW.Coordinate> coordinates) {
         for(int i = 0; i < coordinates.size() - 1; i++) {
-            DP.Coordinate a = coordinates.get(i);
+            DPW.Coordinate a = coordinates.get(i);
             for(int j = i+1; j < coordinates.size(); j++) {
-                DP.Coordinate b = coordinates.get(j);
+                DPW.Coordinate b = coordinates.get(j);
                 if(a.stemm.equals(b.stemm)) {
                     double total = a.value + b.value;
                     if(a.term.length() < b.term.length())
-                        coordinates.set(i, new DP.Coordinate(a.term, a.stemm, total));
+                        coordinates.set(i, new DPW.Coordinate(a.term, a.stemm, total));
                     else
-                        coordinates.set(i, new DP.Coordinate(b.term, b.stemm, total));
+                        coordinates.set(i, new DPW.Coordinate(b.term, b.stemm, total));
                     a = coordinates.get(i);
                     coordinates.remove(j);
                 }

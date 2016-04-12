@@ -52,9 +52,9 @@ public class TestTM {
         //lse.add(new Searx());
         SearchEngine se = new CollectionSearchEngine(lse);
 
-        /*DP dp1 = TM.learnDP(new Unigram("temperature"), se, stopWords);
+        /*DPW dp1 = TM.learnDP(new Unigram("temperature"), se, stopWords);
         System.out.println(dp1);
-        DP dp2 = TM.learnDP(new Unigram("temperature"), se, stopWords);
+        DPW dp2 = TM.learnDP(new Unigram("temperature"), se, stopWords);
         System.out.println(dp2);
         System.out.println("Similarity: "+dp1.similarity(dp2));*/
 

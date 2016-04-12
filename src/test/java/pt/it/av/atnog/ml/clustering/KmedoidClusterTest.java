@@ -1,10 +1,13 @@
 package pt.it.av.atnog.ml.clustering;
 
 
-import static org.junit.Assert.assertTrue;
+import pt.it.av.atnog.utils.structures.Point2D;import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for K-medoid cluster.
+ *
+ * @author Mário Antunes
+ * @version 1.0
  */
 public class KmedoidClusterTest {
     public Element<Point2D> p0,p1,p2,p3,p4;

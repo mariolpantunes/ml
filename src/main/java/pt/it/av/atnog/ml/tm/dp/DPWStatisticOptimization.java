@@ -13,24 +13,24 @@ import java.util.stream.Collectors;
  * @author Mário Antunes
  * @version 1.0
  */
-public class DPStatisticOptimization implements DPOptimization {
+public class DPWStatisticOptimization implements DPWOptimization {
     private final int min, neighborhood;
     private final double alpha;
 
-    public DPStatisticOptimization(final int min, final int neighborhood, final double alpha) {
+    public DPWStatisticOptimization(final int min, final int neighborhood, final double alpha) {
         this.min = min;
         this.neighborhood = neighborhood;
         this.alpha = alpha;
     }
 
     @Override
-    public List<DP.Coordinate> optimize(List<DP.Coordinate> coordinates) {
-        List<DP.Coordinate> rv = coordinates;
+    public List<DPW.Coordinate> optimize(List<DPW.Coordinate> coordinates) {
+        List<DPW.Coordinate> rv = coordinates;
         if (coordinates.size() > min) {
             int vocabulary = coordinates.size(), total = 0;
-            for (DP.Coordinate c : coordinates)
-                total += c.value;
-            int partitions = total / neighborhood;
+            for (DPW.Coordinate c : coordinates)
+                total += c.value - c.term.size() + 1;
+            int partitions = total;
             //coordinates.removeIf(p -> probs((int) p.value, partitions, vocabulary) >= alpha);
             rv = coordinates.parallelStream().filter(p -> probs((int) p.value, partitions, vocabulary) < alpha).
                     collect(Collectors.toList());

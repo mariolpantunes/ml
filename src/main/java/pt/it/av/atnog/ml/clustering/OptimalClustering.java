@@ -1,13 +1,13 @@
 package pt.it.av.atnog.ml.clustering;
 
-import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.Utils;
+import pt.it.av.atnog.utils.structures.Distance;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO:
+ * @author Mário Antunes
+ * @version 1.0
  */
 public class OptimalClustering {
 
@@ -21,9 +21,9 @@ public class OptimalClustering {
      * @param <T>
      * @return
      */
-    public static <T extends Distance<T>> List<? extends Cluster<Element<T>>> optimalClustering
+    public static <T extends Distance<T>> List<? extends Cluster<Element<T>>> clustering
             (Kmeans alg, List<T> objs, int min, int max, int Nd) {
-        return optimalClustering(alg, objs, min, max, Nd, 5);
+        return clustering(alg, objs, min, max, Nd, 5);
     }
 
     /**
@@ -37,7 +37,7 @@ public class OptimalClustering {
      * @param <T>
      * @return
      */
-    public static <T extends Distance<T>> List<? extends Cluster<Element<T>>> optimalClustering
+    public static <T extends Distance<T>> List<? extends Cluster<Element<T>>> clustering
     (Kmeans alg, List<T> objs, int min, int max, int Nd, int reps) {
 
         double fk[] = new double[(max - min) + 1];
@@ -47,15 +47,20 @@ public class OptimalClustering {
 
 
         for (int k = min, i = 0; k <= max; k++, i++) {
-            List<? extends Cluster<Element<T>>> clusters = alg.clustering(objs, k);
-            double distortion = distortion(clusters);
+            List<? extends Cluster<Element<T>>> clusters = null;
+            double distortion = Double.MAX_VALUE;
 
-            for(int j = 1; j < reps; j++) {
-                List<? extends Cluster<Element<T>>> currentClusters = alg.clustering(objs, k);
-                double currentDistortion = distortion(currentClusters);
-                if(currentDistortion < distortion) {
-                    clusters = currentClusters;
-                    distortion = currentDistortion;
+            if(k < objs.size()) {
+                clusters = alg.clustering(objs, k);
+                distortion = distortion(clusters);
+
+                for (int j = 1; j < reps; j++) {
+                    List<? extends Cluster<Element<T>>> currentClusters = alg.clustering(objs, k);
+                    double currentDistortion = distortion(currentClusters);
+                    if (currentDistortion < distortion) {
+                        clusters = currentClusters;
+                        distortion = currentDistortion;
+                    }
                 }
             }
 
