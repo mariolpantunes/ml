@@ -39,6 +39,21 @@ public class DPW implements Similarity<DPW> {
 
     /**
      *
+     * @param term
+     * @return
+     */
+    public double getCoor(NGram term) {
+        double rv = 0.0;
+        Comparator<Coordinate> c = (Coordinate a, Coordinate b) -> (a.term.compareTo(b.term));
+        Collections.sort(coordinates, c);
+        int idx = Collections.binarySearch(coordinates, new Coordinate(term,term, 0), c);
+        if(idx >= 0)
+            rv = coordinates().get(idx).value;
+        return rv;
+    }
+
+    /**
+     *
      * @return
      */
     public List<Coordinate> coordinates() {
@@ -61,7 +76,7 @@ public class DPW implements Similarity<DPW> {
      * @param c2
      * @return
      */
-    protected static double similarity(List<Coordinate> coor1, List<Coordinate> coor2) {
+    public static double similarity(List<Coordinate> coor1, List<Coordinate> coor2) {
         Comparator<Coordinate> c = (Coordinate a, Coordinate b) -> (a.term.compareTo(b.term));
         Collections.sort(coor1, c);
         Collections.sort(coor2, c);
