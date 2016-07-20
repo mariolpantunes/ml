@@ -19,23 +19,7 @@ public interface Tokenizer {
     /**
      *
      * @param input
-     * @param n
-     * @return
-     */
-    Iterator<NGram> tokenizeIt(String input, int n);
-
-    /**
-     *
-     * @param input
      * @return
      */
     List<String> tokenize(String input);
-
-    /**
-     *
-     * @param input
-     * @param n
-     * @return
-     */
-    List<NGram> tokenize(String input, int n);
 }

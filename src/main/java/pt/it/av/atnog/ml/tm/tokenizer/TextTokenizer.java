@@ -12,7 +12,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Implements a tokenizer for plain text.
  *
+ * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
+ * @version 1.0
  */
 public class TextTokenizer implements Tokenizer {
     private final Locale locale;
@@ -56,7 +59,12 @@ public class TextTokenizer implements Tokenizer {
         return new TextTokenizerIteratorString(normalize(input));
     }
 
-    @Override
+    /**
+     *
+     * @param input
+     * @param n
+     * @return
+     */
     public Iterator<NGram> tokenizeIt(String input, int n) {
         return new TextTokenizerIteratorNGram(normalize(input), n);
     }
@@ -70,7 +78,12 @@ public class TextTokenizer implements Tokenizer {
         return rv;
     }
 
-    @Override
+    /**
+     *
+     * @param input
+     * @param n
+     * @return
+     */
     public List<NGram> tokenize(String input, int n) {
         Iterator<NGram> it = this.tokenizeIt(input, n);
         List<NGram> rv = new ArrayList<>();
