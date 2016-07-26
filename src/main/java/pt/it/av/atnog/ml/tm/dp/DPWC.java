@@ -7,10 +7,12 @@ import pt.it.av.atnog.utils.structures.Similarity;
 import java.util.List;
 
 /**
+ * Distributional Profile of multiple Word Categories.
+ *
  * @author Mário Antunes
  * @version 1.0
  */
-public class DPC implements Similarity<DPC> {
+public class DPWC implements Similarity<DPWC> {
     private final NGram term;
     private List<Category> categories;
 
@@ -18,7 +20,7 @@ public class DPC implements Similarity<DPC> {
      * @param term
      * @param categories
      */
-    public DPC(final NGram term, List<Category> categories) {
+    public DPWC(final NGram term, List<Category> categories) {
         this.term = term;
         this.categories = categories;
     }
@@ -46,7 +48,7 @@ public class DPC implements Similarity<DPC> {
     }
 
     @Override
-    public double similarityTo(DPC dpc) {
+    public double similarityTo(DPWC dpc) {
         double rv = 0.0;
 
         for (Category c1 : categories) {

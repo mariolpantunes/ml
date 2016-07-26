@@ -62,7 +62,6 @@ public class CorpusDiskCache implements Corpus {
         @Override
         public boolean hasNext() {
             boolean rv = true;
-
             if (line == null) {
                 rv = false;
                 if (in != null) {
@@ -75,7 +74,6 @@ public class CorpusDiskCache implements Corpus {
                     }
                 }
             }
-
             return rv;
         }
 
@@ -98,7 +96,7 @@ public class CorpusDiskCache implements Corpus {
      */
     private class CorpusIterator implements Iterator<String> {
         private final Iterator<String> it;
-        private BufferedWriter out;
+        private BufferedWriter out = null;
 
 
         /**
@@ -109,12 +107,14 @@ public class CorpusDiskCache implements Corpus {
          */
         public CorpusIterator(Iterator<String> it, Path file) {
             this.it = it;
-            try {
-                this.out = new BufferedWriter(new OutputStreamWriter(new GZIPOutputStream
-                        (Files.newOutputStream(file)), "UTF-8"));
-            } catch (IOException e) {
-                //should not happen
-                e.printStackTrace();
+            if (it.hasNext()) {
+                try {
+                    this.out = new BufferedWriter(new OutputStreamWriter(new GZIPOutputStream
+                            (Files.newOutputStream(file)), "UTF-8"));
+                } catch (IOException e) {
+                    //should not happen
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -134,7 +134,6 @@ public class CorpusDiskCache implements Corpus {
                 }
                 rv = false;
             }
-
             return rv;
         }
 

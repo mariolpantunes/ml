@@ -9,6 +9,8 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
+ * Distributional Profile of a Word.
+ *
  * @author Mário Antunes
  * @version 1.0
  */

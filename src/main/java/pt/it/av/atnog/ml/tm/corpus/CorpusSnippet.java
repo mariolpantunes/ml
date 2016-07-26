@@ -23,7 +23,7 @@ public class CorpusSnippet implements Corpus {
 
     @Override
     public Iterator<String> iterator(final NGram ngram) {
-        return new CorpusIterator(ngram);
+        return new CorpusIterator(se.searchIt(ngram.toString()));
     }
 
     /**
@@ -37,8 +37,8 @@ public class CorpusSnippet implements Corpus {
          *
          * @param ngram
          */
-        public CorpusIterator(final NGram ngram) {
-            this.it = se.searchIt(ngram.toString());
+        public CorpusIterator(final Iterator it) {
+            this.it = it;
         }
 
         @Override

@@ -1,9 +1,6 @@
 package pt.it.av.atnog.ml.tm.corpus;
 
 import pt.it.av.atnog.ml.tm.ngrams.NGram;
-import pt.it.av.atnog.semantic.corpus.Corpus;
-import pt.it.av.atnog.semantic.corpus.CorpusDiskCache;
-import pt.it.av.atnog.semantic.corpus.CorpusSnippet;
 import pt.it.av.atnog.utils.ws.search.SearchEngine;
 
 import java.io.IOException;
