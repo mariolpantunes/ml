@@ -7,7 +7,7 @@ import pt.it.av.atnog.ml.tm.tokenizer.Tokenizer;
 import pt.it.av.atnog.utils.StringUtils;
 import pt.it.av.atnog.utils.parallel.Pipeline;
 import pt.it.av.atnog.utils.structures.CircularQueue;
-import pt.it.av.atnog.utils.structures.MutableInteger;
+import pt.it.av.atnog.utils.structures.mutableNumber.MutableDouble;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -95,7 +95,7 @@ public class TM {
      * @see java.util.Map
      */
     public static Pipeline DPPipeline(NGram term, Tokenizer t, StopWords sw, int min, int max,
-                                      int n, int nn, Stemmer s, Map<NGram, MutableInteger> m) {
+                                      int n, int nn, Stemmer s, Map<NGram, MutableDouble> m) {
         Pipeline pipeline = new Pipeline();
         CircularQueue<String> q = new CircularQueue<>(n * 2 + term.size());
         NGram stemm = s.stem(term);
@@ -149,7 +149,7 @@ public class TM {
             List<NGram> candidates = (List<NGram>) o;
             for (NGram ngram : candidates) {
                 if (!m.containsKey(ngram))
-                    m.put(ngram, new MutableInteger());
+                    m.put(ngram, new MutableDouble());
                 m.get(ngram).increment();
             }
         });
