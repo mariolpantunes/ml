@@ -6,7 +6,10 @@ import pt.it.av.atnog.utils.structures.Distance;
 import java.util.List;
 
 /**
- * @author Mário Antunes
+ * Implements Optimal Clustering based on a method present on...
+ * TODO: Add paper reference to the documentation...
+ *
+ * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
 public class OptimalClustering {

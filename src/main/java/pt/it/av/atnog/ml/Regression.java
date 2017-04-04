@@ -6,7 +6,11 @@ import pt.it.av.atnog.utils.bla.Vector;
 
 
 /**
- * Created by mantunes on 9/14/15.
+ * Test code for regression
+ * TODO: do something usefull with this...
+ *
+ * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
+ * @version 1.0
  */
 public class Regression {
 

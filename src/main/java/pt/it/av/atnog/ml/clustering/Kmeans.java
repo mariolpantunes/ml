@@ -10,10 +10,11 @@ import java.util.List;
  * TODO: due to contrains in time, for now I am going to implement Kmedoid and Kmeans++
  * TODO: in the future I will try do to add single linkage clustering and a density based algorithm
  *
- * @author Mário Antunes
+ * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
 public interface Kmeans {
+
     /**
      *
      * @param objects

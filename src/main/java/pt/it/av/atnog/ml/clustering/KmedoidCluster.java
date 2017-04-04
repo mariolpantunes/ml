@@ -62,7 +62,6 @@ public class KmedoidCluster<E extends Element> extends ArrayList<E> implements C
                     distortion = tmp;
                 }
             }
-
             medoid = optimalMedoid;
         }
     }
@@ -73,6 +72,16 @@ public class KmedoidCluster<E extends Element> extends ArrayList<E> implements C
         for (int i = 0; i < size(); i++)
             rv += Math.pow(medoid.distanceTo(get(i)), 2.0);
         return rv;
+    }
+
+    @Override
+    public double distortion(E e) {
+        return 0;
+    }
+
+    @Override
+    public double distortion(Cluster<E> c) {
+        return 0;
     }
 
     @Override

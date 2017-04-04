@@ -92,7 +92,7 @@ public class JSONTokenizer implements Tokenizer{
                         stack.add(v);
                 }
             } else if(values.isObject()) {
-                for(Map.Entry<String, JSONValue> e : values.asObject()) {
+                for(Map.Entry<String, JSONValue> e : values.asObject().entrySet()) {
                     rv.addAll(t.tokenize(e.getKey()));
                     JSONValue v = e.getValue();
                     if (v.isString())

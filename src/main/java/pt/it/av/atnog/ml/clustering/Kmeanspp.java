@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Kmeans++ implementation.
  *
- * @author Mário Antunes
+ * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
 public class Kmeanspp extends Kmedoids {
