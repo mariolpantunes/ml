@@ -1,5 +1,6 @@
 package pt.it.av.atnog.ml.clustering;
 
+import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.Utils;
 import pt.it.av.atnog.utils.structures.Distance;
 
@@ -76,7 +77,7 @@ public class OptimalClustering {
         //System.out.println("AK: " + PrintUtils.array(ak));
         //System.out.println("FK: " + PrintUtils.array(fk));
 
-        int idx = Utils.min(fk);
+        int idx = ArrayUtils.min(fk);
         return allClusters[idx];
     }
 
