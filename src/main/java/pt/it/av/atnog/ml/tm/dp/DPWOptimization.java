@@ -7,5 +7,5 @@ import java.util.List;
  * @version 1.0
  */
 public interface DPWOptimization {
-    List<DPW.Coordinate> optimize(List<DPW.Coordinate> coordinates);
+    List<DPW.DpDimension> optimize(List<DPW.DpDimension> dpDimensions);
 }

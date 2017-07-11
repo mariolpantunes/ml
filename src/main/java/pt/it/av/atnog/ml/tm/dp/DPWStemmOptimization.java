@@ -8,22 +8,22 @@ import java.util.List;
  */
 public class DPWStemmOptimization implements DPWOptimization {
     @Override
-    public List<DPW.Coordinate> optimize(List<DPW.Coordinate> coordinates) {
-        for(int i = 0; i < coordinates.size() - 1; i++) {
-            DPW.Coordinate a = coordinates.get(i);
-            for(int j = i+1; j < coordinates.size(); j++) {
-                DPW.Coordinate b = coordinates.get(j);
+    public List<DPW.DpDimension> optimize(List<DPW.DpDimension> dpDimensions) {
+        for(int i = 0; i < dpDimensions.size() - 1; i++) {
+            DPW.DpDimension a = dpDimensions.get(i);
+            for(int j = i+1; j < dpDimensions.size(); j++) {
+                DPW.DpDimension b = dpDimensions.get(j);
                 if(a.stemm.equals(b.stemm)) {
                     double total = a.value + b.value;
                     if(a.term.length() < b.term.length())
-                        coordinates.set(i, new DPW.Coordinate(a.term, a.stemm, total));
+                        dpDimensions.set(i, new DPW.DpDimension(a.term, a.stemm, total));
                     else
-                        coordinates.set(i, new DPW.Coordinate(b.term, b.stemm, total));
-                    a = coordinates.get(i);
-                    coordinates.remove(j);
+                        dpDimensions.set(i, new DPW.DpDimension(b.term, b.stemm, total));
+                    a = dpDimensions.get(i);
+                    dpDimensions.remove(j);
                 }
             }
         }
-        return coordinates;
+        return dpDimensions;
     }
 }

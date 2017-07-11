@@ -24,15 +24,15 @@ public class DPWStatisticOptimization implements DPWOptimization {
     }
 
     @Override
-    public List<DPW.Coordinate> optimize(List<DPW.Coordinate> coordinates) {
-        List<DPW.Coordinate> rv = coordinates;
-        if (coordinates.size() > min) {
-            int vocabulary = coordinates.size(), total = 0;
-            for (DPW.Coordinate c : coordinates)
+    public List<DPW.DpDimension> optimize(List<DPW.DpDimension> dpDimensions) {
+        List<DPW.DpDimension> rv = dpDimensions;
+        if (dpDimensions.size() > min) {
+            int vocabulary = dpDimensions.size(), total = 0;
+            for (DPW.DpDimension c : dpDimensions)
                 total += c.value - c.term.size() + 1;
             int partitions = total;
-            //coordinates.removeIf(p -> probs((int) p.value, partitions, vocabulary) >= alpha);
-            rv = coordinates.parallelStream().filter(p -> probs((int) p.value, partitions, vocabulary) < alpha).
+            //dpDimensions.removeIf(p -> probs((int) p.value, partitions, vocabulary) >= alpha);
+            rv = dpDimensions.parallelStream().filter(p -> probs((int) p.value, partitions, vocabulary) < alpha).
                     collect(Collectors.toList());
         }
         return rv;

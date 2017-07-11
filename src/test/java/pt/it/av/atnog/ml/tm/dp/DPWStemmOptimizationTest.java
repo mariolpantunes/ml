@@ -16,21 +16,21 @@ import static org.junit.Assert.assertTrue;
 public class DPWStemmOptimizationTest {
     @org.junit.Test
     public void test_similarity() {
-        List<DPW.Coordinate> coordinates = new ArrayList<>();
-        coordinates.add(new DPW.Coordinate(NGram.Unigram("engine"), NGram.Unigram("engin"), 6.0));
-        coordinates.add(new DPW.Coordinate(NGram.Unigram("engines"), NGram.Unigram("engin"), 6.0));
-        coordinates.add(new DPW.Coordinate(NGram.Unigram("wheel"), NGram.Unigram("wheel"), 4.0));
-        coordinates.add(new DPW.Coordinate(NGram.Unigram("wheels"), NGram.Unigram("wheel"), 4.0));
-        coordinates.add(new DPW.Coordinate(NGram.Unigram("driver"), NGram.Unigram("driver"), 3.0));
-        coordinates.add(new DPW.Coordinate(NGram.Unigram("drivers"), NGram.Unigram("driver"), 3.0));
+        List<DPW.DpDimension> dpDimensions = new ArrayList<>();
+        dpDimensions.add(new DPW.DpDimension(NGram.Unigram("engine"), NGram.Unigram("engin"), 6.0));
+        dpDimensions.add(new DPW.DpDimension(NGram.Unigram("engines"), NGram.Unigram("engin"), 6.0));
+        dpDimensions.add(new DPW.DpDimension(NGram.Unigram("wheel"), NGram.Unigram("wheel"), 4.0));
+        dpDimensions.add(new DPW.DpDimension(NGram.Unigram("wheels"), NGram.Unigram("wheel"), 4.0));
+        dpDimensions.add(new DPW.DpDimension(NGram.Unigram("driver"), NGram.Unigram("driver"), 3.0));
+        dpDimensions.add(new DPW.DpDimension(NGram.Unigram("drivers"), NGram.Unigram("driver"), 3.0));
 
-        DPW DPW = new DPW(NGram.Unigram("car"), coordinates);
+        DPW DPW = new DPW(NGram.Unigram("car"), dpDimensions);
         DPW.optimize(new DPWStemmOptimization());
-        List<DPW.Coordinate> opt_coordinates = DPW.coordinates();
+        List<pt.it.av.atnog.ml.tm.dp.DPW.DpDimension> opt_dpDimensions = DPW.dimentions();
 
-        assertTrue(opt_coordinates.size() == 3);
-        assertTrue(opt_coordinates.contains(new DPW.Coordinate(NGram.Unigram("engine"), NGram.Unigram("engin"), 12.0)));
-        assertTrue(opt_coordinates.contains(new DPW.Coordinate(NGram.Unigram("wheel"), NGram.Unigram("wheel"), 8.0)));
-        assertTrue(opt_coordinates.contains(new DPW.Coordinate(NGram.Unigram("driver"), NGram.Unigram("driver"), 6.0)));
+        assertTrue(opt_dpDimensions.size() == 3);
+        assertTrue(opt_dpDimensions.contains(new DPW.DpDimension(NGram.Unigram("engine"), NGram.Unigram("engin"), 12.0)));
+        assertTrue(opt_dpDimensions.contains(new DPW.DpDimension(NGram.Unigram("wheel"), NGram.Unigram("wheel"), 8.0)));
+        assertTrue(opt_dpDimensions.contains(new DPW.DpDimension(NGram.Unigram("driver"), NGram.Unigram("driver"), 6.0)));
     }
 }

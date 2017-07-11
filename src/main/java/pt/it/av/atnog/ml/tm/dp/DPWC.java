@@ -13,101 +13,109 @@ import java.util.List;
  * @version 1.0
  */
 public class DPWC implements Similarity<DPWC> {
-    private final NGram term;
-    private List<Category> categories;
+  private final NGram term;
+  private List<Category> categories;
 
-    /**
-     * @param term
-     * @param categories
-     */
-    public DPWC(final NGram term, List<Category> categories) {
-        this.term = term;
-        this.categories = categories;
+  /**
+   * @param term
+   * @param categories
+   */
+  public DPWC(final NGram term, List<Category> categories) {
+    this.term = term;
+    this.categories = categories;
+  }
+
+  /**
+   * @return
+   */
+  public NGram term() {
+    return term;
+  }
+
+  /**
+   * @return
+   */
+  public int size() {
+    return categories.size();
+  }
+
+  /**
+   * @param c
+   * @return
+   */
+  public int size(int c) {
+    return categories.get(c).size();
+  }
+
+  @Override
+  public double similarityTo(DPWC dpc) {
+    double rv = 0.0;
+
+    for (Category c1 : categories) {
+      for (Category c2 : dpc.categories) {
+        double s = DPW.similarity(c1.dpDimensions, c2.dpDimensions) * ((c1.bias + c2.bias) / 2.0);
+        if (s > rv)
+          rv = s;
+      }
     }
 
-    /**
-     * @return
-     */
-    public NGram term() {
-        return term;
+    return rv;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(term.toString() + System.getProperty("line.separator"));
+    for (Category category : categories)
+      sb.append(category.toString() + System.getProperty("line.separator"));
+    return sb.toString();
+  }
+
+  /**
+   *
+   */
+  public static class Category {
+    public final List<DPW.DpDimension> dpDimensions;
+    public final double bias;
+
+
+    public Category(final List<DPW.DpDimension> dpDimensions, final double bias) {
+      this.dpDimensions = dpDimensions;
+      this.bias = bias;
     }
 
+
     /**
-     * @return
+     * Returns the number of dimentions in the category.
+     *
+     * @return the number of dimentions in the category.
      */
     public int size() {
-        return categories.size();
-    }
-
-    /**
-     * @param c
-     * @return
-     */
-    public int size(int c) {
-        return categories.get(c).size();
-    }
-
-    @Override
-    public double similarityTo(DPWC dpc) {
-        double rv = 0.0;
-
-        for (Category c1 : categories) {
-            for (Category c2 : dpc.categories) {
-                double s = DPW.similarity(c1.coordinates, c2.coordinates) * ((c1.affinity + c2.affinity) / 2.0);
-                if (s > rv)
-                    rv = s;
-            }
-        }
-
-        return rv;
+      return dpDimensions.size();
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(term.toString() + System.getProperty("line.separator"));
-        for (Category category : categories)
-            sb.append(category.toString() + System.getProperty("line.separator"));
-        return sb.toString();
+      return "{" + bias + "; " + PrintUtils.list(dpDimensions) + "}";
     }
 
-    public static class Category {
-        public final List<DPW.Coordinate> coordinates;
-        public final double affinity;
-
-
-        public Category(final List<DPW.Coordinate> coordinates, final double affinity) {
-            this.coordinates = coordinates;
-            this.affinity = affinity;
-        }
-
-
-        public int size() {
-            return coordinates.size();
-        }
-
-        @Override
-        public String toString() {
-            return "{" + affinity + "; " + PrintUtils.list(coordinates) + "}";
-        }
-
-        @Override
-        public int hashCode() {
-            return coordinates.hashCode() ^ Double.valueOf(affinity).hashCode();
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            boolean rv = false;
-            if (o != null) {
-                if (o == this)
-                    rv = true;
-                else if (o instanceof Category) {
-                    Category c = (Category) o;
-                    rv = this.coordinates.equals(c.coordinates) && this.affinity == c.affinity;
-                }
-            }
-            return rv;
-        }
+    @Override
+    public int hashCode() {
+      return dpDimensions.hashCode() ^ Double.valueOf(bias).hashCode();
     }
+
+    @Override
+    public boolean equals(Object o) {
+      boolean rv = false;
+      if (o != null) {
+        if (o == this)
+          rv = true;
+        else if (o instanceof Category) {
+          Category c = (Category) o;
+          rv = this.dpDimensions.equals(c.dpDimensions) && this.bias == c.bias;
+        }
+      }
+      return rv;
+    }
+  }
 }

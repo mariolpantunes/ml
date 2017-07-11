@@ -24,17 +24,17 @@ public class DPWElbowOptmization implements DPWOptimization {
     }
 
     @Override
-    public List<DPW.Coordinate> optimize(List<DPW.Coordinate> coordinates) {
-        if (coordinates.size() > min) {
-            Comparator<DPW.Coordinate> c = (DPW.Coordinate a, DPW.Coordinate b) -> (Double.compare(b.value, a.value));
-            Collections.sort(coordinates, c);
-            Vector v = new Vector(coordinates.size());
+    public List<DPW.DpDimension> optimize(List<DPW.DpDimension> dpDimensions) {
+        if (dpDimensions.size() > min) {
+            Comparator<DPW.DpDimension> c = (DPW.DpDimension a, DPW.DpDimension b) -> (Double.compare(b.value, a.value));
+            Collections.sort(dpDimensions, c);
+            Vector v = new Vector(dpDimensions.size());
             int i = 0;
-            for (DPW.Coordinate p : coordinates)
+            for (DPW.DpDimension p : dpDimensions)
                 v.set(i++, p.value);
             double t = v.elbow();
-            coordinates.removeIf(p -> p.value < t);
+            dpDimensions.removeIf(p -> p.value < t);
         }
-        return coordinates;
+        return dpDimensions;
     }
 }
