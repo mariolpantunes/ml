@@ -1,7 +1,5 @@
 package pt.it.av.atnog.ml.clustering;
 
-import pt.it.av.atnog.utils.structures.Distance;
-
 /**
  * DBSCAN algorithm implementation.
  *

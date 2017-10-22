@@ -17,7 +17,6 @@ import java.util.List;
 public interface Kmeans {
 
     /**
-     *
      * @param dps
      * @param k
      * @param <D>

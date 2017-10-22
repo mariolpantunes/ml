@@ -7,14 +7,73 @@ import java.util.List;
 
 public class Cluster<D extends Distance> extends ArrayList<D> {
 
-  public Cluster() {  }
+  public Cluster() {
+  }
 
   public Cluster(D dp) {
     add(dp);
   }
 
   /**
-   *
+   * @param dps
+   * @param <D>
+   * @return
+   */
+  private static <D extends Distance> D center(List<D> dps) {
+    D rv = null;
+
+    switch (dps.size()) {
+      case 0:
+        rv = null;
+        break;
+      case 1:
+        rv = dps.get(0);
+        break;
+      case 2:
+        rv = dps.get(0);
+        break;
+      default: {
+        D bestCenter = dps.get(0);
+        double bestDistCenter = 0.0;
+
+        for (int j = 0; j < dps.size(); j++) {
+          bestDistCenter += bestCenter.distanceTo(dps.get(j));
+        }
+
+        for (int i = 1; i < dps.size(); i++) {
+          D currentCenter = dps.get(i);
+          double avgDistCenter = 0.0;
+          for (int j = 0; j < dps.size(); j++) {
+            if (i != j) {
+              avgDistCenter += currentCenter.distanceTo(dps.get(j));
+            }
+          }
+          if (avgDistCenter < bestDistCenter) {
+            bestCenter = currentCenter;
+            bestDistCenter = avgDistCenter;
+          }
+        }
+        rv = bestCenter;
+        break;
+      }
+    }
+    return rv;
+  }
+
+  /**
+   * @param dps
+   * @param center
+   * @param <D>
+   * @return
+   */
+  private static <D extends Distance> double distortion(List<D> dps, D center) {
+    double rv = 0.0;
+    for (int i = 0; i < dps.size(); i++)
+      rv += Math.pow(center.distanceTo(dps.get(i)), 2.0);
+    return rv;
+  }
+
+  /**
    * @return
    */
   public D center() {
@@ -32,7 +91,6 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
   }
 
   /**
-   *
    * @param dp
    * @return
    */
@@ -44,7 +102,6 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
   }
 
   /**
-   *
    * @param cdp
    * @return
    */
@@ -53,60 +110,5 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
     tmp.addAll(cdp);
     D center = center(tmp);
     return distortion(tmp, center);
-  }
-
-  /**
-   *
-   * @param dps
-   * @param <D>
-   * @return
-   */
-  private static <D extends Distance> D center(List<D> dps) {
-    D rv = null;
-
-    switch (dps.size()) {
-      case 0: rv = null; break;
-      case 1: rv = dps.get(0); break;
-      case 2: rv = dps.get(0); break;
-      default: {
-        D bestCenter = dps.get(0);
-        double bestDistCenter = 0.0;
-
-        for(int j = 0; j < dps.size(); j++) {
-          bestDistCenter += bestCenter.distanceTo(dps.get(j));
-        }
-
-        for(int i = 1; i < dps.size(); i++) {
-          D currentCenter = dps.get(i);
-          double avgDistCenter = 0.0;
-          for(int j = 0; j < dps.size(); j++) {
-            if(i != j) {
-              avgDistCenter += currentCenter.distanceTo(dps.get(j));
-            }
-          }
-          if(avgDistCenter < bestDistCenter) {
-            bestCenter = currentCenter;
-            bestDistCenter = avgDistCenter;
-          }
-        }
-        rv = bestCenter;
-        break;
-      }
-    }
-    return rv;
-  }
-
-  /**
-   *
-   * @param dps
-   * @param center
-   * @param <D>
-   * @return
-   */
-  private static <D extends Distance> double distortion(List<D> dps, D center) {
-    double rv = 0.0;
-    for (int i = 0; i < dps.size(); i++)
-      rv += Math.pow(center.distanceTo(dps.get(i)), 2.0);
-    return rv;
   }
 }

@@ -33,8 +33,8 @@ public class Kmeanspp extends Kmedoids {
 
       for (int i = 1; i < k; i++) {
         double total = 0.0;
-        for(int j = 0; j < dps.size(); j++) {
-          if(mappings[j] >= 0)
+        for (int j = 0; j < dps.size(); j++) {
+          if (mappings[j] >= 0)
             array[j] = 0.0;
           else
             array[j] = distanceClosestCluster(dps.get(j), clusters);
@@ -78,7 +78,7 @@ public class Kmeanspp extends Kmedoids {
                                                              List<Cluster<D>> clusters) {
     double rv = clusters.get(0).center().distanceTo(dp);
 
-    for(int i = 1; i < clusters.size(); i++){
+    for (int i = 1; i < clusters.size(); i++) {
       double tmp = clusters.get(i).center().distanceTo(dp);
       if (tmp < rv) {
         rv = tmp;

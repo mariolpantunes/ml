@@ -2,7 +2,7 @@ package pt.it.av.atnog.ml.clustering;
 
 public class ClusteringOld {
     /*public static <T extends Element> List<Cluster<T>> fastMinDist(
-	    List<T> elements, double d, double t) {
+      List<T> elements, double d, double t) {
 	List<Cluster<T>> clusters = new ArrayList<Cluster<T>>();
 	KDTree<T> tree = KDTree.build(elements);
 

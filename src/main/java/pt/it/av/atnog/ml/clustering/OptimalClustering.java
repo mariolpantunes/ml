@@ -86,7 +86,7 @@ public class OptimalClustering {
   private static boolean emptyClusters(List<? extends Cluster> clusters) {
     boolean rv = false;
 
-    for(Cluster c : clusters) {
+    for (Cluster c : clusters) {
       if (c.isEmpty()) {
         rv = true;
         break;
