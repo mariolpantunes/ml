@@ -38,8 +38,6 @@ public class KmedoidsTest {
     int clusterPoints = 0;
     for (Cluster c : clusters)
       clusterPoints += c.size();
-    System.err.println(clusterPoints);
-    System.err.println(points.size());
     assertTrue(clusterPoints == points.size());
 
     // For this specific exemple one clusters contains positive number and the other negative numbers.
