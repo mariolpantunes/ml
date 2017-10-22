@@ -1,4 +1,4 @@
-package pt.it.av.atnog.ml.clusteringV2;
+package pt.it.av.atnog.ml.clustering;
 
 import pt.it.av.atnog.utils.structures.Point1D;
 import pt.it.av.atnog.utils.structures.Point2D;

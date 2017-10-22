@@ -25,7 +25,7 @@ public class FastGreedyClustering {
             tree.remove(elements.get(i));
             List<V> closer = tree.atMaxDist(e1, d);
             if (mappings.containsKey(e1) && closer.size() == 0) {
-                VectorCluster<V> cluster = new VectorCluster<V>(e1);
+                Cluster<V> cluster = new Cluster<V>(e1);
                 clusters.add(cluster);
                 mappings.put(e1, cluster);
             } else {
@@ -33,7 +33,7 @@ public class FastGreedyClustering {
                     V e2 = closer.get(j);
                     Cluster c1 = mappings.get(e1), c2 = mappings.get(e1);
                     if (c1 == null && c2 == null) {
-                        VectorCluster<V> cluster = new VectorCluster<V>(e1);
+                        Cluster<V> cluster = new Cluster<V>(e1);
                         cluster.add(e2);
                         clusters.add(cluster);
                         mappings.put(e1, cluster);

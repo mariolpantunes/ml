@@ -1,12 +1,12 @@
 package pt.it.av.atnog.ml.clustering;
 
+
+import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * K-medoid algorithm implementation.
@@ -14,98 +14,109 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
-public class Kmedoids implements Kmeans {
-    /**
-     * @param elements
-     * @param k
-     * @param <E>
-     * @return
-     */
-    protected <D extends Distance> List<KmedoidCluster<Element<D>>> init(final List<Element<D>> elements, int k) {
-        List<KmedoidCluster<Element<D>>> clusters = new ArrayList<>(k);
-        Collections.shuffle(elements);
-        for (int i = 0; i < k; i++)
-            clusters.add(new KmedoidCluster(elements.get(i)));
-        return clusters;
+public class Kmedoids implements Kmeans{
+
+  protected Kmedoids() {}
+
+  /**
+   * @param dps List of data points (Any class that implements {@link Distance})
+   * @param k number of clusters
+   * @param <D>
+   * @return
+   */
+  protected <D extends Distance> List<Cluster<D>> init(final List<D> dps, final int mappings[],
+                                                       final int k) {
+    List<Cluster<D>> clusters = new ArrayList<>(k);
+    int idxs[] = new int[dps.size()];
+
+    for(int i = 1; i < idxs.length; i++){
+      idxs[i]=i;
     }
 
-    /**
-     * @param elements
-     * @param clusters
-     * @param <T>
-     * @return
-     */
-    protected <D extends Distance> boolean assignment(final List<Element<D>> elements, List<KmedoidCluster<Element<D>>> clusters) {
-        boolean rv = false;
-        for (Element e : elements) {
-            KmedoidCluster c = closestCluster(e, clusters);
-            if (c != e.cluster()) {
-                rv = true;
-                if (e.used())
-                    e.cluster().remove(e);
-                c.add(e);
-            }
-        }
-        return rv;
+    ArrayUtils.shuffle(idxs);
+    for (int i = 0; i < k; i++) {
+      clusters.add(new Cluster(dps.get(idxs[i])));
+      mappings[idxs[i]] = i;
+    }
+    return clusters;
+  }
+
+  /**
+   * @param dp
+   * @param centers
+   * @param <D>
+   * @return
+   */
+  private <D extends Distance> int closestCluster(final D dp, final List<D> centers) {
+    int rv = 0;
+    double d = centers.get(0).distanceTo(dp);
+
+    for(int i = 1; i < centers.size(); i++) {
+      double tmp = centers.get(i).distanceTo(dp);
+      if (tmp < d) {
+        d = tmp;
+        rv = i;
+      }
     }
 
-    @Override
-    public <D extends Distance> List<? extends Cluster<Element<D>>> clustering(List<D> objects, int k) {
-        // convert list of Distance objects into Elements
-        List<Element<D>> elements = objects.stream().map(u -> new Element<D>(u)).collect(Collectors.toList());
-        //System.err.println("Convert list of Distance objects into Elements");
+    return rv;
+  }
 
-        // init step
-        List<KmedoidCluster<Element<D>>> clusters = init(elements, k);
-        //System.err.println("Init Step");
-        //System.err.println("Clusters: "+ PrintUtils.list(clusters));
-
-        // assignment step
-        assignment(elements, clusters);
-        //System.err.println("Assignemnt Step");
-        //System.err.println("Clusters: "+ PrintUtils.list(clusters));
-
-        boolean done = false;
-        while (!done) {
-            // update step
-            for(KmedoidCluster c : clusters)
-                c.updateMedoid();
-            //System.err.println("Update Step");
-            //System.err.println("Clusters: "+ PrintUtils.list(clusters));
-            // assignment step
-            done = !assignment(elements, clusters);
-            //System.err.println("Assignemnt Step -> "+done);
-            //System.err.println("Clusters: "+ PrintUtils.list(clusters));
+  /**
+   * @param dps List of data points (Any class that implements {@link Distance})
+   * @param clusters
+   * @param <D>
+   * @return
+   */
+  protected <D extends Distance> boolean assignment(final List<D> dps,
+                                                    final List<Cluster<D>> clusters,
+                                                    final List<D> centers, final int mapping[]) {
+    boolean rv = false;
+    for (int i = 0; i < dps.size(); i++){
+      D dp = dps.get(i);
+      int idxC = closestCluster(dp, centers);
+      if (mapping[i] != idxC) {
+        rv = true;
+        if (mapping[i] >= 0) {
+          clusters.get(mapping[i]).remove(dp);
+          mapping[i] = -1;
         }
+        clusters.get(idxC).add(dp);
+        mapping[i] = idxC;
+      }
+    }
+    return rv;
+  }
 
-        return clusters;
+  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int k) {
+    // mapping used to identity where each datapoint is attributed
+    int mapping[] = new int[dps.size()];
+    // -1 means that the point is not atribuated to any cluster
+    Arrays.fill(mapping, -1);
+
+    // init step
+    List<Cluster<D>> clusters = init(dps, mapping, k);
+
+    // Initial centers
+    List<D> centers = new ArrayList<>(k);
+    for(int i = 0; i < k; i++) {
+      centers.add(clusters.get(i).center());
     }
 
-    /**
-     * @param o
-     * @param clusters
-     * @param <E>
-     * @return
-     */
-    private <E extends Element> KmedoidCluster closestCluster(E o, List<KmedoidCluster<E>> clusters) {
-        double d = 0.0;
-        KmedoidCluster rv = null;
+    // assignment step
+    assignment(dps, clusters, centers, mapping);
 
-        Iterator<KmedoidCluster<E>> it = clusters.iterator();
-        if (it.hasNext()) {
-            rv = it.next();
-            d = rv.medoid().distanceTo(o);
-        }
+    boolean done = false;
+    while (!done) {
+      // update step
+      for(int i = 0; i < k; i++) {
+        centers.set(i, clusters.get(i).center());
+      }
 
-        while (it.hasNext()) {
-            KmedoidCluster c = it.next();
-            double tmp = c.medoid().distanceTo(o);
-            if (tmp < d) {
-                d = tmp;
-                rv = c;
-            }
-        }
-
-        return rv;
+      // assignment step
+      done = !assignment(dps, clusters, centers, mapping);
     }
+
+    return clusters;
+  }
 }

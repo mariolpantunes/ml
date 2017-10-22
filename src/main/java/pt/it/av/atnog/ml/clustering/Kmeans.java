@@ -1,5 +1,6 @@
 package pt.it.av.atnog.ml.clustering;
 
+
 import pt.it.av.atnog.utils.structures.Distance;
 
 import java.util.List;
@@ -17,10 +18,10 @@ public interface Kmeans {
 
     /**
      *
-     * @param objects
+     * @param dps
      * @param k
-     * @param <E>
+     * @param <D>
      * @return
      */
-    <D extends Distance> List<? extends Cluster<Element<D>>> clustering(List<D> objects, int k);
+    <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int k);
 }

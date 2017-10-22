@@ -2,37 +2,113 @@ package pt.it.av.atnog.ml.clustering;
 
 import pt.it.av.atnog.utils.structures.Distance;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
+public class Cluster<D extends Distance> extends ArrayList<D> {
 
-/**
- * Cluster represents a set of elements that are similiar in some way.
- *
- * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
- * @version 1.0
- */
-public interface Cluster<D extends Distance> extends Collection<D> {
+  public Cluster() {  }
 
-    /**
-     * Returns the distiortion of the cluster.
-     *
-     * @return the distortion of the cluster.
-     */
-    double distortion();
+  public Cluster(D dp) {
+    add(dp);
+  }
 
-    /**
-     * Returns the distortion of the this cluster merged with element e.
-     *
-     * @param e extra element used to computed the merged distortion.
-     * @return the distortion of the cluster with the extra element.
-     */
-    double distortion(D e);
+  /**
+   *
+   * @return
+   */
+  public D center() {
+    return center(this);
+  }
 
-    /**
-     * Returns the distortion resulting of merging this cluster with cluster c.
-     *
-     * @param c extra cluster used to computed the merged distortion.
-     * @return the distortion resulting of merging this cluster with cluster c.
-     */
-    double distortion(Cluster<D> c);
+  /**
+   * Returns the distiortion of the cluster.
+   *
+   * @return the distortion of the cluster.
+   */
+  public double distortion() {
+    D center = center();
+    return distortion(this, center);
+  }
+
+  /**
+   *
+   * @param dp
+   * @return
+   */
+  public double distortion(D dp) {
+    List<D> tmp = new ArrayList<>(this);
+    tmp.add(dp);
+    D center = center(tmp);
+    return distortion(tmp, center);
+  }
+
+  /**
+   *
+   * @param cdp
+   * @return
+   */
+  public double distortion(Cluster<D> cdp) {
+    List<D> tmp = new ArrayList<>(this);
+    tmp.addAll(cdp);
+    D center = center(tmp);
+    return distortion(tmp, center);
+  }
+
+  /**
+   *
+   * @param dps
+   * @param <D>
+   * @return
+   */
+  private static <D extends Distance> D center(List<D> dps) {
+    D rv = null;
+
+    switch (dps.size()) {
+      case 0: rv = null; break;
+      case 1: rv = dps.get(0); break;
+      case 2: rv = dps.get(0); break;
+      default: {
+        D bestCenter = dps.get(0);
+        double bestDistCenter = 0.0;
+
+        for(int j = 0; j < dps.size(); j++) {
+          bestDistCenter += bestCenter.distanceTo(dps.get(j));
+        }
+
+        for(int i = 1; i < dps.size(); i++) {
+          D currentCenter = dps.get(i);
+          double avgDistCenter = 0.0;
+          for(int j = 0; j < dps.size(); j++) {
+            if(i != j) {
+              avgDistCenter += currentCenter.distanceTo(dps.get(j));
+            }
+          }
+          if(avgDistCenter < bestDistCenter) {
+            bestCenter = currentCenter;
+            bestDistCenter = avgDistCenter;
+          }
+        }
+        rv = bestCenter;
+        break;
+      }
+    }
+    return rv;
+  }
+
+  /**
+   *
+   * @param dps
+   * @param center
+   * @param <D>
+   * @return
+   */
+  private static <D extends Distance> double distortion(List<D> dps, D center) {
+    double rv = 0.0;
+    for (int i = 0; i < dps.size(); i++)
+      rv += Math.pow(center.distanceTo(dps.get(i)), 2.0);
+    return rv;
+  }
 }

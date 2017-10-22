@@ -20,11 +20,11 @@ public class OptimalClustering {
    * @param min
    * @param max
    * @param Nd
-   * @param <T>
+   * @param <D>
    * @return
    */
-  public static <T extends Distance<T>> List<? extends Cluster<Element<T>>> clustering
-  (Kmeans alg, List<T> objs, int min, int max, int Nd) {
+  public static <D extends Distance<D>> List<? extends Cluster<D>> clustering
+  (Kmeans alg, List<D> objs, int min, int max, int Nd) {
     return clustering(alg, objs, min, max, Nd, 5);
   }
 
@@ -35,27 +35,27 @@ public class OptimalClustering {
    * @param max
    * @param Nd
    * @param reps
-   * @param <T>
+   * @param <D>
    * @return
    */
-  public static <T extends Distance<T>> List<? extends Cluster<Element<T>>> clustering
-  (Kmeans alg, List<T> objs, int min, int max, int Nd, int reps) {
+  public static <D extends Distance<D>> List<? extends Cluster<D>> clustering
+  (Kmeans alg, List<D> objs, int min, int max, int Nd, int reps) {
 
     double fk[] = new double[(max - min) + 1];
     double Sk[] = new double[(max - min) + 1];
     double ak[] = new double[(max - min) + 1];
-    List<? extends Cluster<Element<T>>> allClusters[] = new List[(max - min) + 1];
+    List<? extends Cluster<D>> allClusters[] = new List[(max - min) + 1];
 
 
     for (int k = min, i = 0; k <= max; k++, i++) {
-      List<? extends Cluster<Element<T>>> clusters = null;
+      List<? extends Cluster<D>> clusters = null;
       double distortion = Double.MAX_VALUE;
 
       if (k < objs.size()) {
         //clusters = alg.clustering(objs, k);
         //distortion = distortion(clusters);
         for (int j = 0; j < reps; j++) {
-          List<? extends Cluster<Element<T>>> currentClusters = alg.clustering(objs, k);
+          List<Cluster<D>> currentClusters = alg.clustering(objs, k);
           double currentDistortion = distortion(currentClusters);
           if (currentDistortion < distortion && !emptyClusters(currentClusters)) {
             clusters = currentClusters;
@@ -98,10 +98,10 @@ public class OptimalClustering {
 
   /**
    * @param clusters
-   * @param <T>
+   * @param <D>
    * @return
    */
-  private static <T extends Distance<T>> double distortion(List<? extends Cluster<Element<T>>> clusters) {
+  private static <D extends Distance> double distortion(List<Cluster<D>> clusters) {
     double distortion = 0.0;
     for (Cluster c : clusters)
       distortion += c.distortion();

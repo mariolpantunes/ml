@@ -1,11 +1,10 @@
 package pt.it.av.atnog.ml.clustering;
 
+import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -15,74 +14,77 @@ import java.util.List;
  * @version 1.0
  */
 public class Kmeanspp extends Kmedoids {
-    @Override
-    protected <D extends Distance> List<KmedoidCluster<Element<D>>> init(final List<Element<D>> elements, int k) {
-        List<KmedoidCluster<Element<D>>> clusters = new ArrayList<>(k);
+  @Override
+  protected <D extends Distance> List<Cluster<D>> init(final List<D> dps, final int mappings[],
+                                                       final int k) {
+    List<Cluster<D>> clusters = new ArrayList<>(k);
 
-        if (elements.size() > 0) {
-            //Choose an initial center uniformly at random
-            Collections.shuffle(elements);
-            clusters.add(new KmedoidCluster(elements.get(0)));
+    if (dps.size() > 0) {
+      int idxs[] = new int[dps.size()];
+      for (int i = 1; i < idxs.length; i++) {
+        idxs[i] = i;
+      }
+      ArrayUtils.shuffle(idxs);
 
-            double array[] = new double[elements.size()];
+      clusters.add(new Cluster(dps.get(idxs[0])));
+      mappings[idxs[0]] = 0;
 
-            for (int i = 1; i < k; i++) {
-                int j = 0;
-                double total = 0.0;
-                for (Element<D> e : elements) {
-                    if (e.used())
-                        array[j] = 0.0;
-                    else
-                        array[j] = distanceClosestCluster(e, clusters);
-                    total += array[j++];
-                }
+      double array[] = new double[dps.size()];
 
-                double rnd = Math.random() * total;
-
-                int idx = -1;
-                double v = rnd;
-                for (j = 0; j < array.length && idx < 0; j++) {
-                    rnd -= array[j];
-                    if (rnd < array[j])
-                        idx = j;
-                }
-
-                if (idx == -1) {
-                    System.err.println("TOT " + total);
-                    System.err.println("RND " + v);
-                    System.err.println("CUR " + rnd);
-                    System.err.println(PrintUtils.array(array));
-                }
-
-                clusters.add(new KmedoidCluster<Element<D>>(elements.get(idx)));
-            }
+      for (int i = 1; i < k; i++) {
+        double total = 0.0;
+        for(int j = 0; j < dps.size(); j++) {
+          if(mappings[j] >= 0)
+            array[j] = 0.0;
+          else
+            array[j] = distanceClosestCluster(dps.get(j), clusters);
+          total += array[j];
         }
 
-        return clusters;
-    }
+        double rnd = Math.random() * total;
 
-    /**
-     * This method may suffer from overflow
-     *
-     * @param e
-     * @param clusters
-     * @param <D>
-     * @return
-     */
-    private <D extends Distance> double distanceClosestCluster(Element<D> e, List<KmedoidCluster<Element<D>>> clusters) {
-        double rv = 0.0;
-
-        Iterator<KmedoidCluster<Element<D>>> it = clusters.iterator();
-        if (it.hasNext())
-            rv = it.next().medoid().distanceTo(e);
-
-        while (it.hasNext()) {
-            KmedoidCluster c = it.next();
-            double tmp = c.medoid().distanceTo(e);
-            if (tmp < rv)
-                rv = tmp;
+        int idx = -1;
+        double v = rnd;
+        for (int j = 0; j < array.length && idx < 0; j++) {
+          rnd -= array[j];
+          if (rnd < array[j])
+            idx = j;
         }
 
-        return Math.pow(rv, 2.0);
+        if (idx == -1) {
+          System.err.println("TOT " + total);
+          System.err.println("RND " + v);
+          System.err.println("CUR " + rnd);
+          System.err.println(PrintUtils.array(array));
+        }
+
+        clusters.add(new Cluster(dps.get(idx)));
+        mappings[idx] = i;
+      }
     }
+
+    return clusters;
+  }
+
+  /**
+   * This method may suffer from overflow
+   *
+   * @param dp
+   * @param clusters
+   * @param <D>
+   * @return
+   */
+  private <D extends Distance> double distanceClosestCluster(final D dp,
+                                                             List<Cluster<D>> clusters) {
+    double rv = clusters.get(0).center().distanceTo(dp);
+
+    for(int i = 1; i < clusters.size(); i++){
+      double tmp = clusters.get(i).center().distanceTo(dp);
+      if (tmp < rv) {
+        rv = tmp;
+      }
+    }
+
+    return Math.pow(rv, 2.0);
+  }
 }
