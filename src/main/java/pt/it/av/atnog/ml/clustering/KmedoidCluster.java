@@ -1,7 +1,6 @@
 package pt.it.av.atnog.ml.clustering;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * @param <E>
@@ -80,7 +79,7 @@ public class KmedoidCluster<E extends Element> extends ArrayList<E> implements C
   }
 
   @Override
-  public double distortion(Cluster<E> c) {
+  public double distortion(Cluster c) {
     return 0;
   }
 

@@ -3,7 +3,6 @@ package pt.it.av.atnog.ml.clustering;
 import pt.it.av.atnog.utils.bla.Vector;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created by mantunes on 1/23/17.

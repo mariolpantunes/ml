@@ -1,12 +1,9 @@
 package pt.it.av.atnog.ml.clustering;
 
-import pt.it.av.atnog.utils.Utils;
 import pt.it.av.atnog.utils.bla.Vector;
-import pt.it.av.atnog.utils.structures.Distance;
 import pt.it.av.atnog.utils.structures.KDTree;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,10 +15,10 @@ import java.util.List;
 public class FastGreedyClustering {
 
     private <V extends Vector> List<Cluster<V>> FastGreedyClustering(List<V> elements, double d, double t) {
-        List<Cluster<V>> clusters = new ArrayList<Cluster<V>>();
+        List<Cluster<V>> clusters = new ArrayList<>();
         KDTree<V> tree = KDTree.build(elements);
 
-        HashMap<V, Cluster<V>> mappings = new HashMap<V, Cluster<V>>();
+        HashMap<V, Cluster> mappings = new HashMap<V, Cluster>();
 
         for (int i = 0; i < elements.size() - 1; i++) {
             V e1 = elements.get(i);
@@ -34,7 +31,7 @@ public class FastGreedyClustering {
             } else {
                 for (int j = 0; j < closer.size(); j++) {
                     V e2 = closer.get(j);
-                    Cluster<V> c1 = mappings.get(e1), c2 = mappings.get(e1);
+                    Cluster c1 = mappings.get(e1), c2 = mappings.get(e1);
                     if (c1 == null && c2 == null) {
                         VectorCluster<V> cluster = new VectorCluster<V>(e1);
                         cluster.add(e2);

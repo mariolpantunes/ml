@@ -1,4 +1,4 @@
-package pt.it.av.atnog.ml.clustering;
+package pt.it.av.atnog.ml.clusteringV2;
 
 import pt.it.av.atnog.utils.structures.Point1D;
 import pt.it.av.atnog.utils.structures.Point2D;
@@ -10,12 +10,12 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Unit tests for K-medoids algorithm.
+ * Unit tests for K-means++ algorithm.
  *
  * @author Mário Antunes
  * @version 1.0
  */
-public class KmedoidsTest {
+public class KmeansppTest {
     @org.junit.Test
     public void test_clustering() {
         List<Point1D> points = new ArrayList<Point1D>();
@@ -28,8 +28,8 @@ public class KmedoidsTest {
 
         //System.out.println("Points: " + PrintUtils.list(points));
 
-        Kmeans alg = new Kmedoids();
-        List<? extends Cluster<Element<Point1D>>> clusters = alg.clustering(points, 2);
+        Kmeanspp alg = new Kmeanspp();
+        List<Cluster<Point1D>> clusters = alg.clustering(points, 2);
 
         //System.out.println("Clusters: " + PrintUtils.list(clusters));
 
@@ -40,18 +40,18 @@ public class KmedoidsTest {
         assertTrue(clusterPoints == points.size());
 
         // For this specific exemple one clusters contains positive number and the other negative numbers.
-        Cluster<Element<Point1D>> c1 = clusters.get(0), c2 = clusters.get(1);
+        Cluster<Point1D> c1 = clusters.get(0), c2 = clusters.get(1);
 
-        Iterator<Element<Point1D>> it = c1.iterator();
+        Iterator<Point1D> it = c1.iterator();
         boolean c1SameSign = true;
         int sign = 0;
         if (it.hasNext()) {
-            double x = it.next().element().x();
+            double x = it.next().x();
             sign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
         }
 
         while (it.hasNext()) {
-            double x = it.next().element().x();
+            double x = it.next().x();
             int tmpSign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
             if (tmpSign != sign)
                 c1SameSign = false;
@@ -62,12 +62,12 @@ public class KmedoidsTest {
         boolean c2SameSign = true;
         sign = 0;
         if (it.hasNext()) {
-            double x = it.next().element().x();
+            double x = it.next().x();
             sign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
         }
 
         while (it.hasNext()) {
-            double x = it.next().element().x();
+            double x = it.next().x();
             int tmpSign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
             if (tmpSign != sign)
                 c2SameSign = false;
@@ -86,8 +86,8 @@ public class KmedoidsTest {
         points.add(new Point2D(-1.0, 5.0));
         points.add(new Point2D(-9.0, -2.0));
 
-        Kmeans alg = new Kmedoids();
-        List<? extends Cluster<Element<Point2D>>> clusters = alg.clustering(points, 2);
+        Kmeanspp alg = new Kmeanspp();
+        List<Cluster<Point2D>> clusters = alg.clustering(points, 2);
         assertTrue(clusters != null);
     }
 }

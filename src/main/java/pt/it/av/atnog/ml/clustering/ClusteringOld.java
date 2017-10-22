@@ -1,12 +1,5 @@
 package pt.it.av.atnog.ml.clustering;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import pt.it.av.atnog.utils.Utils;
-import pt.it.av.atnog.utils.structures.KDTree;
-
 public class ClusteringOld {
     /*public static <T extends Element> List<Cluster<T>> fastMinDist(
 	    List<T> elements, double d, double t) {
