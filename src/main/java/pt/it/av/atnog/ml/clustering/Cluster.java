@@ -3,8 +3,6 @@ package pt.it.av.atnog.ml.clustering;
 import pt.it.av.atnog.utils.structures.Distance;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 public class Cluster<D extends Distance> extends ArrayList<D> {
