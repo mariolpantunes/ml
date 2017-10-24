@@ -16,9 +16,6 @@ import java.util.List;
  */
 public class Kmedoids implements Kmeans {
 
-  protected Kmedoids() {
-  }
-
   /**
    * @param dps List of data points (Any class that implements {@link Distance})
    * @param k   number of clusters

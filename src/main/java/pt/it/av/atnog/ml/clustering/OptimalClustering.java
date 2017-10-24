@@ -23,14 +23,14 @@ public class OptimalClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<? extends Cluster<D>> clustering
+  public static <D extends Distance<D>> List<Cluster<D>> clustering
   (Kmeans alg, List<D> objs, int min, int max, int Nd) {
     return clustering(alg, objs, min, max, Nd, 5);
   }
 
   /**
    * @param alg
-   * @param objs
+   * @param dps
    * @param min
    * @param max
    * @param Nd
@@ -38,42 +38,39 @@ public class OptimalClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<? extends Cluster<D>> clustering
-  (Kmeans alg, List<D> objs, int min, int max, int Nd, int reps) {
-
+  public static <D extends Distance<D>> List<Cluster<D>> clustering
+  (Kmeans alg, List<D> dps, int min, int max, int Nd, int reps) {
     double fk[] = new double[(max - min) + 1];
     double Sk[] = new double[(max - min) + 1];
     double ak[] = new double[(max - min) + 1];
-    List<? extends Cluster<D>> allClusters[] = new List[(max - min) + 1];
+    List<Cluster<D>> allClusters[] = new List[(max - min) + 1];
 
-
-    for (int k = min, i = 0; k <= max; k++, i++) {
-      List<? extends Cluster<D>> clusters = null;
-      double distortion = Double.MAX_VALUE;
-
-      if (k < objs.size()) {
-        //clusters = alg.clustering(objs, k);
-        //distortion = distortion(clusters);
-        for (int j = 0; j < reps; j++) {
-          List<Cluster<D>> currentClusters = alg.clustering(objs, k);
+    int i = 0;
+    for (int k = min; k <= max; k++, i++) {
+      if (k < dps.size()) {
+        List<Cluster<D>> clusters = alg.clustering(dps, k);
+        double distortion = distortion(clusters);
+        for (int j = 1; j < reps; j++) {
+          List<Cluster<D>> currentClusters = alg.clustering(dps, k);
           double currentDistortion = distortion(currentClusters);
           if (currentDistortion < distortion && !emptyClusters(currentClusters)) {
             clusters = currentClusters;
             distortion = currentDistortion;
           }
         }
+        Sk[i] = distortion;
+        fk[i] = f(i, Sk[i], Sk, ak, Nd);
+        allClusters[i] = clusters;
+      } else {
+        break;
       }
-
-      Sk[i] = distortion;
-      fk[i] = f(i, Sk[i], Sk, ak, Nd);
-      allClusters[i] = clusters;
     }
 
     //System.out.println("SK: " + PrintUtils.array(Sk));
     //System.out.println("AK: " + PrintUtils.array(ak));
     //System.out.println("FK: " + PrintUtils.array(fk));
 
-    int idx = ArrayUtils.min(fk);
+    int idx = ArrayUtils.min(fk, 0, i);
     return allClusters[idx];
   }
 
@@ -83,7 +80,7 @@ public class OptimalClustering {
    * @param clusters list of clusters
    * @return True if the list of clusters contains empty clusters
    */
-  private static boolean emptyClusters(List<? extends Cluster> clusters) {
+  private static <D extends Distance> boolean emptyClusters(List<Cluster<D>> clusters) {
     boolean rv = false;
 
     for (Cluster c : clusters) {

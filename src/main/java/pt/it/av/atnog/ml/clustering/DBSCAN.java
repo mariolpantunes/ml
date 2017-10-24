@@ -2,8 +2,10 @@ package pt.it.av.atnog.ml.clustering;
 
 import pt.it.av.atnog.utils.structures.Distance;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
 
 /**
@@ -14,19 +16,14 @@ import java.util.List;
  */
 public class DBSCAN {
 
-
-  //Seed set S = N \ {P}                            /* Neighbors to expand */
-  //for each point Q in S {                         /* Process every seed point */
-  //  if label(Q) = Noise then label(Q) = C        /* Change Noise to border point */
-  //  if label(Q) ≠ undefined then continue        /* Previously processed */
-  //      label(Q) = C                                 /* Label neighbor */
-  //  Neighbors N = RangeQuery(DB, dist, Q, eps)   /* Find neighbors */
-  //  if |N| ≥ minPts then {                       /* Density check */
-  //    S = S ∪ N                                 /* Add new neighbors to seed set */
-  //  }
-  //}*/
-
-
+  /**
+   *
+   * @param dps
+   * @param eps
+   * @param minPts
+   * @param <D>
+   * @return
+   */
   public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final double eps,
                                                           final int minPts) {
     int clusterCount = -1;
@@ -35,14 +32,27 @@ public class DBSCAN {
 
     for (int i = 0; i < dps.size(); i++) {
       if (mapping[i] == -1) {
-        List<D> neighbors = rangeQuery(dps, mapping, eps);
+        List<Integer> neighbors = rangeQuery(i, dps, mapping, eps);
         if (neighbors.size() < minPts) {
           mapping[i] = -2; // Represents Noise
         } else {
           ++clusterCount;
           mapping[i] = clusterCount;
-
-
+          Deque<Integer> seeds = new ArrayDeque<>(neighbors);
+          while(!seeds.isEmpty()) {
+            int q = seeds.pollFirst();
+            if(mapping[q] == -2) {
+              mapping[q] = clusterCount;
+            } else if(mapping[q] == -1) {
+              mapping[q] = clusterCount;
+              List<Integer> neighborsQ = rangeQuery(q, dps, mapping, eps);
+              if (neighborsQ.size() >= minPts) {
+                for(int j = 0; j < neighborsQ.size(); j++) {
+                  seeds.addLast(neighborsQ.get(j));
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -51,8 +61,8 @@ public class DBSCAN {
     return clusters;
   }
 
-  private <D extends Distance> List<D> rangeQuery(final List<D> dps, final int[] mapping,
-                                                  final double eps) {
+  private <D extends Distance> List<Integer> rangeQuery(final int idx, final List<D> dps,
+                                                        final int[] mapping, final double eps) {
     return null;
   }
 }
