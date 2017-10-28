@@ -32,7 +32,7 @@ public class DBSCAN {
 
     for (int i = 0; i < dps.size(); i++) {
       if (mapping[i] == -1) {
-        List<Integer> neighbors = rangeQuery(i, dps, mapping, eps);
+        List<Integer> neighbors = rangeQuery(i, dps, eps);
         if (neighbors.size() < minPts) {
           mapping[i] = -2; // Represents Noise
         } else {
@@ -45,7 +45,7 @@ public class DBSCAN {
               mapping[q] = clusterCount;
             } else if(mapping[q] == -1) {
               mapping[q] = clusterCount;
-              List<Integer> neighborsQ = rangeQuery(q, dps, mapping, eps);
+              List<Integer> neighborsQ = rangeQuery(q, dps, eps);
               if (neighborsQ.size() >= minPts) {
                 for(int j = 0; j < neighborsQ.size(); j++) {
                   seeds.addLast(neighborsQ.get(j));
@@ -61,8 +61,28 @@ public class DBSCAN {
     return clusters;
   }
 
+  /**
+   * Returns a list with the indexes of the closest neighbors.
+   * This method implements the sequencial search.
+   *
+   * @param idx
+   * @param dps
+   * @param mapping
+   * @param eps
+   * @param <D>
+   * @return
+   */
   private <D extends Distance> List<Integer> rangeQuery(final int idx, final List<D> dps,
-                                                        final int[] mapping, final double eps) {
-    return null;
+                                                        final double eps) {
+    List<Integer> rv = new ArrayList<>();
+    D dp = dps.get(idx);
+
+    for(int i = 0;  i < dps.size(); i++) {
+      if(i != idx && dp.distanceTo(dps.get(i)) <= eps) {
+        rv.add(i);
+      }
+    }
+
+    return rv;
   }
 }
