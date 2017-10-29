@@ -2,11 +2,7 @@ package pt.it.av.atnog.ml.clustering;
 
 import pt.it.av.atnog.utils.structures.Distance;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 
 /**
  * DBSCAN algorithm implementation.
@@ -58,6 +54,16 @@ public class DBSCAN {
     }
 
     List<Cluster<D>> clusters = new ArrayList<>();
+    for (int i = 0; i < clusterCount; i++) {
+      clusters.add(new Cluster<D>());
+    }
+
+    for (int i = 0; i < mapping.length; i++) {
+      if (mapping[i] >= 0) {
+        clusters.get(mapping[i]).add(dps.get(i));
+      }
+    }
+
     return clusters;
   }
 
@@ -67,7 +73,6 @@ public class DBSCAN {
    *
    * @param idx
    * @param dps
-   * @param mapping
    * @param eps
    * @param <D>
    * @return
