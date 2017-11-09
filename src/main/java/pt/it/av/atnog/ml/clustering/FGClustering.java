@@ -1,9 +1,12 @@
 package pt.it.av.atnog.ml.clustering;
 
+import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.bla.Vector;
+import pt.it.av.atnog.utils.structures.Distance;
 import pt.it.av.atnog.utils.structures.KDTree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,7 +14,77 @@ import java.util.List;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
-public class FastGreedyClustering {
+public class FGClustering {
+
+  private static <D extends Distance> List<Integer> neighbors(final List<D> dps, final int idx, final double eps) {
+    List<Integer> rv = new ArrayList<>();
+    D dp = dps.get(idx);
+
+    for(int i = 0;  i < dps.size(); i++) {
+      if(i != idx && dp.distanceTo(dps.get(i)) <= eps) {
+        rv.add(i);
+      }
+    }
+
+    return rv;
+  }
+
+  public static <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final double eps,
+                                                                 final double radius) {
+    List<Cluster<D>> clusters = new ArrayList<>();
+    int clusterCount = 0;
+    int mapping[] = new int[dps.size()];
+    Arrays.fill(mapping, -1);
+
+    for (int i = 0; i < dps.size() - 1; i++) {
+      D dp1 = dps.get(i);
+      Cluster<D> c1 = null;
+
+      if (mapping[i] == -1) {
+        c1 = new Cluster<D>(dp1);
+        clusters.add(c1);
+        mapping[i] = clusterCount++;
+      } else {
+        c1 = clusters.get(mapping[i]);
+      }
+
+      List<Integer> neighbors = neighbors(dps, i, eps);
+
+      for (int j = 0; j < neighbors.size(); j++) {
+        D dp2 = dps.get(neighbors.get(j));
+        if (mapping[neighbors.get(j)] == -1) {
+          double cRadius = c1.radius(dp2);
+          if (cRadius <= radius) {
+            c1.add(dp2);
+            mapping[neighbors.get(j)] = mapping[i];
+          }
+        } else {
+          //Lazy clean, mark the cluster as empty
+          if(mapping[i] != mapping[neighbors.get(j)]){
+            Cluster<D> c2 = clusters.get(mapping[neighbors.get(j)]);
+            double cRadius = c1.radius(c2);
+            if(cRadius < radius) {
+              c1.addAll(c2);
+              int clusterIdx = mapping[neighbors.get(j)];
+              ArrayUtils.replace(mapping, clusterIdx, mapping[i]);
+              clusters.get(clusterIdx).clear();
+            }
+          }
+        }
+      }
+    }
+
+    List<Cluster<D>> rv = new ArrayList<>();
+    for(int i = 0; i < clusters.size(); i++) {
+      Cluster<D> cluster = clusters.get(i);
+      if(cluster.size() > 0) {
+        rv.add(cluster);
+      }
+    }
+
+    return rv;
+  }
+
 
   private <V extends Vector> List<Cluster<V>> FastGreedyClustering(List<V> elements, double d, double t) {
     List<Cluster<V>> clusters = new ArrayList<>();
@@ -30,7 +103,7 @@ public class FastGreedyClustering {
       } else {
         for (int j = 0; j < closer.size(); j++) {
           V e2 = closer.get(j);
-          Cluster c1 = mappings.get(e1), c2 = mappings.get(e1);
+          Cluster c1 = mappings.get(e1), c2 = mappings.get(e2);
           if (c1 == null && c2 == null) {
             Cluster<V> cluster = new Cluster<V>(e1);
             cluster.add(e2);
@@ -52,7 +125,6 @@ public class FastGreedyClustering {
               c1.addAll(c2);
             }
           }
-
         }
       }
     }

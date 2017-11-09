@@ -68,8 +68,27 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
    */
   private static <D extends Distance> double distortion(List<D> dps, D center) {
     double rv = 0.0;
-    for (int i = 0; i < dps.size(); i++)
+    for (int i = 0; i < dps.size(); i++) {
       rv += Math.pow(center.distanceTo(dps.get(i)), 2.0);
+    }
+    return rv;
+  }
+
+  /**
+   *
+   * @param dps
+   * @param center
+   * @param <D>
+   * @return
+   */
+  private static <D extends Distance> double radius(List<D> dps, D center) {
+    double rv = center.distanceTo(dps.get(0));
+    for(int i = 1; i < dps.size(); i++) {
+      double t = center.distanceTo(dps.get(i));
+      if( t > rv) {
+        rv = t;
+      }
+    }
     return rv;
   }
 
@@ -110,5 +129,37 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
     tmp.addAll(cdp);
     D center = center(tmp);
     return distortion(tmp, center);
+  }
+
+  /**
+   *
+   * @return
+   */
+  public double radius() {
+    D center = center();
+    return radius(this, center);
+  }
+
+  /**
+   *
+   * @param dp
+   * @return
+   */
+  public double radius(D dp) {
+    List<D> tmp = new ArrayList<>(this);
+    tmp.add(dp);
+    D center = center(tmp);
+    return radius(tmp, center);
+  }
+
+  /**
+   * @param cdp
+   * @return
+   */
+  public double radius(Cluster<D> cdp) {
+    List<D> tmp = new ArrayList<>(this);
+    tmp.addAll(cdp);
+    D center = center(tmp);
+    return radius(tmp, center);
   }
 }

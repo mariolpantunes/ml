@@ -54,7 +54,7 @@ public class DBSCAN {
     }
 
     List<Cluster<D>> clusters = new ArrayList<>();
-    for (int i = 0; i < clusterCount; i++) {
+    for (int i = 0; i <= clusterCount; i++) {
       clusters.add(new Cluster<D>());
     }
 
