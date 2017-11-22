@@ -16,6 +16,14 @@ import java.util.List;
  */
 public class FGClustering {
 
+  /**
+   *
+   * @param dps
+   * @param idx
+   * @param eps
+   * @param <D>
+   * @return
+   */
   private static <D extends Distance> List<Integer> neighbors(final List<D> dps, final int idx, final double eps) {
     List<Integer> rv = new ArrayList<>();
     D dp = dps.get(idx);
@@ -29,6 +37,14 @@ public class FGClustering {
     return rv;
   }
 
+  /**
+   *
+   * @param dps
+   * @param eps
+   * @param radius
+   * @param <D>
+   * @return
+   */
   public static <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final double eps,
                                                                  final double radius) {
     List<Cluster<D>> clusters = new ArrayList<>();
@@ -85,7 +101,14 @@ public class FGClustering {
     return rv;
   }
 
-
+  /**
+   *
+   * @param elements
+   * @param d
+   * @param t
+   * @param <V>
+   * @return
+   */
   private <V extends Vector> List<Cluster<V>> FastGreedyClustering(List<V> elements, double d, double t) {
     List<Cluster<V>> clusters = new ArrayList<>();
     KDTree<V> tree = KDTree.build(elements);
@@ -132,68 +155,4 @@ public class FGClustering {
     mappings.clear();
     return clusters;
   }
-
-    /*@Override
-    public boolean add(E e) {
-        super.add(e);
-        icd = icdWith(e);
-        return false;
-    }
-
-    public void addAll(MinDistCluster<E> c) {
-        for (E e : c.elements)
-            super.add(e);
-
-        icd = icdWith(c);
-    }
-
-    public double icdWith(E e) {
-        double rv = 0.0;
-
-        for (E el : elements)
-            rv += el.distance(e);
-
-        rv = (icd * t(elements.size()) + rv) / t(elements.size() + 1);
-
-        return rv;
-    }
-
-    public double icdWith(Cluster<E> c) {
-        List<E> all = new ArrayList<E>(elements.size() + c.elements.size());
-        all.addAll(elements);
-        all.addAll(c.elements);
-        //return distortion(all);
-        return 0.0;
-    }
-
-    public double icdWithout(E e) {
-        double rv = 0.0;
-
-        for (E el : elements)
-            if (!el.equals(e))
-                rv += el.distance(e);
-
-        rv = (icd * t(elements.size()) + rv) / t(elements.size() + 1);
-
-        return rv;
-    }
-
-    public double icd() {
-        return icd;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("Cluster with " + elements.size() + " elements:\n");
-        for (Distance d : elements)
-            sb.append(" -> " + d + "\n");
-
-        return sb.toString();
-    }
-
-    protected double t(int n) {
-        return (n * n - 1) / 2.0;
-    }*/
 }
