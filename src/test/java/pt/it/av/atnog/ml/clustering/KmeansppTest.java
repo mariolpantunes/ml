@@ -35,8 +35,10 @@ public class KmeansppTest {
 
         // The number of points in the clusters must be the same as the initial number of points.
         int clusterPoints = 0;
-        for (Cluster c : clusters)
+        for (Cluster c : clusters) {
             clusterPoints += c.size();
+            System.out.println(c);
+        }
         assertTrue(clusterPoints == points.size());
 
         // For this specific exemple one clusters contains positive number and the other negative numbers.
