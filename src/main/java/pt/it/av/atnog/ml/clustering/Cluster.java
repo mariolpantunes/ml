@@ -5,6 +5,11 @@ import pt.it.av.atnog.utils.structures.Distance;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @param <D>
+ * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
+ * @version 1.0
+ */
 public class Cluster<D extends Distance> extends ArrayList<D> {
 
   public Cluster() {
