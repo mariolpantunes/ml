@@ -5,15 +5,14 @@ import pt.it.av.atnog.utils.structures.mutableNumber.MutableInteger;
 import pt.it.av.atnog.utils.structures.tuple.Pair;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * Detect knee points in a curve using the "Kneedle" algorithm as described in the paper "Finding a" Kneedle" in a
- * Haystack: Detecting Knee Points in System Behavior".
  * <p>
- * NOTE: This implementation does not check the concavity of the curve.
- * Also no smoothing of the curve is applied by this method.
- * <p>
+ * Detect knee points in a curve using the "Kneedle" algorithm as described in the paper
+ * "Finding a Kneedle in a Haystack: Detecting Knee Points in System Behavior".
+ * </p>
  * Kneedle algorithm described in:
  * Satopaa, V., Albrecht, J., Irwin, D., & Raghavan, B. (2011, June).
  * Finding a" Kneedle" in a Haystack: Detecting Knee Points in System Behavior.
@@ -23,10 +22,100 @@ import java.util.List;
  * @version 1.0
  */
 public class Kneedle {
+  //TODO: needs to optimize code
+
   /**
    *
    */
   private Kneedle() {
+  }
+
+  /**
+   * Find a single knee (the best one) in a batch manner.
+   * Since it work on a batch manner it becomes simpler than the conventional algorithm.
+   * This version assumes the X variable is incremental [1, 2, 3, ..., length(Y)].
+   *
+   * @param y
+   * @return
+   */
+  public static int knee(final double[] y) {
+    double inc = 1.0/y.length, yn[] = normalize(y), yDiff[] = new double[y.length];
+
+    for (int i = 0; i < y.length; i++) {
+      yDiff[i] = yn[i] - (i * inc);
+    }
+
+    return ArrayUtils.max(yDiff);
+  }
+
+  /**
+   * Find a single elbow (the best one) in a batch manner.
+   * Since it work on a batch manner it becomes simpler than the conventional algorithm.
+   * This version assumes the X variable is incremental [1, 2, 3, ..., length(Y)].
+   *
+   * @param y
+   * @return
+   */
+  public static int elbow(final double[] y) {
+    double inc = 1.0/y.length, yn[] = normalize(y), yDiff[] = new double[y.length];
+
+    for (int i = 0; i < y.length; i++) {
+      yDiff[i] = yn[i] - (i * inc);
+    }
+
+    double yMax = yDiff[ArrayUtils.max(yDiff)];
+
+    //for (int i = 0; i < yDiff.length; i++) {
+    //  yDiff[i] = yMax - yDiff[i];
+    //}
+
+    return ArrayUtils.min(yDiff);
+  }
+
+  /**
+   * Find a single knee (the best one) in a batch manner.
+   * Since it work on a batch manner it becomes simpler than the conventional algorithm.
+   *
+   * @param x
+   * @param y
+   * @return
+   */
+  public static int knee(final double[] x, final double[] y) {
+    int rv = 0;
+    double[] xn = normalize(x), yn = normalize(y);
+
+    double[] yDiff = new double[y.length];
+    for (int i = 0; i < y.length; i++) {
+      yDiff[i] = yn[i] - xn[i];
+    }
+
+    return ArrayUtils.max(yDiff);
+  }
+
+  /**
+   * Find a single elbow (the best one) in a batch manner.
+   * Since it work on a batch manner it becomes simpler than the conventional algorithm.
+   *
+   * @param x
+   * @param y
+   * @return
+   */
+  public static int elbow(final double[] x, final double[] y) {
+    int rv = 0;
+    double[] xn = normalize(x), yn = normalize(y);
+
+    double[] yDiff = new double[y.length];
+    for (int i = 0; i < y.length; i++) {
+      yDiff[i] = yn[i] - xn[i];
+    }
+
+    double yMax = yDiff[ArrayUtils.max(yDiff)];
+
+    //for (int i = 0; i < yDiff.length; i++) {
+    //  yDiff[i] = yMax - yDiff[i];
+    //}
+
+    return ArrayUtils.min(yDiff);
   }
 
   /**

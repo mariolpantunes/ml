@@ -14,6 +14,11 @@ public class DBSCAN {
 
   /**
    *
+   */
+  private DBSCAN() {}
+
+  /**
+   *
    * @param dps
    * @param eps
    * @param minPts
