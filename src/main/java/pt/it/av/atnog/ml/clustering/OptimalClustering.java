@@ -23,8 +23,7 @@ public class OptimalClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> clustering
-  (Kmeans alg, List<D> objs, int min, int max, int Nd) {
+  public static <D extends Distance<D>> List<Cluster<D>> clustering(final Kmeans alg, final List<D> objs, int min, int max, int Nd) {
     return clustering(alg, objs, min, max, Nd, 5);
   }
 
@@ -38,8 +37,9 @@ public class OptimalClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> clustering
-  (Kmeans alg, List<D> dps, int min, int max, int Nd, int reps) {
+  public static <D extends Distance<D>> List<Cluster<D>> clustering(final Kmeans alg,
+                                                                    final List<D> dps, int min,
+                                                                    int max, int Nd, int reps) {
     double fk[] = new double[(max - min) + 1];
     double Sk[] = new double[(max - min) + 1];
     double ak[] = new double[(max - min) + 1];

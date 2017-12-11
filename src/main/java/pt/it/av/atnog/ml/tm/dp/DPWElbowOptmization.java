@@ -13,28 +13,29 @@ import java.util.List;
  * @version 1.0
  */
 public class DPWElbowOptmization implements DPWOptimization {
-    private final int min;
+  private final int min;
 
-    /**
-     *
-     * @param min
-     */
-    public DPWElbowOptmization(final int min) {
-        this.min = min;
-    }
+  //TODO: Added kneedle algorithm in where...
 
-    @Override
-    public List<DPW.DpDimension> optimize(List<DPW.DpDimension> dpDimensions) {
-        if (dpDimensions.size() > min) {
-            Comparator<DPW.DpDimension> c = (DPW.DpDimension a, DPW.DpDimension b) -> (Double.compare(b.value, a.value));
-            Collections.sort(dpDimensions, c);
-            Vector v = new Vector(dpDimensions.size());
-            int i = 0;
-            for (DPW.DpDimension p : dpDimensions)
-                v.set(i++, p.value);
-            double t = v.elbow();
-            dpDimensions.removeIf(p -> p.value < t);
-        }
-        return dpDimensions;
+  /**
+   * @param min
+   */
+  public DPWElbowOptmization(final int min) {
+    this.min = min;
+  }
+
+  @Override
+  public List<DPW.DpDimension> optimize(List<DPW.DpDimension> dpDimensions) {
+    if (dpDimensions.size() > min) {
+      Comparator<DPW.DpDimension> c = (DPW.DpDimension a, DPW.DpDimension b) -> (Double.compare(b.value, a.value));
+      Collections.sort(dpDimensions, c);
+      Vector v = new Vector(dpDimensions.size());
+      int i = 0;
+      for (DPW.DpDimension p : dpDimensions)
+        v.set(i++, p.value);
+      double t = 0; //v.elbow();
+      dpDimensions.removeIf(p -> p.value < t);
     }
+    return dpDimensions;
+  }
 }
