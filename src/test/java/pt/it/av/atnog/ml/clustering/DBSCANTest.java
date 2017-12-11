@@ -30,7 +30,7 @@ public class DBSCANTest {
     int clusterPoints = 0;
     for (Cluster c : clusters) {
       clusterPoints += c.size();
-      System.out.println(c);
+      //System.out.println(c);
     }
     assertTrue(clusterPoints == points.size());
 
@@ -70,5 +70,92 @@ public class DBSCANTest {
     }
 
     assertTrue(c1SameSign && c2SameSign);
+  }
+
+  @org.junit.Test
+  public void test_clustering_no_eps() {
+    List<Point1D> points = new ArrayList<Point1D>();
+    points.add(new Point1D(10.0));
+    points.add(new Point1D(8.0));
+    points.add(new Point1D(5.0));
+    points.add(new Point1D(-5.0));
+    points.add(new Point1D(-8.0));
+    points.add(new Point1D(-10.0));
+    points.add(new Point1D(12.0));
+    points.add(new Point1D(6.0));
+    points.add(new Point1D(3.0));
+    points.add(new Point1D(-3.0));
+    points.add(new Point1D(-6.0));
+    points.add(new Point1D(-12.0));
+    points.add(new Point1D(14.0));
+    points.add(new Point1D(16.0));
+    points.add(new Point1D(18.0));
+    points.add(new Point1D(-14.0));
+    points.add(new Point1D(-16.0));
+    points.add(new Point1D(-18.0));
+
+    //System.out.println("Points: " + PrintUtils.list(points));
+
+    DBSCAN alg = new DBSCAN();
+    List<Cluster<Point1D>> clusters = alg.clustering(points, 2);
+
+    //System.out.println("Clusters: " + PrintUtils.list(clusters));
+
+    // The number of points in the clusters must be the same as the initial number of points.
+    int clusterPoints = 0;
+    for (Cluster c : clusters) {
+      clusterPoints += c.size();
+    }
+    assertTrue(clusterPoints == points.size());
+
+    // For this specific exemple one clusters contains positive number and the other negative numbers.
+    Cluster<Point1D> c1 = clusters.get(0), c2 = clusters.get(1);
+
+    Iterator<Point1D> it = c1.iterator();
+    boolean c1SameSign = true;
+    int sign = 0;
+    if (it.hasNext()) {
+      double x = it.next().x();
+      sign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
+    }
+
+    while (it.hasNext()) {
+      double x = it.next().x();
+      int tmpSign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
+      if (tmpSign != sign)
+        c1SameSign = false;
+
+    }
+
+    it = c2.iterator();
+    boolean c2SameSign = true;
+    sign = 0;
+    if (it.hasNext()) {
+      double x = it.next().x();
+      sign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
+    }
+
+    while (it.hasNext()) {
+      double x = it.next().x();
+      int tmpSign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
+      if (tmpSign != sign)
+        c2SameSign = false;
+
+    }
+
+    assertTrue(c1SameSign && c2SameSign);
+  }
+
+  //TODO: fix this test...
+  @org.junit.Test
+  public void test_k_closer_dp() {
+    List<Point1D> points = new ArrayList<Point1D>();
+    points.add(new Point1D(1.0));
+    points.add(new Point1D(2.0));
+    points.add(new Point1D(3.0));
+    points.add(new Point1D(4.0));
+    points.add(new Point1D(5.0));
+    points.add(new Point1D(6.0));
+    //System.err.println(PrintUtils.array(DBSCAN.kCloserPoints(points, 0, 2)));
   }
 }

@@ -5,7 +5,6 @@ import pt.it.av.atnog.utils.structures.mutableNumber.MutableInteger;
 import pt.it.av.atnog.utils.structures.tuple.Pair;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -63,12 +62,6 @@ public class Kneedle {
       yDiff[i] = yn[i] - (i * inc);
     }
 
-    double yMax = yDiff[ArrayUtils.max(yDiff)];
-
-    //for (int i = 0; i < yDiff.length; i++) {
-    //  yDiff[i] = yMax - yDiff[i];
-    //}
-
     return ArrayUtils.min(yDiff);
   }
 
@@ -81,7 +74,6 @@ public class Kneedle {
    * @return
    */
   public static int knee(final double[] x, final double[] y) {
-    int rv = 0;
     double[] xn = normalize(x), yn = normalize(y);
 
     double[] yDiff = new double[y.length];
@@ -101,19 +93,12 @@ public class Kneedle {
    * @return
    */
   public static int elbow(final double[] x, final double[] y) {
-    int rv = 0;
     double[] xn = normalize(x), yn = normalize(y);
 
     double[] yDiff = new double[y.length];
     for (int i = 0; i < y.length; i++) {
       yDiff[i] = yn[i] - xn[i];
     }
-
-    double yMax = yDiff[ArrayUtils.max(yDiff)];
-
-    //for (int i = 0; i < yDiff.length; i++) {
-    //  yDiff[i] = yMax - yDiff[i];
-    //}
 
     return ArrayUtils.min(yDiff);
   }

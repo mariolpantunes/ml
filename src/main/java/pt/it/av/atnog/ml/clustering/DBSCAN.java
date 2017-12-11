@@ -1,5 +1,6 @@
 package pt.it.av.atnog.ml.clustering;
 
+import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
 import java.util.*;
@@ -12,10 +13,56 @@ import java.util.*;
  */
 public class DBSCAN {
 
-  /**
-   *
-   */
-  private DBSCAN() {}
+  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int minPts) {
+    // array with average distance to closest minPts
+    double dist[] = new double[dps.size()];
+
+    // Find minPits closer points
+    for (int i = 0; i < dps.size(); i++) {
+      dist[i] = ArrayUtils.mean(kCloserPoints(dps, i, minPts));
+    }
+    // Sort distances
+    Arrays.sort(dist);
+
+    //System.err.println(PrintUtils.array(dist));
+
+    // Find elbow and use it as EPS
+    double eps = dist[Kneedle.elbow(dist)];
+    //System.err.println(eps);
+
+    return clustering(dps, eps, minPts);
+  }
+
+  public static <D extends Distance> double[] kCloserPoints(List<D> dps, final int idx, final int k) {
+    double rv[] = new double[k];
+
+    D dp = dps.get(idx);
+
+    // Init the return array with the first k element distance, that are not the idx point
+    int i = 0, rvIdx = 0;
+    while (rvIdx < k) {
+      if (i != idx) {
+        rv[rvIdx] = dp.distanceTo(dps.get(i));
+        rvIdx++;
+      }
+      i++;
+    }
+
+    // Find the index of the larger distance
+    int maxIdx = ArrayUtils.max(rv);
+
+    for (; i < dps.size(); i++) {
+      if (i != idx) {
+        double distance = dp.distanceTo(dps.get(i));
+        if (distance < rv[maxIdx]) {
+          rv[maxIdx] = distance;
+          maxIdx = ArrayUtils.max(rv);
+        }
+      }
+    }
+
+    return rv;
+  }
 
   /**
    *
