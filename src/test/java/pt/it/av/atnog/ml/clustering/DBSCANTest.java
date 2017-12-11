@@ -50,7 +50,6 @@ public class DBSCANTest {
       int tmpSign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
       if (tmpSign != sign)
         c1SameSign = false;
-
     }
 
     it = c2.iterator();
@@ -66,7 +65,6 @@ public class DBSCANTest {
       int tmpSign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
       if (tmpSign != sign)
         c2SameSign = false;
-
     }
 
     assertTrue(c1SameSign && c2SameSign);
@@ -105,6 +103,7 @@ public class DBSCANTest {
     int clusterPoints = 0;
     for (Cluster c : clusters) {
       clusterPoints += c.size();
+      //System.err.println(c);
     }
     assertTrue(clusterPoints == points.size());
 
@@ -124,7 +123,6 @@ public class DBSCANTest {
       int tmpSign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
       if (tmpSign != sign)
         c1SameSign = false;
-
     }
 
     it = c2.iterator();
@@ -140,7 +138,6 @@ public class DBSCANTest {
       int tmpSign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
       if (tmpSign != sign)
         c2SameSign = false;
-
     }
 
     assertTrue(c1SameSign && c2SameSign);

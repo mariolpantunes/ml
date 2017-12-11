@@ -38,6 +38,36 @@ public class FGClustering {
   }
 
   /**
+   * Use the same technique as in DBSCAN.
+   *
+   * @param dps
+   * @param minPts
+   * @param <D>
+   * @return
+   */
+  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int minPts) {
+    // array with average distance to closest minPts
+    double dist[] = new double[dps.size()];
+
+    // Find minPits closer points
+    for (int i = 0; i < dps.size(); i++) {
+      dist[i] = ArrayUtils.mean(DBSCAN.kCloserPoints(dps, i, minPts));
+    }
+    // Sort distances
+    Arrays.sort(dist);
+
+    double x[] = new double[dps.size()];
+    for (int i = 0; i < dps.size(); i++) {
+      x[i] = i;
+    }
+
+    // Find elbow and use it as EPS
+    double eps = dist[Kneedle.elbow(x, dist)];
+    return clustering(dps, eps, eps);
+  }
+
+
+  /**
    *
    * @param dps
    * @param eps
@@ -45,7 +75,8 @@ public class FGClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final double eps,
+  public static <D extends Distance> List<Cluster<D>> clustering(final List<D> dps,
+                                                                 final double eps,
                                                                  final double radius) {
     List<Cluster<D>> clusters = new ArrayList<>();
     int clusterCount = 0;

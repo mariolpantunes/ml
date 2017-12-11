@@ -1,8 +1,7 @@
 package pt.it.av.atnog.ml.clustering;
 
 import pt.it.av.atnog.utils.ArrayUtils;
-import pt.it.av.atnog.utils.structures.mutableNumber.MutableInteger;
-import pt.it.av.atnog.utils.structures.tuple.Pair;
+import pt.it.av.atnog.utils.PrintUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,8 @@ public class Kneedle {
    * @return
    */
   public static int knee(final double[] y) {
-    double inc = 1.0/y.length, yn[] = normalize(y), yDiff[] = new double[y.length];
+    double inc = 1.0 / y.length, yn[] = new double[y.length], yDiff[] = new double[y.length];
+    ArrayUtils.rescaling(y, yn);
 
     for (int i = 0; i < y.length; i++) {
       yDiff[i] = yn[i] - (i * inc);
@@ -56,11 +56,15 @@ public class Kneedle {
    * @return
    */
   public static int elbow(final double[] y) {
-    double inc = 1.0/y.length, yn[] = normalize(y), yDiff[] = new double[y.length];
+    double inc = 1.0 / y.length, yn[] = new double[y.length], yDiff[] = new double[y.length];
+    ArrayUtils.rescaling(y, yn);
 
     for (int i = 0; i < y.length; i++) {
       yDiff[i] = yn[i] - (i * inc);
     }
+
+    System.err.println(PrintUtils.array(yDiff));
+    System.err.println(ArrayUtils.min(yDiff));
 
     return ArrayUtils.min(yDiff);
   }
@@ -74,7 +78,9 @@ public class Kneedle {
    * @return
    */
   public static int knee(final double[] x, final double[] y) {
-    double[] xn = normalize(x), yn = normalize(y);
+    double xn[] = new double[x.length], yn[] = new double[y.length];
+    ArrayUtils.rescaling(y, yn);
+    ArrayUtils.rescaling(x, xn);
 
     double[] yDiff = new double[y.length];
     for (int i = 0; i < y.length; i++) {
@@ -93,7 +99,9 @@ public class Kneedle {
    * @return
    */
   public static int elbow(final double[] x, final double[] y) {
-    double[] xn = normalize(x), yn = normalize(y);
+    double xn[] = new double[x.length], yn[] = new double[y.length];
+    ArrayUtils.rescaling(y, yn);
+    ArrayUtils.rescaling(x, xn);
 
     double[] yDiff = new double[y.length];
     for (int i = 0; i < y.length; i++) {
@@ -116,8 +124,9 @@ public class Kneedle {
     List<Integer> lmxIndices = new ArrayList<Integer>();
     List<Double> lmxThresholds = new ArrayList<Double>();
 
-    double[] xn = normalize(x);
-    double[] yn = normalize(y);
+    double xn[] = new double[x.length], yn[] = new double[y.length];
+    ArrayUtils.rescaling(y, yn);
+    ArrayUtils.rescaling(x, xn);
 
     double[] yDiff = new double[y.length];
     for (int i = 0; i < y.length; i++) {
@@ -162,20 +171,6 @@ public class Kneedle {
     }
 
     return knees;
-  }
-
-  /**
-   * @param values
-   * @return
-   */
-  private static double[] normalize(final double[] values) {
-    double normalized[] = new double[values.length];
-    Pair<MutableInteger, MutableInteger> minMax = ArrayUtils.minMax(values);
-    double min = values[minMax.a.intValue()], max = values[minMax.b.intValue()];
-    for (int i = 0; i < values.length; i++) {
-      normalized[i] = (values[i] - min) / (max - min);
-    }
-    return normalized;
   }
 
   /**
