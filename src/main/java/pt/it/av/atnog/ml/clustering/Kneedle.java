@@ -20,8 +20,6 @@ import java.util.List;
  * @version 1.0
  */
 public class Kneedle {
-  //TODO: needs to optimize code
-
   /**
    *
    */
@@ -37,8 +35,10 @@ public class Kneedle {
    * @return
    */
   public static int knee(final double[] y) {
-    double inc = 1.0 / y.length, yn[] = new double[y.length], yDiff[] = new double[y.length];
-    ArrayUtils.rescaling(y, yn);
+    double inc = 1.0 / y.length, ys[] = new double[y.length],
+        yn[] = new double[y.length], yDiff[] = new double[y.length];
+    ArrayUtils.mm(y, ys, 1);
+    ArrayUtils.rescaling(ys, yn);
 
     for (int i = 0; i < y.length; i++) {
       yDiff[i] = yn[i] - (i * inc);
@@ -56,8 +56,10 @@ public class Kneedle {
    * @return
    */
   public static int elbow(final double[] y) {
-    double inc = 1.0 / y.length, yn[] = new double[y.length], yDiff[] = new double[y.length];
-    ArrayUtils.rescaling(y, yn);
+    double inc = 1.0 / y.length, ys[] = new double[y.length],
+        yn[] = new double[y.length], yDiff[] = new double[y.length];
+    ArrayUtils.mm(y, ys, 1);
+    ArrayUtils.rescaling(ys, yn);
 
     for (int i = 0; i < y.length; i++) {
       yDiff[i] = yn[i] - (i * inc);
@@ -78,9 +80,12 @@ public class Kneedle {
    * @return
    */
   public static int knee(final double[] x, final double[] y) {
-    double xn[] = new double[x.length], yn[] = new double[y.length];
-    ArrayUtils.rescaling(y, yn);
-    ArrayUtils.rescaling(x, xn);
+    double xs[] = new double[x.length], xn[] = new double[x.length],
+        ys[] = new double[y.length], yn[] = new double[y.length];
+    ArrayUtils.mm(x, xs, 1);
+    ArrayUtils.rescaling(xs, xn);
+    ArrayUtils.mm(y, ys, 1);
+    ArrayUtils.rescaling(ys, yn);
 
     double[] yDiff = new double[y.length];
     for (int i = 0; i < y.length; i++) {
@@ -99,9 +104,13 @@ public class Kneedle {
    * @return
    */
   public static int elbow(final double[] x, final double[] y) {
-    double xn[] = new double[x.length], yn[] = new double[y.length];
-    ArrayUtils.rescaling(y, yn);
-    ArrayUtils.rescaling(x, xn);
+    double xs[] = new double[x.length], xn[] = new double[x.length],
+        ys[] = new double[y.length], yn[] = new double[y.length];
+    ArrayUtils.mm(x, xs, 1);
+    ArrayUtils.rescaling(xs, xn);
+    ArrayUtils.mm(y, ys, 1);
+    ArrayUtils.rescaling(ys, yn);
+    ;
 
     double[] yDiff = new double[y.length];
     for (int i = 0; i < y.length; i++) {
@@ -112,6 +121,7 @@ public class Kneedle {
   }
 
   /**
+   * TODO: fix this
    * @param x
    * @param y
    * @return

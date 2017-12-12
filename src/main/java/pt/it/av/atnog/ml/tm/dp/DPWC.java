@@ -1,9 +1,13 @@
 package pt.it.av.atnog.ml.tm.dp;
 
+import pt.it.av.atnog.ml.clustering.Cluster;
 import pt.it.av.atnog.ml.tm.ngrams.NGram;
+import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.structures.Similarity;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -53,7 +57,7 @@ public class DPWC implements Similarity<DPWC> {
 
     for (Category c1 : categories) {
       for (Category c2 : dpc.categories) {
-        double s = DPW.similarity(c1.dpDimensions, c2.dpDimensions) * ((c1.bias + c2.bias) / 2.0);
+        double s = DPW.similarity(c1.dpDimensions, c2.dpDimensions) * ((c1.affinity + c2.affinity) / 2.0);
         if (s > rv)
           rv = s;
       }
@@ -72,18 +76,116 @@ public class DPWC implements Similarity<DPWC> {
   }
 
   /**
+   * Returns a DPWC built using a DPW and a set of clusters.
+   * Assumes equal affinity for each word category.
+   *
+   * @param dpw
+   * @param clusters
+   * @param <P>
+   * @return
+   */
+  public static <P extends DPPoint<P>> DPWC buildDPWC_no_affinity(final DPW dpw, final List<Cluster<P>> clusters) {
+    List<Cluster<P>> validClusters = new ArrayList<>();
+
+    // Remove empyt and single element clusters
+    for (Iterator<Cluster<P>> it = clusters.iterator(); it.hasNext(); ) {
+      Cluster<P> cluster = it.next();
+      if (cluster.size() > 1) {
+        validClusters.add(cluster);
+      }
+    }
+
+    // Build the DPWC
+    List<DPWC.Category> categories = new ArrayList<>();
+    for (Cluster<P> cluster : validClusters) {
+      List<DPW.DpDimension> dpDimensions = new ArrayList<>();
+      for (P point : cluster) {
+        dpDimensions.add(filter(dpw, point));
+      }
+      categories.add(new DPWC.Category(dpDimensions, 1.0));
+    }
+
+    return new DPWC(dpw.term(), categories);
+  }
+
+  /**
+   * Returns a DPWC built using a DPW and a set of clusters.
+   * Uses the average affinity of each cluster as a weight to the similarity metric.
+   *
+   * @param dpw
+   * @param clusters
+   * @return
+   */
+  public static <P extends DPPoint<P>> DPWC buildDPWC(final DPW dpw, final List<Cluster<P>> clusters) {
+    List<Cluster<P>> validClusters = new ArrayList<>();
+    double a[] = new double[clusters.size()];
+
+    // Remove empyt and single element clusters
+    for (Iterator<Cluster<P>> it = clusters.iterator(); it.hasNext(); ) {
+      Cluster<P> cluster = it.next();
+      if (cluster.size() > 1) {
+        validClusters.add(cluster);
+      }
+    }
+
+    // Pre-compute affinity
+    // Average affinity between data points
+    int i = 0;
+    for (Cluster<P> cluster : validClusters) {
+      for (P point : cluster) {
+        a[i] += point.affinity(dpw);
+      }
+      a[i++] /= (double) cluster.size();
+    }
+
+    // Scale affinity
+    double max = a[ArrayUtils.max(a)];
+    for (i = 0; i < a.length; i++)
+      a[i] /= max;
+
+    // Build the DPWC
+    List<DPWC.Category> categories = new ArrayList<>();
+    i = 0;
+    for (Cluster<P> cluster : validClusters) {
+      List<DPW.DpDimension> dpDimensions = new ArrayList<>();
+      for (P point : cluster) {
+        dpDimensions.add(filter(dpw, point));
+      }
+      categories.add(new DPWC.Category(dpDimensions, a[i++]));
+    }
+
+    return new DPWC(dpw.term(), categories);
+  }
+
+  /**
+   * @param dpw
+   * @param point
+   * @return
+   */
+  public static <P extends DPPoint> DPW.DpDimension filter(DPW dpw, P point) {
+    DPW.DpDimension rv = null;
+    for (DPW.DpDimension dimension : dpw.dimentions())
+      if (dimension.term.equals(point.term())) {
+        rv = dimension;
+        break;
+      }
+    if (rv == null)
+      System.err.println("NULL -> " + point);
+    return rv;
+  }
+
+  /**
    *
    */
   public static class Category {
     public final List<DPW.DpDimension> dpDimensions;
-    public final double bias;
+    public final double affinity;
 
 
-    public Category(final List<DPW.DpDimension> dpDimensions, final double bias) {
+    public Category(final List<DPW.DpDimension> dpDimensions, final double affinity) {
       this.dpDimensions = dpDimensions;
-      this.bias = bias;
+      this.affinity = affinity;
     }
-
 
     /**
      * Returns the number of dimentions in the category.
@@ -96,12 +198,12 @@ public class DPWC implements Similarity<DPWC> {
 
     @Override
     public String toString() {
-      return "{" + bias + "; " + PrintUtils.list(dpDimensions) + "}";
+      return "{" + affinity + "; " + PrintUtils.list(dpDimensions) + "}";
     }
 
     @Override
     public int hashCode() {
-      return dpDimensions.hashCode() ^ Double.valueOf(bias).hashCode();
+      return dpDimensions.hashCode() ^ Double.valueOf(affinity).hashCode();
     }
 
     @Override
@@ -112,7 +214,7 @@ public class DPWC implements Similarity<DPWC> {
           rv = true;
         else if (o instanceof Category) {
           Category c = (Category) o;
-          rv = this.dpDimensions.equals(c.dpDimensions) && this.bias == c.bias;
+          rv = this.dpDimensions.equals(c.dpDimensions) && this.affinity == c.affinity;
         }
       }
       return rv;
