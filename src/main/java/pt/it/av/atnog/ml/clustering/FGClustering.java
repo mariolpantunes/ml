@@ -63,7 +63,7 @@ public class FGClustering {
 
     // Find elbow and use it as EPS
     double eps = dist[Kneedle.elbow(x, dist)];
-    return clustering(dps, eps, eps);
+    return clustering(dps, eps, 1.25*eps);
   }
 
 

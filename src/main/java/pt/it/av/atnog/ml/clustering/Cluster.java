@@ -12,9 +12,17 @@ import java.util.List;
  */
 public class Cluster<D extends Distance> extends ArrayList<D> {
 
+  /**
+   * Creates an empty cluster.
+   */
   public Cluster() {
   }
 
+  /**
+   * Creates a cluster with a single element.
+   *
+   * @param dp data point to be added to the cluster.
+   */
   public Cluster(D dp) {
     add(dp);
   }
@@ -98,7 +106,9 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
   }
 
   /**
-   * @return
+   * Returns the data point with lower distance to all the data points in the cluster.
+   *
+   * @return data point with lower distance to all the data points in the cluster
    */
   public D center() {
     return center(this);
@@ -137,8 +147,10 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
   }
 
   /**
+   * Returns the radius of the cluster.
+   * The radius is the higher distance of all elements to the center.
    *
-   * @return
+   * @return radius of the cluster.
    */
   public double radius() {
     D center = center();
@@ -166,5 +178,21 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
     tmp.addAll(cdp);
     D center = center(tmp);
     return radius(tmp, center);
+  }
+
+  /**
+   * Returns the average distance of a dp point to all the data points in the cluster.
+   *
+   * @param dp data point (input).
+   * @return average distance of a dp point to all the data points in the cluster.
+   */
+  public double avgDistance(D dp) {
+    double rv = 0.0;
+
+    for (int i = 0; i < size(); i++) {
+      rv += dp.distanceTo(get(i));
+    }
+
+    return rv/size();
   }
 }

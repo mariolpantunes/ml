@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+//TODO: until find a better solution -> Build DPWC with single clusters
 /**
  * Distributional Profile of multiple Word Categories.
  *
@@ -90,7 +91,7 @@ public class DPWC implements Similarity<DPWC> {
     // Remove empyt and single element clusters
     for (Iterator<Cluster<P>> it = clusters.iterator(); it.hasNext(); ) {
       Cluster<P> cluster = it.next();
-      if (cluster.size() > 1) {
+      if (cluster.size() > 0) {
         validClusters.add(cluster);
       }
     }
@@ -123,7 +124,7 @@ public class DPWC implements Similarity<DPWC> {
     // Remove empyt and single element clusters
     for (Iterator<Cluster<P>> it = clusters.iterator(); it.hasNext(); ) {
       Cluster<P> cluster = it.next();
-      if (cluster.size() > 1) {
+      if (cluster.size() > 0) {
         validClusters.add(cluster);
       }
     }
