@@ -6,11 +6,15 @@ import pt.it.av.atnog.utils.structures.Distance;
 import java.util.List;
 
 /**
+ * Implements methods to help deal with lists of {@link Cluster}.
  *
+ * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
+ * @version 1.0
  */
 public class ClusterUtils {
   /**
-   *
+   * Private constructor.
+   * This class is a static library.
    */
   private ClusterUtils() {  }
 
@@ -54,6 +58,26 @@ public class ClusterUtils {
   }
 
   /**
+   * Returns true if the list of clusters contains empty clusters, otherwise false.
+   *
+   * @param clusters list of clusters.
+   * @param <D> Any Class that implements {@link Distance} interface.
+   * @return true if the list of clusters contains empty clusters, otherwise false.
+   */
+  public static <D extends Distance> boolean emptyClusters(List<Cluster<D>> clusters) {
+    boolean rv = false;
+
+    for (Cluster c : clusters) {
+      if (c.isEmpty()) {
+        rv = true;
+        break;
+      }
+    }
+
+    return rv;
+  }
+
+  /**
    * Returns the average Silhouette score for the cluster's list.
    *
    * @param clusters the list of clusters.
@@ -63,31 +87,37 @@ public class ClusterUtils {
   public static <D extends Distance> double avgSilhouette(List<Cluster<D>> clusters) {
     double rv = 0.0, count = 0;
 
-    // For all data points
-    for(int c = 0; c < clusters.size(); c++) {
-      Cluster<D> cluster = clusters.get(c);
-      count += cluster.size();
-      for (int d = 0; d < cluster.size(); d++) {
-        D dp = cluster.get(d);
+    if(clusters.isEmpty()) {
+      rv = Double.MIN_VALUE;
+    } else {
+      // For all data points
+      for (int c = 0; c < clusters.size(); c++) {
+        Cluster<D> cluster = clusters.get(c);
+        count += cluster.size();
+        for (int d = 0; d < cluster.size(); d++) {
+          D dp = cluster.get(d);
 
-        // a(i) -> average distance of datum i to all data points in the cluster
-        double ai = cluster.avgDistance(dp);
+          // a(i) -> average distance of datum i to all data points in the cluster
+          double ai = cluster.avgDistance(dp);
 
-        // b(i) -> lowest average distance of datum i to all points in other clusters,
-        // of which i is not a member
-        double bi = Double.MAX_VALUE;
-        for(int i = 0; i < clusters.size(); i++) {
-          if(i != c) {
-            double tbi = clusters.get(i).avgDistance(dp);
-            if(tbi < bi) {
-              bi = tbi;
+          // b(i) -> lowest average distance of datum i to all points in other clusters,
+          // of which i is not a member
+          double bi = Double.MAX_VALUE;
+          for (int i = 0; i < clusters.size(); i++) {
+            if (i != c) {
+              double tbi = clusters.get(i).avgDistance(dp);
+              if (tbi < bi) {
+                bi = tbi;
+              }
             }
           }
+          // s(i) = b(i) - a(i) / max{b(i), a(i)}
+          rv += ((bi - ai) / Double.max(bi, ai));
         }
-        // s(i) = b(i) - a(i) / max{b(i), a(i)}
-        rv += ((bi - ai)/Double.max(bi, ai));
       }
+      rv /= count;
     }
-    return rv/count;
+
+    return rv;
   }
 }
