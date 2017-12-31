@@ -12,12 +12,12 @@ import java.util.List;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 2.0
  */
-public class OptimalClustering {
+public class AutoK {
   /**
    * Private constructor.
    * This code is a static library.
    */
-  private OptimalClustering() { }
+  private AutoK() { }
 
   /**
    *
@@ -99,7 +99,11 @@ public class OptimalClustering {
       allClusters[i] = clusters;
       wsss[i] = wss;
     }
-    return allClusters[Kneedle.ielbow(wsss)];
+
+    //int idx = AutoThres.knee(wsss);
+    //System.err.println("IDX = "+idx);
+    //return allClusters[Kneedle.ielbow(wsss)];
+    return allClusters[AutoThres.knee(wsss)];
   }
 
   /**
