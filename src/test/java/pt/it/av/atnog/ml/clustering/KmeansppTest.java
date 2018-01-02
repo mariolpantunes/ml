@@ -1,6 +1,6 @@
 package pt.it.av.atnog.ml.clustering;
 
-import pt.it.av.atnog.utils.structures.Point1D;
+import org.junit.BeforeClass;
 import pt.it.av.atnog.utils.structures.Point2D;
 
 import java.util.ArrayList;
@@ -16,80 +16,81 @@ import static org.junit.Assert.assertTrue;
  * @version 1.0
  */
 public class KmeansppTest {
-    @org.junit.Test
-    public void test_clustering() {
-        List<Point1D> points = new ArrayList<Point1D>();
-        points.add(new Point1D(10.0));
-        points.add(new Point1D(8.0));
-        points.add(new Point1D(5.0));
-        points.add(new Point1D(-5.0));
-        points.add(new Point1D(-8.0));
-        points.add(new Point1D(-10.0));
+  private static List<Point2D> dps = new ArrayList<>();
 
-        //System.out.println("Points: " + PrintUtils.list(points));
+  @BeforeClass
+  public static void setup() {
+    dps.add(new Point2D(2, 2));
+    dps.add(new Point2D(2, 3));
+    dps.add(new Point2D(3, 2));
+    dps.add(new Point2D(3, 3));
+    dps.add(new Point2D(-2, -2));
+    dps.add(new Point2D(-2, -3));
+    dps.add(new Point2D(-3, -2));
+    dps.add(new Point2D(-3, -3));
+  }
 
-        Kmeanspp alg = new Kmeanspp();
-        List<Cluster<Point1D>> clusters = alg.clustering(points, 2);
 
-        //System.out.println("Clusters: " + PrintUtils.list(clusters));
+  @org.junit.Test
+  public void test_clustering() {
+    //System.out.println("Points: " + PrintUtils.list(dps));
 
-        // The number of points in the clusters must be the same as the initial number of points.
-        int clusterPoints = 0;
-        for (Cluster c : clusters) {
-            clusterPoints += c.size();
-            System.out.println(c);
-        }
-        assertTrue(clusterPoints == points.size());
+    Kmeanspp alg = new Kmeanspp();
+    List<Cluster<Point2D>> clusters = alg.clustering(dps, 2);
 
-        // For this specific exemple one clusters contains positive number and the other negative numbers.
-        Cluster<Point1D> c1 = clusters.get(0), c2 = clusters.get(1);
+    //System.out.println("Clusters: " + PrintUtils.list(clusters));
 
-        Iterator<Point1D> it = c1.iterator();
-        boolean c1SameSign = true;
-        int sign = 0;
-        if (it.hasNext()) {
-            double x = it.next().x();
-            sign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
-        }
+    // The number of points in the clusters must be the same as the initial number of points.
+    int clusterPoints = 0;
+    for (Cluster c : clusters) {
+      clusterPoints += c.size();
+      System.out.println(c);
+    }
+    assertTrue(clusterPoints == dps.size());
 
-        while (it.hasNext()) {
-            double x = it.next().x();
-            int tmpSign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
-            if (tmpSign != sign)
-                c1SameSign = false;
+    // For this specific exemple one clusters contains positive number and the other negative numbers.
+    Cluster<Point2D> c1 = clusters.get(0), c2 = clusters.get(1);
 
-        }
-
-        it = c2.iterator();
-        boolean c2SameSign = true;
-        sign = 0;
-        if (it.hasNext()) {
-            double x = it.next().x();
-            sign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
-        }
-
-        while (it.hasNext()) {
-            double x = it.next().x();
-            int tmpSign = (Math.signum(x) != 0.0) ? (int) Math.signum(x) : 1;
-            if (tmpSign != sign)
-                c2SameSign = false;
-
-        }
-
-        assertTrue(c1SameSign && c2SameSign);
+    Iterator<Point2D> it = c1.iterator();
+    int quadrant = 0;
+    boolean c1SameQ = true;
+    if (it.hasNext()) {
+      quadrant = it.next().quadrant();
     }
 
-    @org.junit.Test(timeout = 3000)
-    public void test_loop() {
-        List<Point2D> points = new ArrayList<>();
-        points.add(new Point2D(-3.0, -6.0));
-        points.add(new Point2D(5.0, -8.0));
-        points.add(new Point2D(-3.0, -10.0));
-        points.add(new Point2D(-1.0, 5.0));
-        points.add(new Point2D(-9.0, -2.0));
-
-        Kmeanspp alg = new Kmeanspp();
-        List<Cluster<Point2D>> clusters = alg.clustering(points, 2);
-        assertTrue(clusters != null);
+    while (it.hasNext()) {
+      int tmpQ = it.next().quadrant();
+      if (tmpQ != quadrant)
+        c1SameQ = false;
     }
+
+    it = c2.iterator();
+    boolean c2SameQ = true;
+    quadrant = 0;
+    if (it.hasNext()) {
+      quadrant = it.next().quadrant();
+    }
+
+    while (it.hasNext()) {
+      int tmpQ = it.next().quadrant();
+      if (tmpQ != quadrant)
+        c2SameQ = false;
+    }
+
+    assertTrue(c1SameQ && c2SameQ);
+  }
+
+  @org.junit.Test(timeout = 3000)
+  public void test_loop() {
+    List<Point2D> points = new ArrayList<>();
+    points.add(new Point2D(-3.0, -6.0));
+    points.add(new Point2D(5.0, -8.0));
+    points.add(new Point2D(-3.0, -10.0));
+    points.add(new Point2D(-1.0, 5.0));
+    points.add(new Point2D(-9.0, -2.0));
+
+    Kmeanspp alg = new Kmeanspp();
+    List<Cluster<Point2D>> clusters = alg.clustering(points, 2);
+    assertTrue(clusters != null);
+  }
 }

@@ -24,13 +24,11 @@ public class DBSCAN {
     // Sort distances
     Arrays.sort(dist);
 
-    double x[] = new double[dps.size()];
-    for (int i = 0; i < dps.size(); i++) {
-      x[i] = i;
-    }
+    //System.err.println(PrintUtils.array(dist));
+    //System.err.println("EPS = "+dist[AutoThres.elbow(x, dist)]);
 
     // Find elbow and use it as EPS
-    return clustering(dps, dist[Kneedle.elbow(x, dist)], minPts);
+    return clustering(dps, dist[AutoThres.elbow(dist)], minPts);
   }
 
   public static <D extends Distance> double[] kCloserPoints(List<D> dps, final int idx, final int k) {

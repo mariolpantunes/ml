@@ -18,15 +18,15 @@ public class TClustering {
     List<Point4D> dps = Iris.load();
 
     //System.out.println(PrintUtils.list(points));
-    List<Cluster<Point4D>> clusters = AutoK.elbow(alg, dps, 2, 20, 25);
+    List<Cluster<Point4D>> clusters = AutoK.elbow(alg, dps, 2, 30, 50);
     System.out.println(clusters.size());
     System.out.println(clusters);
 
-    clusters = AutoK.silhouette(alg, dps, 2, 10, 25);
+    clusters = AutoK.silhouette(alg, dps, 2, 30, 50);
     System.out.println(clusters.size());
     System.out.println(clusters);
 
-    clusters = AutoK.clustering(alg, dps, 2, 10, 4, 25);
+    clusters = AutoK.clustering(alg, dps, 2, 30, 4, 50);
     System.out.println(clusters.size());
     System.out.println(clusters);
   }

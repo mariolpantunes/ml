@@ -1,7 +1,6 @@
 package pt.it.av.atnog.ml.clustering;
 
 import pt.it.av.atnog.utils.ArrayUtils;
-import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
 import java.util.List;
@@ -103,7 +102,7 @@ public class AutoK {
     //int idx = AutoThres.knee(wsss);
     //System.err.println("IDX = "+idx);
     //return allClusters[Kneedle.ielbow(wsss)];
-    return allClusters[AutoThres.knee(wsss)];
+    return allClusters[AutoThres.elbow(wsss)];
   }
 
   /**

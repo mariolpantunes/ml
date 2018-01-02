@@ -1,7 +1,6 @@
 package pt.it.av.atnog.ml.clustering;
 
 import pt.it.av.atnog.utils.ArrayUtils;
-import pt.it.av.atnog.utils.PrintUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,8 +86,8 @@ public class Kneedle {
       yDiff[i] = yn[i] - (i * inc);
     }
 
-    System.err.println(PrintUtils.array(yDiff));
-    System.err.println(ArrayUtils.min(yDiff));
+    //System.err.println(PrintUtils.array(yDiff));
+    //System.err.println(ArrayUtils.min(yDiff));
 
     return ArrayUtils.min(yDiff);
   }
