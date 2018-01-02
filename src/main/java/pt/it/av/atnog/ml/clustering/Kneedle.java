@@ -132,7 +132,6 @@ public class Kneedle {
     ArrayUtils.rescaling(xs, xn);
     ArrayUtils.mm(y, ys, 1);
     ArrayUtils.rescaling(ys, yn);
-    ;
 
     double[] yDiff = new double[y.length];
     for (int i = 0; i < y.length; i++) {
