@@ -1,6 +1,7 @@
 package pt.it.av.atnog.ml.clustering;
 
 import pt.it.av.atnog.utils.ArrayUtils;
+import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
 import java.util.List;
@@ -17,6 +18,11 @@ public class AutoK {
    * This code is a static library.
    */
   private AutoK() { }
+
+  public static <D extends Distance<D>> List<Cluster<D>> silhouette(final Kmeans alg,
+    final List<D> dps, final int min, final int max){
+    return silhouette(alg, dps, min, max, 10);
+  }
 
   /**
    *
@@ -79,6 +85,9 @@ public class AutoK {
    */
   public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg,
    final List<D> dps, final int min, final int max, final int reps) {
+
+    //System.err.println("Size of data: "+dps.size());
+
     final int kmax = (max < dps.size())?max:dps.size()-1;
     double wsss[] = new double[(kmax - min) + 1];
     List<Cluster<D>> allClusters[] = new List[(kmax - min) + 1];
@@ -99,10 +108,15 @@ public class AutoK {
       wsss[i] = wss;
     }
 
-    //int idx = AutoThres.knee(wsss);
+    //System.err.println(PrintUtils.array(wsss));
+    //TODO: have to improve this.
+    int idx = 0;
+    if (wsss.length > 1)
+      idx = AutoThres.knee(wsss);
     //System.err.println("IDX = "+idx);
     //return allClusters[Kneedle.ielbow(wsss)];
-    return allClusters[AutoThres.elbow(wsss)];
+
+    return allClusters[idx];
   }
 
   /**
