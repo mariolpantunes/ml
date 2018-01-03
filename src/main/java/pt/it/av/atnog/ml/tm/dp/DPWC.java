@@ -77,7 +77,21 @@ public class DPWC implements Similarity<DPWC> {
   }
 
   /**
-   * Returns a DPWC built using a DPW and a set of clusters.
+   * Returns a {@link DPWC} with a single category from a {@link DPW}.
+   * In other words, converts a {@link DPW} into a {@link DPWC}.
+   *
+   * @param dpw
+   * @param <P>
+   * @return Returns a {@link DPWC} with a single category from a {@link DPW}.
+   */
+  public static <P extends DPPoint<P>> DPWC buildDPWC(final DPW dpw) {
+    List<DPWC.Category> categories = new ArrayList<>();
+    categories.add(new DPWC.Category(dpw.dimentions(), 1.0));
+    return new DPWC(dpw.term(), categories);
+  }
+
+  /**
+   * Returns a {@link DPWC} built using a {@link DPW} and a set of clusters.
    * Assumes equal affinity for each word category.
    *
    * @param dpw
@@ -110,7 +124,7 @@ public class DPWC implements Similarity<DPWC> {
   }
 
   /**
-   * Returns a DPWC built using a DPW and a set of clusters.
+   * Returns a {@link DPWC} built using a {@link DPW} and a set of clusters.
    * Uses the average affinity of each cluster as a weight to the similarity metric.
    *
    * @param dpw
@@ -189,9 +203,9 @@ public class DPWC implements Similarity<DPWC> {
     }
 
     /**
-     * Returns the number of dimentions in the category.
+     * Returns the number of dimentions in the {@link Category}.
      *
-     * @return the number of dimentions in the category.
+     * @return the number of dimentions in the {@link Category}.
      */
     public int size() {
       return dpDimensions.size();
