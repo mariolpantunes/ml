@@ -56,13 +56,8 @@ public class FGClustering {
     // Sort distances
     Arrays.sort(dist);
 
-    double x[] = new double[dps.size()];
-    for (int i = 0; i < dps.size(); i++) {
-      x[i] = i;
-    }
-
     // Find elbow and use it as EPS
-    double eps = dist[Kneedle.elbow(x, dist)];
+    double eps = dist[AutoThres.elbow(dist)];
     return clustering(dps, eps, 1.25*eps);
   }
 
