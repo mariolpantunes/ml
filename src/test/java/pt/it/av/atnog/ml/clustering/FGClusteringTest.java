@@ -29,7 +29,7 @@ public class FGClusteringTest {
     //System.out.println("Points: " + PrintUtils.list(dps));
 
     FGClustering alg = new FGClustering();
-    List<Cluster<Point2D>> clusters = alg.clustering(dps, 3, 3);
+    List<Cluster<Point2D>> clusters = alg.clustering(dps, 1.0);
 
     //System.out.println("Clusters: " + PrintUtils.list(clusters));
 
@@ -37,7 +37,7 @@ public class FGClusteringTest {
     int clusterPoints = 0;
     for (Cluster c : clusters) {
       clusterPoints += c.size();
-      //System.out.println(c);
+      System.out.println(c);
     }
     assertTrue(clusterPoints == dps.size());
 

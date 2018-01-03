@@ -43,17 +43,17 @@ public class AutoK {
     int i = 0;
     for (int k = min; k <= kmax; k++, i++) {
       List<Cluster<D>> clusters = alg.clustering(dps, k);
-      double silhouette = ClusterUtils.avgSilhouette(clusters);
+      double wss = ClusterUtils.avgDistortion(clusters);
       for (int j = 1; j < reps; j++) {
         List<Cluster<D>> currentClusters = alg.clustering(dps, k);
-        double currentSilhouette = ClusterUtils.avgSilhouette(currentClusters);
-        if (currentSilhouette > silhouette && !ClusterUtils.emptyClusters(currentClusters)) {
+        double currentWSS = ClusterUtils.avgDistortion(currentClusters);
+        if (currentWSS > wss && !ClusterUtils.emptyClusters(currentClusters)) {
           clusters = currentClusters;
-          silhouette = currentSilhouette;
+          wss = currentWSS;
         }
       }
       allClusters[i] = clusters;
-      sil[i] = silhouette;
+      sil[i] = ClusterUtils.avgSilhouette(clusters);
     }
     return allClusters[ArrayUtils.max(sil)];
   }
@@ -111,8 +111,10 @@ public class AutoK {
     //System.err.println(PrintUtils.array(wsss));
     //TODO: have to improve this.
     int idx = 0;
-    if (wsss.length > 1)
-      idx = AutoThres.knee(wsss);
+    if (wsss.length > 1) {
+      //idx = AutoThres.knee(wsss);
+      idx = Kneedle.ielbow(wsss);
+    }
     //System.err.println("IDX = "+idx);
     //return allClusters[Kneedle.ielbow(wsss)];
 

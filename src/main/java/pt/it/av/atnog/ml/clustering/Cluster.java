@@ -88,21 +88,34 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
   }
 
   /**
-   *
    * @param dps
    * @param center
    * @param <D>
    * @return
    */
-  private static <D extends Distance> double radius(List<D> dps, D center) {
+  private static <D extends Distance> double maxRadius(List<D> dps, D center) {
     double rv = center.distanceTo(dps.get(0));
-    for(int i = 1; i < dps.size(); i++) {
+    for (int i = 1; i < dps.size(); i++) {
       double t = center.distanceTo(dps.get(i));
-      if( t > rv) {
+      if (t > rv) {
         rv = t;
       }
     }
     return rv;
+  }
+
+  /**
+   * @param dps
+   * @param center
+   * @param <D>
+   * @return
+   */
+  private static <D extends Distance> double avgRadius(List<D> dps, D center) {
+    double rv = center.distanceTo(dps.get(0));
+    for (int i = 1; i < dps.size(); i++) {
+      rv += center.distanceTo(dps.get(i));
+    }
+    return rv / dps.size();
   }
 
   /**
@@ -147,37 +160,69 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
   }
 
   /**
-   * Returns the radius of the cluster.
-   * The radius is the higher distance of all elements to the center.
+   * Returns the average radius of the cluster.
+   * The average radius is the average distance from all points to the center.
    *
    * @return radius of the cluster.
    */
-  public double radius() {
+  public double avgRadius() {
     D center = center();
-    return radius(this, center);
+    return avgRadius(this, center);
   }
 
   /**
-   *
    * @param dp
    * @return
    */
-  public double radius(D dp) {
+  public double avgRadius(D dp) {
     List<D> tmp = new ArrayList<>(this);
     tmp.add(dp);
     D center = center(tmp);
-    return radius(tmp, center);
+    return avgRadius(tmp, center);
   }
 
   /**
    * @param cdp
    * @return
    */
-  public double radius(Cluster<D> cdp) {
+  public double avgRadius(Cluster<D> cdp) {
     List<D> tmp = new ArrayList<>(this);
     tmp.addAll(cdp);
     D center = center(tmp);
-    return radius(tmp, center);
+    return avgRadius(tmp, center);
+  }
+
+  /**
+   * Returns the radius of the cluster.
+   * The radius is the higher distance of all elements to the center.
+   *
+   * @return radius of the cluster.
+   */
+  public double maxRadius() {
+    D center = center();
+    return maxRadius(this, center);
+  }
+
+  /**
+   * @param dp
+   * @return
+   */
+  public double maxRadius(D dp) {
+    List<D> tmp = new ArrayList<>(this);
+    tmp.add(dp);
+    D center = center(tmp);
+    return maxRadius(tmp, center);
+  }
+
+  /**
+   * @param cdp
+   * @return
+   */
+  public double maxRadius(Cluster<D> cdp) {
+    List<D> tmp = new ArrayList<>(this);
+    tmp.addAll(cdp);
+    D center = center(tmp);
+    return maxRadius(tmp, center);
   }
 
   /**
@@ -192,7 +237,6 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
     for (int i = 0; i < size(); i++) {
       rv += dp.distanceTo(get(i));
     }
-
-    return rv/size();
+    return rv / size();
   }
 }

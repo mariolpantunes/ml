@@ -69,4 +69,24 @@ public class ClusterTest {
     cluster.add(p2);
     assertTrue(cluster.distortion() == 2.0);
   }
+
+  @org.junit.Test
+  public void test_maxRadius() {
+    Cluster<Point2D> cluster = new Cluster<>(p0);
+    cluster.add(p1);
+    cluster.add(p2);
+    cluster.add(p3);
+    cluster.add(p4);
+    assertTrue(cluster.maxRadius() == 1.0);
+  }
+
+  @org.junit.Test
+  public void test_avgRadius() {
+    Cluster<Point2D> cluster = new Cluster<>(p0);
+    cluster.add(p1);
+    cluster.add(p2);
+    cluster.add(p3);
+    cluster.add(p4);
+    assertTrue(cluster.avgRadius() == 4.0/5.0);
+  }
 }
