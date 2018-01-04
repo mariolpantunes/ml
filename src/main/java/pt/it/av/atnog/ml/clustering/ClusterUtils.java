@@ -85,11 +85,9 @@ public class ClusterUtils {
    * @return
    */
   public static <D extends Distance> double avgSilhouette(List<Cluster<D>> clusters) {
-    double rv = 0.0, count = 0;
+    double rv = -1.0, count = 0;
 
-    if(clusters.isEmpty()) {
-      rv = Double.MIN_VALUE;
-    } else {
+    if (clusters.size() > 1) {
       // For all data points
       for (int c = 0; c < clusters.size(); c++) {
         Cluster<D> cluster = clusters.get(c);

@@ -83,8 +83,8 @@ public class DPW implements Similarity<DPW> {
   }
 
   /**
-   * @param c1
-   * @param c2
+   * @param coor1
+   * @param coor2
    * @return
    */
   public static double similarity(List<DpDimension> coor1, List<DpDimension> coor2) {

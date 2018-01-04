@@ -85,9 +85,6 @@ public class AutoK {
    */
   public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg,
    final List<D> dps, final int min, final int max, final int reps) {
-
-    //System.err.println("Size of data: "+dps.size());
-
     final int kmax = (max < dps.size())?max:dps.size()-1;
     double wsss[] = new double[(kmax - min) + 1];
     List<Cluster<D>> allClusters[] = new List[(kmax - min) + 1];
