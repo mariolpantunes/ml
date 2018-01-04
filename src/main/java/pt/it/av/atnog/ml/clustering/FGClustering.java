@@ -1,14 +1,11 @@
 package pt.it.av.atnog.ml.clustering;
 
 import pt.it.av.atnog.utils.ArrayUtils;
-import pt.it.av.atnog.utils.bla.Vector;
 import pt.it.av.atnog.utils.structures.Distance;
-import pt.it.av.atnog.utils.structures.KDTree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -87,7 +84,6 @@ public class FGClustering {
   /**
    *
    * @param dps
-   * @param eps
    * @param radius
    * @param <D>
    * @return
