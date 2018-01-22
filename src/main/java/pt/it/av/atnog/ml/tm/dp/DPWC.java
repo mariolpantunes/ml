@@ -102,9 +102,8 @@ public class DPWC implements Similarity<DPWC> {
   public static <P extends DPPoint<P>> DPWC buildDPWC_no_affinity(final DPW dpw, final List<Cluster<P>> clusters) {
     List<Cluster<P>> validClusters = new ArrayList<>();
 
-    // Remove empyt and single element clusters
-    for (Iterator<Cluster<P>> it = clusters.iterator(); it.hasNext(); ) {
-      Cluster<P> cluster = it.next();
+    // Remove empyt clusters
+    for (Cluster<P> cluster : clusters){
       if (cluster.size() > 0) {
         validClusters.add(cluster);
       }
@@ -133,15 +132,15 @@ public class DPWC implements Similarity<DPWC> {
    */
   public static <P extends DPPoint<P>> DPWC buildDPWC(final DPW dpw, final List<Cluster<P>> clusters) {
     List<Cluster<P>> validClusters = new ArrayList<>();
-    double a[] = new double[clusters.size()];
 
-    // Remove empyt and single element clusters
-    for (Iterator<Cluster<P>> it = clusters.iterator(); it.hasNext(); ) {
-      Cluster<P> cluster = it.next();
+    // Remove empyt clusters
+    for (Cluster<P> cluster : clusters){
       if (cluster.size() > 0) {
         validClusters.add(cluster);
       }
     }
+
+    double a[] = new double[validClusters.size()];
 
     // Pre-compute affinity
     // Average affinity between data points
@@ -168,7 +167,6 @@ public class DPWC implements Similarity<DPWC> {
       }
       categories.add(new DPWC.Category(dpDimensions, a[i++]));
     }
-
     return new DPWC(dpw.term(), categories);
   }
 

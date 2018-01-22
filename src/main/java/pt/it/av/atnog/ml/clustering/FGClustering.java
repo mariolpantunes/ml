@@ -85,7 +85,6 @@ public class FGClustering {
   /**
    *
    * @param dps
-   * @param eps
    * @param radius
    * @param <D>
    * @return
