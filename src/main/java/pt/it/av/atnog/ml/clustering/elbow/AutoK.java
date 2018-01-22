@@ -1,7 +1,9 @@
-package pt.it.av.atnog.ml.clustering;
+package pt.it.av.atnog.ml.clustering.elbow;
 
+import pt.it.av.atnog.ml.clustering.Cluster;
+import pt.it.av.atnog.ml.clustering.ClusterUtils;
+import pt.it.av.atnog.ml.clustering.Kmeans;
 import pt.it.av.atnog.utils.ArrayUtils;
-import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.List;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 2.0
  */
-public class AutoK {
+public class AutoK implements Elbow{
   /**
    * Private constructor.
    * This code is a static library.
@@ -20,7 +22,7 @@ public class AutoK {
   private AutoK() { }
 
   public static <D extends Distance<D>> List<Cluster<D>> silhouette(final Kmeans alg,
-    final List<D> dps, final int min, final int max){
+                                                                    final List<D> dps, final int min, final int max){
     return silhouette(alg, dps, min, max, 10);
   }
 

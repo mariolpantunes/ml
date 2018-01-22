@@ -1,6 +1,9 @@
 package pt.it.av.atnog.ml.clustering;
 
-import pt.it.av.atnog.ml.Iris;
+import pt.it.av.atnog.ml.dataset.Dataset;
+import pt.it.av.atnog.ml.dataset.Iris;
+import pt.it.av.atnog.ml.clustering.elbow.AutoK;
+import pt.it.av.atnog.utils.bla.Vector;
 import pt.it.av.atnog.utils.structures.Point4D;
 
 import java.util.List;
@@ -15,7 +18,8 @@ import java.util.List;
 public class TClustering {
   public static void main(String[] args) {
     Kmeans alg = new Kmeanspp();
-    List<Point4D> dps = Iris.load();
+    Dataset dataset = new Iris();
+    List<Point4D> dps = dataset.load();
 
     //System.out.println(PrintUtils.list(points));
     List<Cluster<Point4D>> clusters = AutoK.elbow(alg, dps, 2, 30);
