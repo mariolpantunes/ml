@@ -3,7 +3,7 @@ package pt.it.av.atnog.ml.clustering;
 import pt.it.av.atnog.utils.ArrayUtils;
 
 /**
- * Alternative method to detect knee and elbow points in performance curves.
+ * Alternative method to detect knee and curvature points in performance curves.
  *
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 2.0

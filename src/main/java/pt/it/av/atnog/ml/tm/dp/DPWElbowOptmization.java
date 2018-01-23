@@ -33,7 +33,7 @@ public class DPWElbowOptmization implements DPWOptimization {
       int i = 0;
       for (DPW.DpDimension p : dpDimensions)
         v.set(i++, p.value);
-      double t = 0; //v.elbow();
+      double t = 0; //v.curvature();
       dpDimensions.removeIf(p -> p.value < t);
     }
     return dpDimensions;

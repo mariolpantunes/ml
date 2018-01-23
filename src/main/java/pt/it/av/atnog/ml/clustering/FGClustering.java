@@ -1,6 +1,6 @@
 package pt.it.av.atnog.ml.clustering;
 
-import pt.it.av.atnog.ml.clustering.elbow.Kneedle;
+import pt.it.av.atnog.ml.clustering.curvature.Kneedle;
 import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
@@ -34,7 +34,7 @@ public class FGClustering {
     // Sort distances
     Arrays.sort(dist);
 
-    // Find elbow and use it as EPS
+    // Find curvature and use it as EPS
     double eps = dist[Kneedle.elbow(dist)];
     return clustering(dps, eps);
   }

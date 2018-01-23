@@ -1,4 +1,4 @@
-package pt.it.av.atnog.ml.clustering.elbow;
+package pt.it.av.atnog.ml.clustering.curvature;
 
 import pt.it.av.atnog.utils.ArrayUtils;
 
@@ -18,7 +18,7 @@ import java.util.List;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
-public class Kneedle implements Elbow{
+public class Kneedle implements Curvature{
   /**
    *
    */
@@ -33,7 +33,7 @@ public class Kneedle implements Elbow{
    * @param y
    * @return
    */
-  public static int knee(final double[] y) {
+  public int knee(final double[] y) {
     double inc = 1.0 / y.length, ys[] = new double[y.length],
         yn[] = new double[y.length], yDiff[] = new double[y.length];
     ArrayUtils.mm(y, ys, 1);
@@ -47,10 +47,10 @@ public class Kneedle implements Elbow{
   }
 
   /**
-   * Find a single elbow (the best one) in a batch manner.
+   * Find a single curvature (the best one) in a batch manner.
    * Since it work on a batch manner it becomes simpler than the conventional algorithm.
    * This version assumes the X variable is incremental [1, 2, 3, ..., length(Y)].
-   * It also assumes that the elbow is inverted (insteas of using y=x, it uses y=-x).
+   * It also assumes that the curvature is inverted (insteas of using y=x, it uses y=-x).
    *
    * @param y
    * @return
@@ -69,14 +69,14 @@ public class Kneedle implements Elbow{
   }
 
   /**
-   * Find a single elbow (the best one) in a batch manner.
+   * Find a single curvature (the best one) in a batch manner.
    * Since it work on a batch manner it becomes simpler than the conventional algorithm.
    * This version assumes the X variable is incremental [1, 2, 3, ..., length(Y)].
    *
    * @param y
    * @return
    */
-  public static int elbow(final double[] y) {
+  public int elbow(final double[] y) {
     double inc = 1.0 / y.length, ys[] = new double[y.length],
         yn[] = new double[y.length], yDiff[] = new double[y.length];
     ArrayUtils.mm(y, ys, 1);
@@ -100,7 +100,7 @@ public class Kneedle implements Elbow{
    * @param y
    * @return
    */
-  public static int knee(final double[] x, final double[] y) {
+  public int knee(final double[] x, final double[] y) {
     double xs[] = new double[x.length], xn[] = new double[x.length],
         ys[] = new double[y.length], yn[] = new double[y.length];
     ArrayUtils.mm(x, xs, 1);
@@ -117,14 +117,14 @@ public class Kneedle implements Elbow{
   }
 
   /**
-   * Find a single elbow (the best one) in a batch manner.
+   * Find a single curvature (the best one) in a batch manner.
    * Since it work on a batch manner it becomes simpler than the conventional algorithm.
    *
    * @param x
    * @param y
    * @return
    */
-  public static int elbow(final double[] x, final double[] y) {
+  public int elbow(final double[] x, final double[] y) {
     double xs[] = new double[x.length], xn[] = new double[x.length],
         ys[] = new double[y.length], yn[] = new double[y.length];
     ArrayUtils.mm(x, xs, 1);

@@ -25,9 +25,9 @@ public class DBSCAN {
     Arrays.sort(dist);
 
     //System.err.println(PrintUtils.array(dist));
-    //System.err.println("EPS = "+dist[AutoThres.elbow(x, dist)]);
+    //System.err.println("EPS = "+dist[AutoThres.curvature(x, dist)]);
 
-    // Find elbow and use it as EPS
+    // Find curvature and use it as EPS
     return clustering(dps, dist[AutoThres.elbow(dist)], minPts);
   }
 

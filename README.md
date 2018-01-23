@@ -1,15 +1,15 @@
 # Machine Learning (ML) library
 
-A standard machine learning library written in Java.
-It contains several pieces of code/methods/functions that are related with ML and useful
+A standard ml library written in Java.
+It contains several pieces of code/methods/functions that are related to ML and useful
 for my research. More functions and algorithms are being developed (mostly when I need them).
-Nevertheless if someone uses the code and requires a specific method or optimization, just ask.
+Nevertheless, if someone uses the code and requires a specific method or optimization, just ask.
 
 ## Prerequisites
 
 Most of my code requires a library named [utils](https://github.com/mariolpantunes/utils).
 This library is no exception.
-Currently it requires Java 8.
+Currently, it requires Java 8.
 
 ## Installation
 

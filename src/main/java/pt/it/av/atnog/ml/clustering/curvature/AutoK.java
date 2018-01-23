@@ -1,4 +1,4 @@
-package pt.it.av.atnog.ml.clustering.elbow;
+package pt.it.av.atnog.ml.clustering.curvature;
 
 import pt.it.av.atnog.ml.clustering.Cluster;
 import pt.it.av.atnog.ml.clustering.ClusterUtils;
