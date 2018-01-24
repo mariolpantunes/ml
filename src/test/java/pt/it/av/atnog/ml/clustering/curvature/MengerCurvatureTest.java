@@ -12,4 +12,12 @@ public class MengerCurvatureTest {
     assertTrue(elbow == 2);
     //System.out.println(CurvatureTest.elbow_x[elbow]);
   }
+
+  @Test
+  public void test_knee() {
+    Curvature alg = new MengerCurvature();
+    int knee = alg.knee(CurvatureTest.knee_x, CurvatureTest.knee_y);
+    assertTrue(knee == 10);
+    //System.out.println(CurvatureTest.knee_x[knee]);
+  }
 }

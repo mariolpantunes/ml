@@ -1,6 +1,8 @@
 package pt.it.av.atnog.ml.clustering;
 
-import pt.it.av.atnog.ml.clustering.curvature.AutoThres;
+import pt.it.av.atnog.ml.clustering.curvature.Curvature;
+import pt.it.av.atnog.ml.clustering.curvature.DFDE;
+import pt.it.av.atnog.ml.clustering.curvature.Lmethod;
 import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
@@ -15,12 +17,19 @@ import java.util.*;
 public class DBSCAN {
 
   public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int minPts) {
+    return clustering(dps, minPts, new Lmethod());
+  }
+
+  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int minPts,
+                                                          final Curvature curvature) {
     // array with average distance to closest minPts
     double dist[] = new double[dps.size()];
+    double x[] = new double[dps.size()];
 
     // Find minPits closer points
     for (int i = 0; i < dps.size(); i++) {
       dist[i] = ArrayUtils.mean(kCloserPoints(dps, i, minPts));
+      x[i] = i;
     }
     // Sort distances
     Arrays.sort(dist);
@@ -29,7 +38,7 @@ public class DBSCAN {
     //System.err.println("EPS = "+dist[AutoThres.curvature(x, dist)]);
 
     // Find curvature and use it as EPS
-    return clustering(dps, dist[AutoThres.elbow(dist)], minPts);
+    return clustering(dps, dist[curvature.elbow(x, dist)], minPts);
   }
 
   public static <D extends Distance> double[] kCloserPoints(List<D> dps, final int idx, final int k) {
