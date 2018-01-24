@@ -1,5 +1,6 @@
 package pt.it.av.atnog.ml.clustering;
 
+import pt.it.av.atnog.ml.clustering.curvature.Curvature;
 import pt.it.av.atnog.ml.clustering.curvature.Kneedle;
 import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.structures.Distance;
@@ -24,18 +25,24 @@ public class FGClustering {
    * @return
    */
   public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int minPts) {
+    // Elbow
+    Curvature alg = new Kneedle();
+
     // array with average distance to closest minPts
-    double dist[] = new double[dps.size()];
+    double dist[] = new double[dps.size()],
+        x[] = new double[dps.size()];
 
     // Find minPits closer points
     for (int i = 0; i < dps.size(); i++) {
       dist[i] = ArrayUtils.mean(DBSCAN.kCloserPoints(dps, i, minPts));
+      x[i] = i;
     }
+
     // Sort distances
     Arrays.sort(dist);
 
     // Find curvature and use it as EPS
-    double eps = dist[Kneedle.elbow(dist)];
+    double eps = dist[alg.elbow(x, dist)];
     return clustering(dps, eps);
   }
 

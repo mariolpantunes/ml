@@ -6,17 +6,14 @@ public class Lmethod implements Curvature {
 
   @Override
   public int knee(final double x[], final double[] y) {
-
-
-
-
-
-    return 0;
+    //return lMethod(x, y, x.length);
+    return refinement(x, y);
   }
 
   @Override
   public int elbow(final double x[], final double[] y) {
-    return 0;
+    //return lMethod(x, y, x.length);
+    return refinement(x, y);
   }
 
   /**
@@ -46,12 +43,12 @@ public class Lmethod implements Curvature {
   private int lMethod(final double x[], final double[] y, final int length) {
     int idx = 1;
     double lrl[] = ArrayUtils.lr(x, y,0,0,idx+1),
-    lrr[] = ArrayUtils.lr(x, y, idx+1, idx+1, length);
+    lrr[] = ArrayUtils.lr(x, y, idx+1, idx+1, length - (idx+1));
     double rmse = rmse(x, y, lrl, lrr, idx, length);
 
     for(int i = 2; i < length-2; i++) {
       lrl = ArrayUtils.lr(x, y,0,0,i+1);
-      lrr = ArrayUtils.lr(x, y,i+1, i+1, length);
+      lrr = ArrayUtils.lr(x, y,i+1, i+1, length - (i+1));
 
       double crmse = rmse(x, y, lrl, lrr, i, length);
       if(crmse < rmse) {
@@ -84,6 +81,6 @@ public class Lmethod implements Curvature {
       mser += Math.pow(y[i]-(lrr[0]*x[i]+lrr[1]) ,2.0);
     }
 
-    return ((idx/length)*Math.sqrt(msel)) + (((length-idx)/length)*Math.sqrt(mser));
+    return (idx * Math.sqrt(msel) + (length-idx) * Math.sqrt(mser))/length;
   }
 }

@@ -1,4 +1,4 @@
-package pt.it.av.atnog.ml.clustering;
+package pt.it.av.atnog.ml.clustering.curvature;
 
 import pt.it.av.atnog.utils.ArrayUtils;
 

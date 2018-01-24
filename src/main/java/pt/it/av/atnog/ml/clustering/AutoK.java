@@ -1,8 +1,10 @@
-package pt.it.av.atnog.ml.clustering.curvature;
+package pt.it.av.atnog.ml.clustering;
 
 import pt.it.av.atnog.ml.clustering.Cluster;
 import pt.it.av.atnog.ml.clustering.ClusterUtils;
 import pt.it.av.atnog.ml.clustering.Kmeans;
+import pt.it.av.atnog.ml.clustering.curvature.Curvature;
+import pt.it.av.atnog.ml.clustering.curvature.Kneedle;
 import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
@@ -14,7 +16,7 @@ import java.util.List;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 2.0
  */
-public class AutoK implements Elbow{
+public class AutoK {
   /**
    * Private constructor.
    * This code is a static library.

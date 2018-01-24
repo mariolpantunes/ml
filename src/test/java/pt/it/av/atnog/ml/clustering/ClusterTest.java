@@ -1,5 +1,7 @@
 package pt.it.av.atnog.ml.clustering;
 
+import org.junit.Test;
+
 import pt.it.av.atnog.utils.structures.Point1D;
 import pt.it.av.atnog.utils.structures.Point2D;
 
@@ -24,19 +26,19 @@ public class ClusterTest {
     p4 = new Point2D(0,-1);
   }
 
-  @org.junit.Test
+  @Test
   public void test_center_zero() {
     Cluster<Point1D> cluster = new Cluster<Point1D>();
     assertTrue(cluster.center() == null);
   }
 
-  @org.junit.Test
+  @Test
   public void test_center_one() {
     Cluster<Point2D> cluster = new Cluster<Point2D>(p0);
     assertTrue(cluster.center().equals(p0));
   }
 
-  @org.junit.Test
+  @Test
   public void test_center_multiple() {
     Cluster<Point2D> cluster = new Cluster<>(p0);
     assertTrue(cluster.center() == p0);
@@ -55,7 +57,7 @@ public class ClusterTest {
     assertTrue(cluster.center() == p0);
   }
 
-  @org.junit.Test
+  @Test
   public void test_distortion() {
     Cluster<Point2D> cluster = new Cluster<>(p0);
     cluster.add(p1);
@@ -70,7 +72,7 @@ public class ClusterTest {
     assertTrue(cluster.distortion() == 2.0);
   }
 
-  @org.junit.Test
+  @Test
   public void test_maxRadius() {
     Cluster<Point2D> cluster = new Cluster<>(p0);
     cluster.add(p1);
@@ -80,7 +82,7 @@ public class ClusterTest {
     assertTrue(cluster.maxRadius() == 1.0);
   }
 
-  @org.junit.Test
+  @Test
   public void test_avgRadius() {
     Cluster<Point2D> cluster = new Cluster<>(p0);
     cluster.add(p1);

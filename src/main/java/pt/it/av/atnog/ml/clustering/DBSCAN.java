@@ -1,5 +1,6 @@
 package pt.it.av.atnog.ml.clustering;
 
+import pt.it.av.atnog.ml.clustering.curvature.AutoThres;
 import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 

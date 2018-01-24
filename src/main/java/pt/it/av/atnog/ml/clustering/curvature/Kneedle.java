@@ -20,12 +20,6 @@ import java.util.List;
  */
 public class Kneedle implements Curvature{
   /**
-   *
-   */
-  private Kneedle() {
-  }
-
-  /**
    * Find a single knee (the best one) in a batch manner.
    * Since it work on a batch manner it becomes simpler than the conventional algorithm.
    * This version assumes the X variable is incremental [1, 2, 3, ..., length(Y)].
@@ -125,6 +119,26 @@ public class Kneedle implements Curvature{
    * @return
    */
   public int elbow(final double[] x, final double[] y) {
+    // Check the slope of the curvature
+    double m = (y[y.length-1] - y[0]) / (x[x.length-1] - x[0]);
+    int rv = 0;
+
+    if(m >= 0) {
+      rv = elbow_positive(x, y);
+    } else {
+      rv = elbow_negative(x, y);
+    }
+
+    return rv;
+  }
+
+  /**
+   *
+   * @param x
+   * @param y
+   * @return
+   */
+  private int elbow_positive(final double[] x, final double[] y) {
     double xs[] = new double[x.length], xn[] = new double[x.length],
         ys[] = new double[y.length], yn[] = new double[y.length];
     ArrayUtils.mm(x, xs, 1);
@@ -135,6 +149,28 @@ public class Kneedle implements Curvature{
     double[] yDiff = new double[y.length];
     for (int i = 0; i < y.length; i++) {
       yDiff[i] = yn[i] - xn[i];
+    }
+
+    return ArrayUtils.min(yDiff);
+  }
+
+  /**
+   *
+   * @param x
+   * @param y
+   * @return
+   */
+  private int elbow_negative(final double[] x, final double[] y) {
+    double xs[] = new double[x.length], xn[] = new double[x.length],
+        ys[] = new double[y.length], yn[] = new double[y.length];
+    ArrayUtils.mm(x, xs, 1);
+    ArrayUtils.rescaling(xs, xn);
+    ArrayUtils.mm(y, ys, 1);
+    ArrayUtils.rescaling(ys, yn);
+
+    double[] yDiff = new double[y.length];
+    for (int i = 0; i < y.length; i++) {
+      yDiff[i] = yn[i] - (1.0 - xn[i]);
     }
 
     return ArrayUtils.min(yDiff);

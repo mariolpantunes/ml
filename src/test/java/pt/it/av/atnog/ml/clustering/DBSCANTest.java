@@ -1,6 +1,7 @@
 package pt.it.av.atnog.ml.clustering;
 
 import org.junit.BeforeClass;
+import org.junit.Test;
 import pt.it.av.atnog.utils.structures.Point2D;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class DBSCANTest {
     dps.add(new Point2D(-3, -3));
   }
 
-  @org.junit.Test
+  @Test
   public void test_clustering() {
     //System.out.println("Points: " + PrintUtils.list(dps));
 
