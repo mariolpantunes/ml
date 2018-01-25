@@ -2,6 +2,7 @@ package pt.it.av.atnog.ml.clustering;
 
 import pt.it.av.atnog.ml.clustering.curvature.Curvature;
 import pt.it.av.atnog.ml.clustering.curvature.Kneedle;
+import pt.it.av.atnog.ml.clustering.curvature.Lmethod;
 import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
@@ -16,6 +17,11 @@ import java.util.List;
  */
 public class FGClustering {
   private static final int EMPTY = -1;
+
+  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int minPts) {
+    return clustering(dps, minPts, new Lmethod());
+  }
+
   /**
    * Use the same technique as in DBSCAN.
    *
@@ -24,10 +30,8 @@ public class FGClustering {
    * @param <D>
    * @return
    */
-  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int minPts) {
-    // Elbow
-    Curvature alg = new Kneedle();
-
+  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps,
+    final int minPts, final Curvature cur) {
     // array with average distance to closest minPts
     double dist[] = new double[dps.size()],
         x[] = new double[dps.size()];
@@ -42,7 +46,7 @@ public class FGClustering {
     Arrays.sort(dist);
 
     // Find curvature and use it as EPS
-    double eps = dist[alg.elbow(x, dist)];
+    double eps = dist[cur.elbow(x, dist)];
     return clustering(dps, eps);
   }
 

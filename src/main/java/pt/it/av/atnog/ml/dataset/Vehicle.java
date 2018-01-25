@@ -10,25 +10,25 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Control implements Dataset<Vector>{
-  private final List<Vector> dataset = new ArrayList<>(600);
+public class Vehicle implements Dataset<Vector>{
+  private final List<Vector> dataset = new ArrayList<>(846);
 
-  public Control(final String filename) {
+  public Vehicle(final String filename) {
     this(new File(filename));
   }
 
-  public Control() {
-    this(ClassLoader.getSystemClassLoader().getResource("control.csv").getFile());
+  public Vehicle() {
+    this(ClassLoader.getSystemClassLoader().getResource("vehicle.csv").getFile());
   }
 
-  public Control(final File file) {
+  public Vehicle(final File file) {
     try(BufferedReader br = new BufferedReader(new FileReader(file))) {
       String line = br.readLine();
       while (line != null) {
         String split[] = line.split(",");
 
-        double data[] = new double[split.length];
-        for(int i = 0; i < split.length; i++) {
+        double data[] = new double[split.length-1];
+        for(int i = 0; i < split.length-1; i++) {
           data[i] = Double.parseDouble(split[i]);
         }
 

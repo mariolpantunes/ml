@@ -5,6 +5,7 @@ import pt.it.av.atnog.ml.clustering.ClusterUtils;
 import pt.it.av.atnog.ml.clustering.Kmeans;
 import pt.it.av.atnog.ml.clustering.curvature.Curvature;
 import pt.it.av.atnog.ml.clustering.curvature.Kneedle;
+import pt.it.av.atnog.ml.clustering.curvature.Lmethod;
 import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
@@ -62,6 +63,19 @@ public class AutoK {
     return allClusters[ArrayUtils.max(sil)];
   }
 
+  /**
+   *
+   * @param alg
+   * @param dps
+   * @param min
+   * @param max
+   * @param <D>
+   * @return
+   */
+  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg,
+    final List<D> dps, final int min, final int max) {
+    return elbow(alg, dps, min, max, 10, new Lmethod());
+  }
 
   /**
    *
@@ -73,8 +87,8 @@ public class AutoK {
    * @return
    */
   public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg,
-  final List<D> dps, final int min, final int max) {
-    return elbow(alg, dps, min, max, 10);
+  final List<D> dps, final int min, final int max, final Curvature cur) {
+    return elbow(alg, dps, min, max, 10, cur);
   }
 
   /**
@@ -88,13 +102,15 @@ public class AutoK {
    * @return
    */
   public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg,
-   final List<D> dps, final int min, final int max, final int reps) {
+   final List<D> dps, final int min, final int max, final int reps, final Curvature cur) {
     final int kmax = (max < dps.size())?max:dps.size()-1;
-    double wsss[] = new double[(kmax - min) + 1];
+    double wsss[] = new double[(kmax - min) + 1],
+        x[] = new double[(kmax - min) + 1];
     List<Cluster<D>> allClusters[] = new List[(kmax - min) + 1];
 
     int i = 0;
     for (int k = min; k <= kmax; k++, i++) {
+      x[i] = k;
       List<Cluster<D>> clusters = alg.clustering(dps, k);
       double wss = ClusterUtils.avgDistortion(clusters);
       for (int j = 1; j < reps; j++) {
@@ -109,15 +125,10 @@ public class AutoK {
       wsss[i] = wss;
     }
 
-    //System.err.println(PrintUtils.array(wsss));
-    //TODO: have to improve this.
     int idx = 0;
     if (wsss.length > 1) {
-      //idx = AutoThres.knee(wsss);
-      idx = Kneedle.ielbow(wsss);
+      idx = cur.elbow(x, wsss);
     }
-    //System.err.println("IDX = "+idx);
-    //return allClusters[Kneedle.ielbow(wsss)];
 
     return allClusters[idx];
   }

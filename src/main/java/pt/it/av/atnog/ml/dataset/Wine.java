@@ -10,26 +10,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Control implements Dataset<Vector>{
-  private final List<Vector> dataset = new ArrayList<>(600);
+public class Wine implements Dataset<Vector>{
+  private final List<Vector> dataset = new ArrayList<>(178);
 
-  public Control(final String filename) {
+  public Wine(final String filename) {
     this(new File(filename));
   }
 
-  public Control() {
-    this(ClassLoader.getSystemClassLoader().getResource("control.csv").getFile());
+  public Wine() {
+    this(ClassLoader.getSystemClassLoader().getResource("wine.csv").getFile());
   }
 
-  public Control(final File file) {
+  public Wine(final File file) {
     try(BufferedReader br = new BufferedReader(new FileReader(file))) {
       String line = br.readLine();
       while (line != null) {
         String split[] = line.split(",");
 
-        double data[] = new double[split.length];
-        for(int i = 0; i < split.length; i++) {
-          data[i] = Double.parseDouble(split[i]);
+        double data[] = new double[split.length-1];
+        for(int i = 1; i < split.length; i++) {
+          data[i-1] = Double.parseDouble(split[i]);
         }
 
         dataset.add(new Vector(data));
