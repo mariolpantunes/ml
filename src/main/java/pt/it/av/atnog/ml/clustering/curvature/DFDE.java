@@ -1,7 +1,6 @@
 package pt.it.av.atnog.ml.clustering.curvature;
 
 import pt.it.av.atnog.utils.ArrayUtils;
-import pt.it.av.atnog.utils.PrintUtils;
 
 /**
  * Alternative method to detect knee and curvature points in error curves.
@@ -35,9 +34,9 @@ public class DFDE implements Curvature {
   public int elbow(final double[] x, final double[] y) {
     double m[] = slopes(x, y);
     double t = ArrayUtils.isoData(m);
-    System.err.println("T = "+t);
-    System.err.println(PrintUtils.array(y));
-    System.err.println(PrintUtils.array(m));
+    //System.err.println("T = "+t);
+    //System.err.println(PrintUtils.array(y));
+    //System.err.println(PrintUtils.array(m));
 
     double dist = Math.abs(m[0] - t);
     int idx = 0;
