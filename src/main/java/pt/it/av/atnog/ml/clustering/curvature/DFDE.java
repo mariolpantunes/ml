@@ -13,7 +13,7 @@ public class DFDE implements Curvature {
 
   @Override
   public int knee(final double[] x, final double y[]) {
-    double m[] = centralFirstDerivative(x, y);
+    double m[] = centralSecondDerivative(x, y);
     double t = ArrayUtils.isoData(m);
     //System.err.println("T = " + t);
     //System.err.println(PrintUtils.array(y));
@@ -33,11 +33,11 @@ public class DFDE implements Curvature {
 
   @Override
   public int elbow(final double[] x, final double[] y) {
-    double m[] = centralFirstDerivative(x, y);
+    double m[] = slopes(x, y);
     double t = ArrayUtils.isoData(m);
-    //System.err.println("T = "+t);
-    //System.err.println(PrintUtils.array(y));
-    //System.err.println(PrintUtils.array(m));
+    System.err.println("T = "+t);
+    System.err.println(PrintUtils.array(y));
+    System.err.println(PrintUtils.array(m));
 
     double dist = Math.abs(m[0] - t);
     int idx = 0;
@@ -75,7 +75,7 @@ public class DFDE implements Curvature {
     double rv[] = new double[y.length - 2];
 
     for (int i = 1; i < y.length - 1; i++) {
-      rv[i-1] = (y[i+1] - 2*y[i] + y[i]) / (Math.pow((x[i]-x[i-1])+(x[i+1]-x[i]), 2.0));
+      rv[i-1] = (y[i+1] - 2*y[i] + y[i]) / ((x[i]-x[i-1])*(x[i+1]-x[i]));
     }
 
     return rv;

@@ -7,6 +7,7 @@ import pt.it.av.atnog.ml.clustering.curvature.Curvature;
 import pt.it.av.atnog.ml.clustering.curvature.Kneedle;
 import pt.it.av.atnog.ml.clustering.curvature.Lmethod;
 import pt.it.av.atnog.utils.ArrayUtils;
+import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
 import java.util.List;
@@ -88,7 +89,7 @@ public class AutoK {
    */
   public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg,
   final List<D> dps, final int min, final int max, final Curvature cur) {
-    return elbow(alg, dps, min, max, 10, cur);
+    return elbow(alg, dps, min, max, 3, cur);
   }
 
   /**
@@ -129,6 +130,8 @@ public class AutoK {
     if (wsss.length > 1) {
       idx = cur.elbow(x, wsss);
     }
+
+    //System.out.println(PrintUtils.array(wsss));
 
     return allClusters[idx];
   }

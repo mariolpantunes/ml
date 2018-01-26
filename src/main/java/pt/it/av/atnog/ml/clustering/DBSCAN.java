@@ -14,7 +14,7 @@ import java.util.*;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
-public class DBSCAN {
+public class DBSCAN implements Density{
 
   public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int minPts) {
     return clustering(dps, minPts, new Lmethod());
