@@ -1,15 +1,10 @@
 package pt.it.av.atnog.ml.clustering;
 
-import pt.it.av.atnog.ml.clustering.Cluster;
-import pt.it.av.atnog.ml.clustering.ClusterUtils;
-import pt.it.av.atnog.ml.clustering.Kmeans;
-import pt.it.av.atnog.ml.clustering.curvature.Curvature;
-import pt.it.av.atnog.ml.clustering.curvature.Kneedle;
-import pt.it.av.atnog.ml.clustering.curvature.Lmethod;
+import pt.it.av.atnog.ml.clustering.curvature.*;
 import pt.it.av.atnog.utils.ArrayUtils;
-import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -134,6 +129,47 @@ public class AutoK {
     //System.out.println(PrintUtils.array(wsss));
 
     return allClusters[idx];
+  }
+
+  public static <D extends Distance<D>> void elbowTest(final Kmeans alg,
+                                                       final List<D> dps, final int min, final int max, final int reps) {
+    final int kmax = (max < dps.size()) ? max : dps.size() - 1;
+    double wsss[] = new double[(kmax - min) + 1],
+        x[] = new double[(kmax - min) + 1];
+    List<Cluster<D>> allClusters[] = new List[(kmax - min) + 1];
+    List<Curvature> curs = new ArrayList<>();
+    curs.add(new Kneedle());
+    curs.add(new Lmethod());
+    curs.add(new MengerCurvature());
+    curs.add(new DFDE());
+
+    int i = 0;
+    for (int k = min; k <= kmax; k++, i++) {
+      x[i] = k;
+      List<Cluster<D>> clusters = alg.clustering(dps, k);
+      double wss = ClusterUtils.avgDistortion(clusters);
+      for (int j = 1; j < reps; j++) {
+        List<Cluster<D>> currentClusters = alg.clustering(dps, k);
+        double cwss = ClusterUtils.avgDistortion(currentClusters);
+        if (cwss > wss && !ClusterUtils.emptyClusters(currentClusters)) {
+          clusters = currentClusters;
+          wss = cwss;
+        }
+      }
+      allClusters[i] = clusters;
+      wsss[i] = wss;
+    }
+
+
+    for (Curvature cur : curs) {
+      int idx = 0;
+      if (wsss.length > 1) {
+        idx = cur.elbow(x, wsss);
+      }
+      System.out.println("\t -> " + allClusters[idx].size());
+    }
+    //System.out.println(PrintUtils.array(wsss));
+    //return allClusters[idx];
   }
 
   /**
