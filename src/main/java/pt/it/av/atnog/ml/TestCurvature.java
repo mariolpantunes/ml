@@ -5,7 +5,7 @@ import pt.it.av.atnog.ml.clustering.Cluster;
 import pt.it.av.atnog.ml.clustering.Kmeans;
 import pt.it.av.atnog.ml.clustering.Kmeanspp;
 import pt.it.av.atnog.ml.clustering.curvature.Curvature;
-import pt.it.av.atnog.ml.clustering.curvature.DFDE;
+import pt.it.av.atnog.ml.clustering.curvature.DFDT;
 import pt.it.av.atnog.ml.clustering.curvature.Kneedle;
 import pt.it.av.atnog.ml.clustering.curvature.Lmethod;
 import pt.it.av.atnog.ml.clustering.curvature.MengerCurvature;
@@ -30,7 +30,7 @@ public class TestCurvature {
     Curvature kneedle = new Kneedle(),
         lmethod = new Lmethod(),
         menger = new MengerCurvature(),
-        dfde = new DFDE();
+        dfde = new DFDT();
 
     // IRIS
     /*System.out.println("Iris dataset (4)");

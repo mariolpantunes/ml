@@ -7,13 +7,13 @@ public class Lmethod implements Curvature {
   @Override
   public int knee(final double x[], final double[] y) {
     //return lMethod(x, y, x.length);
-    return refinement(x, y);
+    return itRefinement(x, y);
   }
 
   @Override
   public int elbow(final double x[], final double[] y) {
     //return lMethod(x, y, x.length);
-    return refinement(x, y);
+    return itRefinement(x, y);
   }
 
   /**
@@ -22,7 +22,7 @@ public class Lmethod implements Curvature {
    * @param y
    * @return
    */
-  private int refinement(final double x[], final double[] y) {
+  private int itRefinement(final double x[], final double[] y) {
     int cutoff =  x.length, lastCurve =  x.length, curve =  x.length;
 
     do {
