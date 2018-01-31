@@ -10,7 +10,7 @@ public class DFDTTest {
   public void test_elbow() {
     Curvature alg = new DFDT();
     int elbow = alg.elbow(CurvatureTest.elbow_x, CurvatureTest.elbow_y);
-    assertTrue(elbow == 3);
+    assertTrue(elbow == 5);
     //System.out.println(CurvatureTest.elbow_x[elbow]);
   }
 
@@ -18,7 +18,7 @@ public class DFDTTest {
   public void test_knee() {
     Curvature alg = new DFDT();
     int knee = alg.knee(CurvatureTest.knee_x, CurvatureTest.knee_y);
-    assertTrue(knee == 4);
+    assertTrue(knee == 9);
     //System.out.println(CurvatureTest.knee_x[knee]);
   }
 }

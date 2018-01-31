@@ -1,7 +1,6 @@
 package pt.it.av.atnog.ml.clustering.curvature;
 
 import pt.it.av.atnog.utils.ArrayUtils;
-import pt.it.av.atnog.utils.PrintUtils;
 
 /**
  * Alternative method to detect knee and curvature points in error curves.
@@ -22,19 +21,17 @@ public class DFDT implements Curvature {
   }
 
   private int itRefinement(final double x[], final double[] y) {
-    int cutoff =  0, lastCurve =  x.length, curve =  x.length, tries = 0;
+    int cutoff = 0, lastCurve = x.length, curve = x.length;
 
     do {
       //System.out.println("Cutoff = "+cutoff);
       lastCurve = curve;
-      int l = y.length - cutoff;
-      curve = dfdt(x, y, cutoff, l);
+      curve = dfdt(x, y, cutoff, y.length - cutoff);
       //System.out.println("Curve = "+curve);
       cutoff = curve / 2;
       //System.out.println("New Cutoff = "+cutoff);
       //System.out.println();
-      tries++;
-    } while(curve != lastCurve && tries < 10);
+    } while (curve != lastCurve);
 
     return curve;
   }
@@ -55,6 +52,6 @@ public class DFDT implements Curvature {
       }
     }
 
-    return idx+1;
+    return idx + 1 + bIdx;
   }
 }
