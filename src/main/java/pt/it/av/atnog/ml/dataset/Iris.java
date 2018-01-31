@@ -11,25 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implements methods to help deal with pt.it.av.atnog.ml.dataset.Iris dataset.
+ * Implements methods to help deal with Iris dataset.
  *
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
 public class Iris implements Dataset<Point4D>{
-
-  private final List<Point4D> data = new ArrayList<>(150);
-
-  public Iris(final String filename) {
-    this(new File(filename));
-  }
-
-  public Iris() {
-    this(ClassLoader.getSystemClassLoader().getResource("iris.csv").getFile());
-  }
-
-  public Iris(final File file) {
-    try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+  @Override
+  public List<Point4D> load() {
+    String fileName = getClass().getResource("iris.csv").getFile();
+    List<Point4D> data = new ArrayList<>(150);
+    try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
       String line = br.readLine();
       while (line != null) {
         String split[] = line.split(",");
@@ -42,10 +34,6 @@ public class Iris implements Dataset<Point4D>{
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-  @Override
-  public List<Point4D> load() {
     return data;
   }
 }

@@ -11,18 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Vehicle implements Dataset<Vector>{
-  private final List<Vector> dataset = new ArrayList<>(846);
-
-  public Vehicle(final String filename) {
-    this(new File(filename));
-  }
-
-  public Vehicle() {
-    this(ClassLoader.getSystemClassLoader().getResource("vehicle.csv").getFile());
-  }
-
-  public Vehicle(final File file) {
-    try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+  @Override
+  public List<Vector> load() {
+    String fileName = getClass().getResource("vehicle.csv").getFile();
+    List<Vector> dataset = new ArrayList<>(846);
+    try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
       String line = br.readLine();
       while (line != null) {
         String split[] = line.split(",");
@@ -40,11 +33,6 @@ public class Vehicle implements Dataset<Vector>{
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-
-  @Override
-  public List<Vector> load() {
     return dataset;
   }
 }

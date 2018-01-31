@@ -11,18 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ASetsA1 implements Dataset<Point2D> {
-  private final List<Point2D> dataset = new ArrayList<>(3000);
-
-  public ASetsA1(final String filename) {
-    this(new File(filename));
-  }
-
-  public ASetsA1() {
-    this(ClassLoader.getSystemClassLoader().getResource("a1.csv").getFile());
-  }
-
-  public ASetsA1(final File file) {
-    try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+  @Override
+  public List<Point2D> load() {
+    String fileName = getClass().getResource("a1.csv").getFile();
+    List<Point2D> dataset = new ArrayList<>(3000);
+    try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
       String line = br.readLine();
       while (line != null) {
         String split[] = line.split(",");
@@ -35,11 +28,6 @@ public class ASetsA1 implements Dataset<Point2D> {
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-
-  @Override
-  public List<Point2D> load() {
     return dataset;
   }
 }

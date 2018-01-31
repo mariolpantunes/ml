@@ -12,18 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SSetsS1 implements Dataset<Point2D> {
-  private final List<Point2D> dataset = new ArrayList<>(5000);
-
-  public SSetsS1(final String filename) {
-    this(new File(filename));
-  }
-
-  public SSetsS1() {
-    this(ClassLoader.getSystemClassLoader().getResource("s1.csv").getFile());
-  }
-
-  public SSetsS1(final File file) {
-    try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+  @Override
+  public List<Point2D> load() {
+    List<Point2D> dataset = new ArrayList<>(5000);
+    String fileName = getClass().getResource("s1.csv").getFile();
+    try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
       String line = br.readLine();
       while (line != null) {
         String split[] = line.split(",");
@@ -36,11 +29,6 @@ public class SSetsS1 implements Dataset<Point2D> {
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-
-  @Override
-  public List<Point2D> load() {
     return dataset;
   }
 }

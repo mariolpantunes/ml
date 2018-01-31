@@ -11,18 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Control implements Dataset<Vector>{
-  private final List<Vector> dataset = new ArrayList<>(600);
-
-  public Control(final String filename) {
-    this(new File(filename));
-  }
-
-  public Control() {
-    this(ClassLoader.getSystemClassLoader().getResource("control.csv").getFile());
-  }
-
-  public Control(final File file) {
-    try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+  @Override
+  public List<Vector> load() {
+    String fileName = getClass().getResource("control.csv").getFile();
+    List<Vector> dataset = new ArrayList<>(600);
+    try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
       String line = br.readLine();
       while (line != null) {
         String split[] = line.split(",");
@@ -40,11 +33,6 @@ public class Control implements Dataset<Vector>{
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-
-  @Override
-  public List<Vector> load() {
     return dataset;
   }
 }

@@ -11,18 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Yeast implements Dataset<Vector> {
-  private final List<Vector> dataset = new ArrayList<>(1484);
-
-  public Yeast(final String filename) {
-    this(new File(filename));
-  }
-
-  public Yeast() {
-    this(ClassLoader.getSystemClassLoader().getResource("yeast.csv").getFile());
-  }
-
-  public Yeast(final File file) {
-    try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+  @Override
+  public List<Vector> load() {
+    String fileName = getClass().getResource("yeast.csv").getFile();
+    List<Vector> dataset = new ArrayList<>(1484);
+    try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
       String line = br.readLine();
       while (line != null) {
         String split[] = line.split(",");
@@ -45,10 +38,6 @@ public class Yeast implements Dataset<Vector> {
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-  @Override
-  public List<Vector> load() {
     return dataset;
   }
 }

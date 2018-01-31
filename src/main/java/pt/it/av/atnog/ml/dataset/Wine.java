@@ -11,18 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Wine implements Dataset<Vector>{
-  private final List<Vector> dataset = new ArrayList<>(178);
-
-  public Wine(final String filename) {
-    this(new File(filename));
-  }
-
-  public Wine() {
-    this(ClassLoader.getSystemClassLoader().getResource("wine.csv").getFile());
-  }
-
-  public Wine(final File file) {
-    try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+  @Override
+  public List<Vector> load() {
+    String fileName = getClass().getResource("wine.csv").getFile();
+    List<Vector> dataset = new ArrayList<>(178);
+    try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
       String line = br.readLine();
       while (line != null) {
         String split[] = line.split(",");
@@ -40,11 +33,6 @@ public class Wine implements Dataset<Vector>{
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-
-  @Override
-  public List<Vector> load() {
     return dataset;
   }
 }
