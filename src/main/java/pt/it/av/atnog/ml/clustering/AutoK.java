@@ -141,7 +141,7 @@ public class AutoK {
     curs.add(new Kneedle());
     curs.add(new Lmethod());
     curs.add(new MengerCurvature());
-    curs.add(new DFDE());
+    curs.add(new DFDT());
 
     int i = 0;
     for (int k = min; k <= kmax; k++, i++) {
