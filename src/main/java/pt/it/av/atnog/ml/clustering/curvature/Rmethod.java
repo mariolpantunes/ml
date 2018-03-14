@@ -1,7 +1,6 @@
 package pt.it.av.atnog.ml.clustering.curvature;
 
 import pt.it.av.atnog.utils.ArrayUtils;
-import pt.it.av.atnog.utils.MathUtils;
 
 /**
  * Alternative method to detect knee and curvature points in error curves.
@@ -26,18 +25,22 @@ public class Rmethod implements Curvature {
 
     //System.out.println("R2="+r2);
     double a = lnr[0];
-    //System.out.println("A="+a);
+    System.out.println("A=" + a);
 
     double rx = x[0];
-    //System.out.println("F("+rx+") = "+flnr(rx,a));
 
-    //int c = 0;
+    // Newtom method
+    /*System.out.println("F("+rx+") = "+flnr(rx,a));
+    int c = 0;
     while (!MathUtils.equals(flnr(rx, a), 0.0, 0.01)) {
       rx = rx - (flnr(rx, a) / f1lnr(rx, a));
-      //c++;
+      c++;
     }
+    System.out.println("F("+rx+") = "+flnr(rx,a)+" ("+c+")");*/
 
-    //System.out.println("F("+rx+") = "+flnr(rx,a)+" ("+c+")");
+    // Ln alternative close formula
+    rx = a / Math.sqrt(2.0);
+    System.out.println("FLN(" + rx + ") = " + flnr(rx, a));
 
     int idx = 0;
     double err = Math.abs(x[0] - rx);
@@ -80,24 +83,28 @@ public class Rmethod implements Curvature {
     double u = a * b, v = u * (b - 1), k = v * (b - 2);
     double z = k * u * u - 3 * v * v * u;
 
-    //System.out.println("A="+a);
-    //System.out.println("B="+b);
-    //System.out.println("U="+u);
-    //System.out.println("V="+v);
-    //System.out.println("K="+k);
-    //System.out.println("Z="+z);
+    System.out.println("A=" + a);
+    System.out.println("B=" + b);
+    System.out.println("U=" + u);
+    System.out.println("V=" + v);
+    System.out.println("K=" + k);
+    System.out.println("Z=" + z);
 
     double rx = x[0];
 
-    //System.out.println("F("+rx+") = "+fpr(rx,k,z,b));
-
-    //int c = 0;
+    // Newton Method
+    /*System.out.println("F("+rx+") = "+fpr(rx,k,z,b));
+    int c = 0;
     while (!MathUtils.equals(fpr(rx, k, z, b), 0.0, 0.001)) {
       rx = rx - (fpr(rx, k, z, b) / f1pr(rx, k, z, b));
-      //c++;
+      c++;
     }
+    System.out.println("F("+rx+") = "+fpr(rx,k,z,b)+" ("+c+")");*/
 
-    //System.out.println("F("+rx+") = "+fpr(rx,k,z,b)+" ("+c+")");
+    // Ln alternative
+    rx = Math.pow((k / -z), (1.0 / (2 * b - 2)));
+
+    System.out.println("Fa1(" + rx + ") = " + fpr(rx, k, z, b));
 
     int idx = 0;
     double err = Math.abs(x[0] - rx);
