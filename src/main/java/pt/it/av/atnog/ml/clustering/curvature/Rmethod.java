@@ -8,10 +8,10 @@ import pt.it.av.atnog.utils.ArrayUtils;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 2.0
  */
-public class Rmethod implements Curvature {
+public class Rmethod extends BaseCurvature {
 
   @Override
-  public int knee(double[] x, double[] y) {
+  public int find_knee(double[] x, double[] y) {
     double lnr[] = ArrayUtils.lnr(x, y);
     double f[] = new double[y.length];
 
@@ -54,7 +54,7 @@ public class Rmethod implements Curvature {
   }
 
   @Override
-  public int elbow(double[] x, double[] y) {
+  public int find_elbow(double[] x, double[] y) {
     double pr[] = ArrayUtils.pr(x, y);
     double f[] = new double[y.length];
 

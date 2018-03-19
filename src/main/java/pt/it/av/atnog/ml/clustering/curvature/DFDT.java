@@ -8,15 +8,15 @@ import pt.it.av.atnog.utils.ArrayUtils;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 2.0
  */
-public class DFDT implements Curvature {
+public class DFDT extends BaseCurvature {
 
   @Override
-  public int knee(final double[] x, final double y[]) {
+  public int find_knee(final double[] x, final double y[]) {
     return itRefinement(x, y);
   }
 
   @Override
-  public int elbow(final double[] x, final double[] y) {
+  public int find_elbow(final double[] x, final double[] y) {
     return itRefinement(x, y);
   }
 

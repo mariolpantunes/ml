@@ -18,7 +18,7 @@ import java.util.List;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
-public class Kneedle implements Curvature{
+public class Kneedle extends BaseCurvature{
   /**
    * Find a single knee (the best one) in a batch manner.
    * Since it work on a batch manner it becomes simpler than the conventional algorithm.
@@ -94,7 +94,7 @@ public class Kneedle implements Curvature{
    * @param y
    * @return
    */
-  public int knee(final double[] x, final double[] y) {
+  public int find_knee(final double[] x, final double[] y) {
     double xs[] = new double[x.length], xn[] = new double[x.length],
         ys[] = new double[y.length], yn[] = new double[y.length];
     ArrayUtils.mm(x, xs, 1);
@@ -118,7 +118,7 @@ public class Kneedle implements Curvature{
    * @param y
    * @return
    */
-  public int elbow(final double[] x, final double[] y) {
+  public int find_elbow(final double[] x, final double[] y) {
     // Check the slope of the curvature
     double m = (y[y.length-1] - y[0]) / (x[x.length-1] - x[0]);
     int rv = 0;

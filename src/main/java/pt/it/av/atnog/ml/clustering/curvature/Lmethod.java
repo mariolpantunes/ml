@@ -2,16 +2,16 @@ package pt.it.av.atnog.ml.clustering.curvature;
 
 import pt.it.av.atnog.utils.ArrayUtils;
 
-public class Lmethod implements Curvature {
+public class Lmethod extends BaseCurvature {
 
   @Override
-  public int knee(final double x[], final double[] y) {
+  public int find_knee(final double x[], final double[] y) {
     //return lMethod(x, y, x.length);
     return itRefinement(x, y);
   }
 
   @Override
-  public int elbow(final double x[], final double[] y) {
+  public int find_elbow(final double x[], final double[] y) {
     //return lMethod(x, y, x.length);
     return itRefinement(x, y);
   }

@@ -1,8 +1,8 @@
 package pt.it.av.atnog.ml.clustering.curvature;
 
-public class MengerCurvature implements Curvature {
+public class MengerCurvature extends BaseCurvature {
   @Override
-  public int knee(final double[] x, final double[] y) {
+  public int find_knee(final double[] x, final double[] y) {
     int idx = 1;
     double dk = dc(x, y, idx);
 
@@ -18,7 +18,7 @@ public class MengerCurvature implements Curvature {
   }
 
   @Override
-  public int elbow(final double[] x, final double[] y) {
+  public int find_elbow(final double[] x, final double[] y) {
     int idx = 1;
     double dk = dc(x, y, idx);
 

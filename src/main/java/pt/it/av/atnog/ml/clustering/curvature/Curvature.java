@@ -7,6 +7,19 @@ package pt.it.av.atnog.ml.clustering.curvature;
  * @version 1.0
  */
 public interface Curvature {
+  /**
+   *
+   * @param x
+   * @param y
+   * @return
+   */
   int knee(final double[] x, final double[] y);
+
+  /**
+   *
+   * @param x
+   * @param y
+   * @return
+   */
   int elbow(final double[] x,final double[] y);
 }
