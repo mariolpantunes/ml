@@ -1,8 +1,8 @@
 package pt.it.av.atnog.ml.clustering;
 
 import pt.it.av.atnog.ml.clustering.curvature.Curvature;
-import pt.it.av.atnog.ml.clustering.curvature.Kneedle;
 import pt.it.av.atnog.ml.clustering.curvature.Lmethod;
+import pt.it.av.atnog.ml.clustering.density.DBSCAN;
 import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
