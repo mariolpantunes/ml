@@ -57,7 +57,7 @@ public class Lmethod extends BaseCurvature {
 
     for(int i = 2; i < length-2; i++) {
       lrl = ArrayUtils.lr(x, y,0,0,i+1);
-      lrr = ArrayUtils.lr(x, y,i+1, i+1, length - (i+1));
+      lrr = ArrayUtils.lr(x, y, i, i, length - (i + 1));
 
       double crmse = rmse(x, y, lrl, lrr, i, length);
       if(crmse < rmse) {
@@ -86,7 +86,7 @@ public class Lmethod extends BaseCurvature {
       msel += Math.pow(y[i]-(lrl[0]*x[i]+lrl[1]) ,2.0);
     }
 
-    for(int i = idx+1; i < length; i++) {
+    for (int i = idx; i < length; i++) {
       mser += Math.pow(y[i]-(lrr[0]*x[i]+lrr[1]) ,2.0);
     }
 

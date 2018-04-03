@@ -16,6 +16,7 @@ public class Smethod extends BaseCurvature {
 
   @Override
   public int find_knee(double[] x, double[] y) {
+    System.out.println("Knee");
     return itRefinement(x, y)[1];
   }
 
@@ -32,15 +33,18 @@ public class Smethod extends BaseCurvature {
    * @return
    */
   private int[] itRefinement(final double x[], final double[] y) {
-    int cutoff =  x.length, lastCurve =  x.length, curve =  x.length;
+    int cutoff = x.length, lastCurve, curve = x.length;
     int p[];
 
-    do {
-      lastCurve = curve;
-      p = sMethod(x, y, cutoff);
+    /*do {
+
       lastCurve = p[1];
       cutoff = curve * 2;
-    } while(curve>= lastCurve);
+    } while(curve >= lastCurve);*/
+
+    p = sMethod(x, y, cutoff);
+
+    System.out.println(p[0] + " " + p[1]);
 
     return p;
   }
@@ -52,14 +56,14 @@ public class Smethod extends BaseCurvature {
    * @return
    */
   private int[] sMethod(final double x[], final double[] y, final int length) {
-    int p[] = {1,2};
+    int p[] = {1, 2};
     double rmse = Double.POSITIVE_INFINITY;
 
     for(int i = 1; i < length - 3; i++) {
       for (int j = i + 1; j < length - 2; j++) {
         double lrl[] = ArrayUtils.lr(x, y, 0, 0, i + 1),
-            lrc[] = ArrayUtils.lr(x, y, i+1, i+1, j - i +1),
-            lrr[] = ArrayUtils.lr(x, y, j + 1, j + 1, length - (j + 1));
+            lrc[] = ArrayUtils.lr(x, y, i, i, j - i + 1),
+            lrr[] = ArrayUtils.lr(x, y, j, j, length - (j + 1));
 
         double crmse = rmse(x, y, lrl, lrc, lrr, i, j, length);
         if (crmse < rmse) {
@@ -80,7 +84,8 @@ public class Smethod extends BaseCurvature {
    * @param lrl
    * @param lrc
    * @param lrr
-   * @param idx
+   * @param p1
+   * @param p2
    * @return
    */
   private double rmse(final double x[], final double[] y, final double lrl[],
@@ -92,11 +97,11 @@ public class Smethod extends BaseCurvature {
       msel += Math.pow(y[i]-(lrl[0]*x[i]+lrl[1]) ,2.0);
     }
 
-    for(int i = p1+1; i < p2+1; i++) {
+    for (int i = p1; i < p2 + 1; i++) {
       msec += Math.pow(y[i]-(lrc[0]*x[i]+lrc[1]) ,2.0);
     }
 
-    for(int i = p2+1; i < length; i++) {
+    for (int i = p2; i < length; i++) {
       mser += Math.pow(y[i]-(lrr[0]*x[i]+lrr[1]) ,2.0);
     }
 
