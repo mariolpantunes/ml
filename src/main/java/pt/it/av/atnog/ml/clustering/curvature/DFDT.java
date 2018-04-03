@@ -3,7 +3,10 @@ package pt.it.av.atnog.ml.clustering.curvature;
 import pt.it.av.atnog.utils.ArrayUtils;
 
 /**
- * Alternative method to detect knee and curvature points in error curves.
+ * DFDT-method
+ * <p>
+ *
+ * </p>
  *
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 2.0

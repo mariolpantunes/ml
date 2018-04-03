@@ -3,7 +3,14 @@ package pt.it.av.atnog.ml.clustering.curvature;
 import pt.it.av.atnog.utils.ArrayUtils;
 
 /**
- * Alternative method to detect knee and curvature points in error curves.
+ * R-method to detect knee/elbow points.
+ * <p>
+ *   Regression method.
+ *   It uses a logarithm and power regression to fit the curve and detect knee and elbow points
+ *   respectively.
+ *   The root of the curvature (Kf(x)) is computed and used to find the maxium curvature point,
+ *   which represent the knee/elbow point.
+ * </p>
  *
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 2.0

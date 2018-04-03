@@ -1,5 +1,14 @@
 package pt.it.av.atnog.ml.clustering.curvature;
 
+/**
+ * Menger Curvature method to detect knee/elbow points.
+ * <p>
+ *
+ * </p>
+ *
+ * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
+ * @version 2.0
+ */
 public class MengerCurvature extends BaseCurvature {
   @Override
   public int find_knee(final double[] x, final double[] y) {
