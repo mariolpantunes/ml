@@ -16,37 +16,12 @@ public class Smethod extends BaseCurvature {
 
   @Override
   public int find_knee(double[] x, double[] y) {
-    System.out.println("Knee");
-    return itRefinement(x, y)[1];
+    return sMethod(x, y, x.length)[0];
   }
 
   @Override
   public int find_elbow(double[] x, double[] y) {
-    return itRefinement(x, y)[1];
-  }
-
-  /**
-   * Iterarive refinement.
-   *
-   * @param x
-   * @param y
-   * @return
-   */
-  private int[] itRefinement(final double x[], final double[] y) {
-    int cutoff = x.length, lastCurve, curve = x.length;
-    int p[];
-
-    /*do {
-
-      lastCurve = p[1];
-      cutoff = curve * 2;
-    } while(curve >= lastCurve);*/
-
-    p = sMethod(x, y, cutoff);
-
-    System.out.println(p[0] + " " + p[1]);
-
-    return p;
+    return sMethod(x, y, x.length)[1];
   }
 
   /**
@@ -62,7 +37,7 @@ public class Smethod extends BaseCurvature {
     for(int i = 1; i < length - 3; i++) {
       for (int j = i + 1; j < length - 2; j++) {
         double lrl[] = ArrayUtils.lr(x, y, 0, 0, i + 1),
-            lrc[] = ArrayUtils.lr(x, y, i, i, j - i + 1),
+            lrc[] = ArrayUtils.lr(x, y, i, i, j - (i + 1)),
             lrr[] = ArrayUtils.lr(x, y, j, j, length - (j + 1));
 
         double crmse = rmse(x, y, lrl, lrc, lrr, i, j, length);

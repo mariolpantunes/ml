@@ -10,9 +10,9 @@ import pt.it.av.atnog.utils.structures.Distance;
 
 import java.util.List;
 
-public class SLINK {
+public class SLINK implements Hierarchical{
 
-  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps) {
+  public <D extends Distance> int[][] clustering(final List<D> dps) {
     double height[] = new double[dps.size()],
         mus[] = new double[dps.size()];
     int parent[] = new int[dps.size()];
@@ -44,8 +44,8 @@ public class SLINK {
       }
     }
 
-    System.out.println(PrintUtils.array(height));
-    System.out.println(PrintUtils.array(parent));
+    //System.out.println(PrintUtils.array(height));
+    //System.out.println(PrintUtils.array(parent));
     //System.out.println(PrintUtils.array(mus));
 
     int d[][] = new int[dps.size()-1][2];
@@ -53,21 +53,17 @@ public class SLINK {
     for(int i = 0; i < dps.size()-1; i++) {
       // find minimum level
       int idx = ArrayUtils.min(height);
-
       d[i][0] = idx;
       d[i][1] = parent[idx];
-
       height[idx] = Double.POSITIVE_INFINITY;
     }
 
-    System.out.println("Merge elements");
+    /*System.out.println("Merge elements");
     for(int i = 0; i < d.length; i++) {
       //System.out.println(dps.get(d[i][0])+" + "+dps.get(d[i][1]));
       System.out.println(d[i][0]+" + "+d[i][1]);
-    }
+    }*/
 
-
-
-    return null;
+    return d;
   }
 }

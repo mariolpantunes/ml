@@ -1,6 +1,7 @@
 package pt.it.av.atnog.ml.clustering;
 
 import pt.it.av.atnog.ml.clustering.curvature.*;
+import pt.it.av.atnog.ml.clustering.density.DBSCAN;
 import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
@@ -131,17 +132,19 @@ public class AutoK {
     return allClusters[idx];
   }
 
-  public static <D extends Distance<D>> void elbowTest(final Kmeans alg,
-                                                       final List<D> dps, final int min, final int max, final int reps) {
+  public static <D extends Distance<D>> void elbowTest(final Kmeans alg, final List<D> dps,
+                                                       final int min, final int max, final int reps) {
     final int kmax = (max < dps.size()) ? max : dps.size() - 1;
     double wsss[] = new double[(kmax - min) + 1],
         x[] = new double[(kmax - min) + 1];
     List<Cluster<D>> allClusters[] = new List[(kmax - min) + 1];
-    List<Curvature> curs = new ArrayList<>();
-    curs.add(new Kneedle());
-    curs.add(new Lmethod());
-    curs.add(new MengerCurvature());
-    curs.add(new DFDT());
+    List<Curvature> curv = new ArrayList<>();
+    curv.add(new Kneedle());
+    curv.add(new Lmethod());
+    curv.add(new MengerCurvature());
+    curv.add(new DFDT());
+    curv.add(new DSDT());
+    curv.add(new Rmethod());
 
     int i = 0;
     for (int k = min; k <= kmax; k++, i++) {
@@ -161,15 +164,45 @@ public class AutoK {
     }
 
 
-    for (Curvature cur : curs) {
+    for (Curvature c : curv) {
       int idx = 0;
       if (wsss.length > 1) {
-        idx = cur.elbow(x, wsss);
+        idx = c.elbow(x, wsss);
       }
       System.out.println("\t -> " + allClusters[idx].size());
     }
     //System.out.println(PrintUtils.array(wsss));
     //return allClusters[idx];
+  }
+
+  public static <D extends Distance<D>> void dbscanElbowTest(final List<D> dps, final int min,
+                                                             final int max) {
+    DBSCAN alg = new DBSCAN();
+    List<Curvature> curv = new ArrayList<>();
+    curv.add(new Kneedle());
+    curv.add(new Lmethod());
+    curv.add(new MengerCurvature());
+    curv.add(new DFDT());
+    curv.add(new DSDT());
+    curv.add(new Rmethod());
+
+    for(Curvature c : curv) {
+      List<Cluster<D>> bClusters = alg.clustering(dps, min, c);
+      double bAvgDistortion = ClusterUtils.avgDistortion(bClusters);
+      for (int i = min+1; i <= max; i++) {
+        List<Cluster<D>> clusters = alg.clustering(dps,i,c);
+        double avgDistortion = ClusterUtils.avgDistortion(clusters);
+        if(avgDistortion < bAvgDistortion) {
+          bClusters = clusters;
+          bAvgDistortion = avgDistortion;
+        }
+      }
+      System.out.println("\t -> "+bClusters.size());
+    }
+  }
+
+  public static <D extends Distance<D>> void hiearchicalElbowTest() {
+
   }
 
   /**
