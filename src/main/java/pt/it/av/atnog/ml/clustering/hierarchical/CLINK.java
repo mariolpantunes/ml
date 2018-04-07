@@ -1,8 +1,6 @@
 package pt.it.av.atnog.ml.clustering.hierarchical;
 
-import pt.it.av.atnog.ml.clustering.Cluster;
 import pt.it.av.atnog.utils.ArrayUtils;
-import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
 import java.util.List;

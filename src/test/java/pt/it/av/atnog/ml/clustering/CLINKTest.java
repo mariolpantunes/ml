@@ -37,6 +37,7 @@ public class CLINKTest {
   @Test
   public void test_clustering() {
     CLINK alg = new CLINK();
-    alg.clustering(dps);
+    //int d[][] = alg.clustering(dps);
+    AutoK.hiearchicalElbowTest(alg, dps);
   }
 }

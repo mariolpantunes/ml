@@ -1,6 +1,6 @@
 package pt.it.av.atnog.ml.clustering.density;
 
-import pt.it.av.atnog.ml.clustering.Cluster;
+import pt.it.av.atnog.ml.clustering.cluster.Cluster;
 import pt.it.av.atnog.ml.clustering.curvature.Curvature;
 import pt.it.av.atnog.ml.clustering.curvature.Lmethod;
 import pt.it.av.atnog.utils.ArrayUtils;

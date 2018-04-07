@@ -37,7 +37,8 @@ public class SLINKTest {
 
   @Test
   public void test_clustering() {
-    SLINK slink = new SLINK();
-    slink.clustering(dps);
+    SLINK alg = new SLINK();
+    //slink.clustering(dps);
+    AutoK.hiearchicalElbowTest(alg, dps);
   }
 }

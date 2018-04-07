@@ -1,7 +1,7 @@
 package pt.it.av.atnog.ml;
 
 import pt.it.av.atnog.ml.clustering.AutoK;
-import pt.it.av.atnog.ml.clustering.Cluster;
+import pt.it.av.atnog.ml.clustering.cluster.Cluster;
 import pt.it.av.atnog.ml.clustering.Kmeans;
 import pt.it.av.atnog.ml.clustering.Kmeanspp;
 import pt.it.av.atnog.ml.dataset.*;

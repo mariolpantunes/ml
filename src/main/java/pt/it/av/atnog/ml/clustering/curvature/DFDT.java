@@ -1,6 +1,7 @@
 package pt.it.av.atnog.ml.clustering.curvature;
 
 import pt.it.av.atnog.utils.ArrayUtils;
+import pt.it.av.atnog.utils.PrintUtils;
 
 /**
  * DFDT-method (Dynamic First Derivative Threshold)
@@ -27,13 +28,9 @@ public class DFDT extends BaseCurvature {
     int cutoff = 0, lastCurve = x.length, curve = x.length;
 
     do {
-      //System.out.println("Cutoff = "+cutoff);
       lastCurve = curve;
       curve = dfdt(x, y, cutoff, y.length - cutoff);
-      //System.out.println("Curve = "+curve);
       cutoff = curve / 2;
-      //System.out.println("New Cutoff = "+cutoff);
-      //System.out.println();
     } while (curve != lastCurve);
 
     return curve;

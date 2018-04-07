@@ -1,8 +1,12 @@
 package pt.it.av.atnog.ml.clustering;
 
+import pt.it.av.atnog.ml.clustering.cluster.Cluster;
+import pt.it.av.atnog.ml.clustering.cluster.ClusterUtils;
 import pt.it.av.atnog.ml.clustering.curvature.*;
 import pt.it.av.atnog.ml.clustering.density.DBSCAN;
+import pt.it.av.atnog.ml.clustering.hierarchical.Hierarchical;
 import pt.it.av.atnog.utils.ArrayUtils;
+import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
 import java.util.ArrayList;
@@ -201,8 +205,44 @@ public class AutoK {
     }
   }
 
-  public static <D extends Distance<D>> void hiearchicalElbowTest() {
+  public static <D extends Distance<D>> void hiearchicalElbowTest(Hierarchical alg, final List<D> dps) {
+    List<Curvature> curv = new ArrayList<>();
+    curv.add(new Kneedle());
+    curv.add(new Lmethod());
+    curv.add(new MengerCurvature());
+    curv.add(new DFDT());
+    //curv.add(new DSDT());
+    curv.add(new Rmethod());
 
+    int d[][] = alg.clustering(dps);
+    double x[] = new double[dps.size()-1], y[] = new double[dps.size()-1];
+
+    // Create individual clusters
+    List<Cluster<D>> clusters = new ArrayList<>(dps.size());
+    for(int i = 0; i < dps.size(); i++) {
+      clusters.add(new Cluster<D>(dps.get(i)));
+    }
+
+    clusters.get(d[0][1]).addAll(clusters.get(d[0][0]));
+    clusters.set(d[0][0], null);
+    x[dps.size()-2] = dps.size()-1;
+    y[dps.size()-2] = ClusterUtils.avgDistortion(clusters);
+
+    // Merge clusters
+    for(int i = 1; i < d.length; i++) {
+      clusters.get(d[i][1]).addAll(clusters.get(d[i][0]));
+      clusters.set(d[i][0], null);
+      x[dps.size() - i - 2] = dps.size() - i-1;
+      y[dps.size() - i - 2] = ClusterUtils.avgDistortion(clusters);
+    }
+
+    //System.out.println(PrintUtils.array(x));
+    //System.out.println(PrintUtils.array(y));
+
+    for (Curvature c : curv) {
+      int idx = c.elbow(x, y);
+      System.out.println("\t -> " + x[idx]);
+    }
   }
 
   /**
