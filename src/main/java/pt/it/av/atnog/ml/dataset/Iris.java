@@ -3,7 +3,6 @@ package pt.it.av.atnog.ml.dataset;
 import pt.it.av.atnog.utils.structures.Point4D;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -19,7 +18,9 @@ import java.util.List;
 public class Iris implements Dataset<Point4D>{
   @Override
   public List<Point4D> load() {
-    String fileName = getClass().getResource("iris.csv").getFile();
+    ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+    String fileName = classloader.getResource("iris.csv").getFile();
+    //String fileName = getClass().getResource("iris.csv").getFile();
     List<Point4D> data = new ArrayList<>(150);
     try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
       String line = br.readLine();
@@ -35,5 +36,10 @@ public class Iris implements Dataset<Point4D>{
       e.printStackTrace();
     }
     return data;
+  }
+
+  @Override
+  public int classes() {
+    return 3;
   }
 }

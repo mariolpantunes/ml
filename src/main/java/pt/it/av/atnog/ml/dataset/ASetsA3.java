@@ -1,6 +1,6 @@
 package pt.it.av.atnog.ml.dataset;
 
-import pt.it.av.atnog.utils.bla.Vector;
+import pt.it.av.atnog.utils.structures.Point2D;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -9,24 +9,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Wine implements Dataset<Vector>{
+public class ASetsA3 implements Dataset<Point2D> {
   @Override
-  public List<Vector> load() {
-    //String fileName = getClass().getResource("wine.csv").getFile();
+  public List<Point2D> load() {
+    //String fileName = getClass().getResource("a3.csv").getFile();
     ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-    String fileName = classloader.getResource("wine.csv").getFile();
-    List<Vector> dataset = new ArrayList<>(178);
-    try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+    String fileName = classloader.getResource("a3.csv").getFile();
+    List<Point2D> dataset = new ArrayList<>(7500);
+    try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
       String line = br.readLine();
       while (line != null) {
         String split[] = line.split(",");
 
-        double data[] = new double[split.length-1];
-        for(int i = 1; i < split.length; i++) {
-          data[i-1] = Double.parseDouble(split[i]);
-        }
-
-        dataset.add(new Vector(data));
+        dataset.add(new Point2D(Double.parseDouble(split[0]), Double.parseDouble(split[1])));
         line = br.readLine();
       }
     } catch (FileNotFoundException e) {
@@ -39,6 +34,6 @@ public class Wine implements Dataset<Vector>{
 
   @Override
   public int classes() {
-    return 3;
+    return 50;
   }
 }

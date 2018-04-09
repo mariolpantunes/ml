@@ -24,13 +24,14 @@ public class DSDT extends BaseCurvature {
   }
 
   private int itRefinement(final double x[], final double[] y) {
-    int cutoff = 0, lastCurve = x.length, curve = x.length;
+    int cutoff = 0, lastCurve, curve = x.length;
 
     do {
       lastCurve = curve;
       curve = dsdt(x, y, cutoff, y.length - cutoff);
-      cutoff = curve / 2;
-    } while (curve != lastCurve);
+      cutoff = (int) Math.ceil(curve / 2.0);
+      //System.out.println("LastCurve = "+lastCurve+" Curve = "+curve+" Cutoff = "+cutoff+" Length = "+(y.length - cutoff));
+    } while (lastCurve > curve);
 
     return curve;
   }
@@ -38,16 +39,7 @@ public class DSDT extends BaseCurvature {
   public int dsdt(final double[] x, final double[] y, final int bIdx, final int len) {
     double m[] = ArrayUtils.csd(x, y, bIdx, bIdx, len);
     double t = ArrayUtils.isoData(m);
-
-    double dist = Math.abs(m[0] - t);
-    int idx = 0;
-    for (int i = 1; i < m.length; i++) {
-      if (Math.abs(m[i] - t) < dist) {
-        idx = i;
-        dist = Math.abs(m[i] - t);
-      }
-    }
-
+    int idx = ArrayUtils.findCloseSorted(t, m);
     return idx + 1 + bIdx;
   }
 }

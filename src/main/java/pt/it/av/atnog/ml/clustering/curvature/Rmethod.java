@@ -5,11 +5,11 @@ import pt.it.av.atnog.utils.ArrayUtils;
 /**
  * R-method to detect knee/elbow points.
  * <p>
- *   Regression method.
- *   It uses a logarithm and power regression to fit the curve and detect knee and elbow points
- *   respectively.
- *   The root of the curvature (Kf(x)) is computed and used to find the maxium curvature point,
- *   which represent the knee/elbow point.
+ * Regression method.
+ * It uses a logarithm and power regression to fit the curve and detect knee and elbow points
+ * respectively.
+ * The root of the curvature (Kf(x)) is computed and used to find the maxium curvature point,
+ * which represent the knee/elbow point.
  * </p>
  *
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
@@ -62,17 +62,9 @@ public class Rmethod extends BaseCurvature {
 
   @Override
   public int find_elbow(double[] x, double[] y) {
+    int rv = -1;
     double pr[] = ArrayUtils.pr(x, y);
-    double f[] = new double[y.length];
 
-    //System.out.println("f(x)="+pr[0]+"x^"+pr[1]);
-
-    for (int i = 0; i < x.length; i++) {
-      f[i] = pr[0] * Math.pow(x[i], pr[1]);
-    }
-
-    double r2 = ArrayUtils.r2(y, f);
-    //System.out.println("R2="+r2);
 
     double a = pr[0], b = pr[1];
     double u = a * b, v = u * (b - 1), k = v * (b - 2);
@@ -88,19 +80,20 @@ public class Rmethod extends BaseCurvature {
     double rx = x[0];
 
     // Newton Method
-    /*System.out.println("F("+rx+") = "+fpr(rx,k,z,b));
-    int c = 0;
-    while (!MathUtils.equals(fpr(rx, k, z, b), 0.0, 0.001)) {
+    //System.out.println("F("+rx+") = "+fpr(rx,k,z,b));
+    /*int c = 0;
+    while (!MathUtils.equals(fpr(rx, k, z, b), 0.0, 0.1)) {
       rx = rx - (fpr(rx, k, z, b) / f1pr(rx, k, z, b));
       c++;
-    }
-    System.out.println("F("+rx+") = "+fpr(rx,k,z,b)+" ("+c+")");*/
+    }*/
+    //System.out.println("F("+rx+") = "+fpr(rx,k,z,b)+" ("+c+")");*/
 
     // Ln alternative
     rx = Math.pow((k / -z), (1.0 / (2 * b - 2)));
     //System.out.println("FLN(" + rx + ") = " + fpr(rx, k, z, b));
+    rv = ArrayUtils.findCloseSorted(rx, x);
 
-    return ArrayUtils.findCloseSorted(rx, x);
+    return rv;
   }
 
   private double fpr(double x, double k, double z, double b) {

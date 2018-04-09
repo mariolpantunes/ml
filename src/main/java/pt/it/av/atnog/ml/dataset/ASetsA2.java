@@ -9,20 +9,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ASetsA1 implements Dataset<Point2D> {
+public class ASetsA2 implements Dataset<Point2D> {
   @Override
   public List<Point2D> load() {
-    //String fileName = getClass().getResource("a1.csv").getFile();
+    //String fileName = getClass().getResource("a2.csv").getFile();
     ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-    String fileName = classloader.getResource("a1.csv").getFile();
-    List<Point2D> dataset = new ArrayList<>(3000);
-    try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+    String fileName = classloader.getResource("a2.csv").getFile();
+    List<Point2D> dataset = new ArrayList<>(5250);
+    try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
       String line = br.readLine();
       while (line != null) {
         String split[] = line.split(",");
-
-        dataset.add(new Point2D(Double.parseDouble(split[0]), Double.parseDouble(split[1])));
-        line = br.readLine();
+        try {
+          dataset.add(new Point2D(Double.parseDouble(split[0]), Double.parseDouble(split[1])));
+          line = br.readLine();
+        } catch (Exception e) {
+          System.err.println(split[0] + " " + split[1]);
+          e.printStackTrace();
+        }
       }
     } catch (FileNotFoundException e) {
       e.printStackTrace();
@@ -34,6 +38,6 @@ public class ASetsA1 implements Dataset<Point2D> {
 
   @Override
   public int classes() {
-    return 20;
+    return 35;
   }
 }

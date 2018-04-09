@@ -2,7 +2,6 @@ package pt.it.av.atnog.ml.clustering;
 
 import org.junit.Test;
 import pt.it.av.atnog.ml.clustering.hierarchical.CLINK;
-import pt.it.av.atnog.ml.clustering.hierarchical.SLINK;
 import pt.it.av.atnog.utils.structures.Point2D;
 
 import java.util.ArrayList;
@@ -38,6 +37,6 @@ public class CLINKTest {
   public void test_clustering() {
     CLINK alg = new CLINK();
     //int d[][] = alg.clustering(dps);
-    AutoK.hiearchicalElbowTest(alg, dps);
+    //AutoK.hiearchicalElbowTest(alg, dps);
   }
 }

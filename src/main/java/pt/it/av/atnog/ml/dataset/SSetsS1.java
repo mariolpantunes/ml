@@ -1,10 +1,8 @@
 package pt.it.av.atnog.ml.dataset;
 
-import pt.it.av.atnog.utils.bla.Vector;
 import pt.it.av.atnog.utils.structures.Point2D;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -30,5 +28,10 @@ public class SSetsS1 implements Dataset<Point2D> {
       e.printStackTrace();
     }
     return dataset;
+  }
+
+  @Override
+  public int classes() {
+    return 15;
   }
 }

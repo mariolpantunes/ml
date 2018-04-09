@@ -7,8 +7,6 @@ import pt.it.av.atnog.utils.structures.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
-
 
 /**
  * Unit tests for Cluster.
@@ -39,6 +37,6 @@ public class SLINKTest {
   public void test_clustering() {
     SLINK alg = new SLINK();
     //slink.clustering(dps);
-    AutoK.hiearchicalElbowTest(alg, dps);
+    //AutoK.hiearchicalElbowTest(alg, dps);
   }
 }

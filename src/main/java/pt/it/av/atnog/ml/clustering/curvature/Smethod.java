@@ -16,12 +16,30 @@ public class Smethod extends BaseCurvature {
 
   @Override
   public int find_knee(double[] x, double[] y) {
-    return sMethod(x, y, x.length)[0];
+    int cutoff = x.length, lastCurve, curve = x.length;
+
+    do {
+      lastCurve = curve;
+      curve = sMethod(x, y, cutoff)[0];
+      cutoff = curve * 2;
+      //System.out.println("LastCurve = "+lastCurve+" Curve = "+curve+" Cutoff = "+cutoff+" Length = "+(y.length - cutoff));
+    } while (lastCurve > curve);
+
+    return curve;
   }
 
   @Override
   public int find_elbow(double[] x, double[] y) {
-    return sMethod(x, y, x.length)[1];
+    int cutoff = x.length, lastCurve, curve = x.length;
+
+    do {
+      lastCurve = curve;
+      curve = sMethod(x, y, cutoff)[1];
+      cutoff = curve * 2;
+      //System.out.println("LastCurve = "+lastCurve+" Curve = "+curve+" Cutoff = "+cutoff+" Length = "+(y.length - cutoff));
+    } while (lastCurve > curve);
+
+    return curve;
   }
 
   /**

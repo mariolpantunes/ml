@@ -32,13 +32,14 @@ public class Lmethod extends BaseCurvature {
    * @return
    */
   private int itRefinement(final double x[], final double[] y) {
-    int cutoff =  x.length, lastCurve =  x.length, curve =  x.length;
+    int cutoff = x.length, lastCurve, curve = x.length;
 
     do {
       lastCurve = curve;
       curve = lMethod(x, y, cutoff);
       cutoff = curve * 2;
-    } while(curve>= lastCurve);
+      //System.out.println("\t\tLastCurve = "+lastCurve+" Curve = "+curve+" Cutoff = "+cutoff+" Length = "+(y.length - cutoff));
+    } while (lastCurve > curve);
 
     return curve;
   }
