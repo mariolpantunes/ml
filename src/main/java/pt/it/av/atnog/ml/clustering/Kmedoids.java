@@ -23,8 +23,8 @@ public class Kmedoids implements Kmeans {
    * @param <D>
    * @return
    */
-  protected <D extends Distance> List<Cluster<D>> init(final List<D> dps, final int mappings[],
-                                                       final int k) {
+  protected <D extends Distance<D>> List<Cluster<D>> init(final List<D> dps, final int mappings[],
+                                                          final int k) {
     List<Cluster<D>> clusters = new ArrayList<>(k);
     int idxs[] = new int[dps.size()];
 
@@ -34,7 +34,7 @@ public class Kmedoids implements Kmeans {
 
     ArrayUtils.shuffle(idxs);
     for (int i = 0; i < k; i++) {
-      clusters.add(new Cluster(dps.get(idxs[i])));
+      clusters.add(new Cluster<>(dps.get(idxs[i])));
       mappings[idxs[i]] = i;
     }
     return clusters;
@@ -46,7 +46,7 @@ public class Kmedoids implements Kmeans {
    * @param <D>
    * @return
    */
-  private <D extends Distance> int closestCluster(final D dp, final List<D> centers) {
+  private <D extends Distance<D>> int closestCluster(final D dp, final List<D> centers) {
     int rv = 0;
     double d = centers.get(0).distanceTo(dp);
 
@@ -67,9 +67,9 @@ public class Kmedoids implements Kmeans {
    * @param <D>
    * @return
    */
-  protected <D extends Distance> boolean assignment(final List<D> dps,
-                                                    final List<Cluster<D>> clusters,
-                                                    final List<D> centers, final int mapping[]) {
+  protected <D extends Distance<D>> boolean assignment(final List<D> dps,
+                                                       final List<Cluster<D>> clusters,
+                                                       final List<D> centers, final int mapping[]) {
     boolean rv = false;
     for (int i = 0; i < dps.size(); i++) {
       D dp = dps.get(i);
@@ -87,7 +87,7 @@ public class Kmedoids implements Kmeans {
     return rv;
   }
 
-  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int k) {
+  public <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps, final int k) {
     // mapping used to identity where each datapoint is attributed
     int mapping[] = new int[dps.size()];
     // -1 means that the point is not atribuated to any cluster

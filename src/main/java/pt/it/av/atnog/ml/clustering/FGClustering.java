@@ -19,7 +19,7 @@ import java.util.List;
 public class FGClustering {
   private static final int EMPTY = -1;
 
-  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int minPts) {
+  public <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps, final int minPts) {
     return clustering(dps, minPts, new Lmethod());
   }
 
@@ -31,8 +31,8 @@ public class FGClustering {
    * @param <D>
    * @return
    */
-  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps,
-    final int minPts, final Curvature cur) {
+  public <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps,
+                                                             final int minPts, final Curvature cur) {
     // array with average distance to closest minPts
     double dist[] = new double[dps.size()],
         x[] = new double[dps.size()];
@@ -59,7 +59,7 @@ public class FGClustering {
    * @param <D>
    * @return
    */
-  private static <D extends Distance> List<Integer> neighbors(final List<D> dps, final int idx, final double eps) {
+  private static <D extends Distance<D>> List<Integer> neighbors(final List<D> dps, final int idx, final double eps) {
     List<Integer> rv = new ArrayList<>();
     D dp = dps.get(idx);
 
@@ -79,7 +79,7 @@ public class FGClustering {
    * @param <D>
    * @return
    */
-  private static <D extends Distance> List<Candidate> candidates(final List<D> dps, final double eps) {
+  private static <D extends Distance<D>> List<Candidate> candidates(final List<D> dps, final double eps) {
     List<Candidate> rv = new ArrayList<>();
 
     for(int i = 0; i < dps.size() - 1; i++) {
@@ -101,8 +101,8 @@ public class FGClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance> List<Cluster<D>> clustering(final List<D> dps,
-                                                                 final double radius) {
+  public static <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps,
+                                                                    final double radius) {
     List<Cluster<D>> clusters = new ArrayList<>();
     int clusterCount = 0;
     int mapping[] = new int[dps.size()];

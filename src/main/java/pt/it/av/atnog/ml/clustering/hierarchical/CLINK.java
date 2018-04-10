@@ -6,7 +6,7 @@ import pt.it.av.atnog.utils.structures.Distance;
 import java.util.List;
 
 public class CLINK implements Hierarchical{
-  public <D extends Distance> int[][] clustering(final List<D> dps) {
+  public <D extends Distance<? super D>> int[][] clustering(final List<D> dps) {
     double height[] = new double[dps.size()],
         mus[] = new double[dps.size()];
     int parent[] = new int[dps.size()];

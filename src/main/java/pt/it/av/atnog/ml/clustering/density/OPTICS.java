@@ -22,8 +22,8 @@ public class OPTICS {
    * @param <D>
    * @return
    */
-  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final double eps,
-                                                          final int minPts) {
+  public <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps, final double eps,
+                                                             final int minPts) {
     double rd[] = new double[dps.size()];
     boolean pr[] = new boolean[dps.size()];
     Arrays.fill(rd, -1);
@@ -39,8 +39,8 @@ public class OPTICS {
     return null;
   }
 
-  private <D extends Distance> List<Integer> rangeQuery(final int idx, final List<D> dps,
-                                                        final double eps) {
+  private <D extends Distance<D>> List<Integer> rangeQuery(final int idx, final List<D> dps,
+                                                           final double eps) {
     List<Integer> rv = new ArrayList<>();
     D dp = dps.get(idx);
 

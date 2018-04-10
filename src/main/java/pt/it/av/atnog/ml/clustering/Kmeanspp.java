@@ -16,8 +16,8 @@ import java.util.List;
  */
 public class Kmeanspp extends Kmedoids {
   @Override
-  protected <D extends Distance> List<Cluster<D>> init(final List<D> dps, final int mappings[],
-                                                       final int k) {
+  protected <D extends Distance<D>> List<Cluster<D>> init(final List<D> dps, final int mappings[],
+                                                          final int k) {
     List<Cluster<D>> clusters = new ArrayList<>(k);
 
     if (dps.size() > 0) {
@@ -27,7 +27,7 @@ public class Kmeanspp extends Kmedoids {
       }
       ArrayUtils.shuffle(idxs);
 
-      clusters.add(new Cluster(dps.get(idxs[0])));
+      clusters.add(new Cluster<D>(dps.get(idxs[0])));
       mappings[idxs[0]] = 0;
 
       double array[] = new double[dps.size()];
@@ -59,7 +59,7 @@ public class Kmeanspp extends Kmedoids {
           System.err.println(PrintUtils.array(array));
         }
 
-        clusters.add(new Cluster(dps.get(idx)));
+        clusters.add(new Cluster<>(dps.get(idx)));
         mappings[idx] = i;
       }
     }
@@ -75,8 +75,8 @@ public class Kmeanspp extends Kmedoids {
    * @param <D>
    * @return
    */
-  private <D extends Distance> double distanceClosestCluster(final D dp,
-                                                             List<Cluster<D>> clusters) {
+  private <D extends Distance<D>> double distanceClosestCluster(final D dp,
+                                                                List<Cluster<D>> clusters) {
     double rv = clusters.get(0).center().distanceTo(dp);
 
     for (int i = 1; i < clusters.size(); i++) {

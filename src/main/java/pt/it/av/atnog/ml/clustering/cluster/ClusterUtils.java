@@ -26,7 +26,7 @@ public class ClusterUtils {
    * @param <D> Any Class that implements {@link Distance} interface.
    * @return the average distortion of cluster's list.
    */
-  public static <D extends Distance> double avgDistortion(List<Cluster<D>> clusters) {
+  public static <D extends Distance<D>> double avgDistortion(List<Cluster<D>> clusters) {
     double rv = 0;
     // Penalizes empty clusters and clusters with only a element
     if (clusters.isEmpty() || singleElementClusters(clusters))
@@ -51,7 +51,7 @@ public class ClusterUtils {
    * @param <D> Any Class that implements {@link Distance} interface.
    * @return true if all the clusters only have a single element, otherwise false
    */
-  public static <D extends Distance> boolean singleElementClusters(List<Cluster<D>> clusters) {
+  public static <D extends Distance<D>> boolean singleElementClusters(List<Cluster<D>> clusters) {
     boolean rv = true;
     for(Cluster<D> cluster : clusters) {
       if(cluster != null && cluster.size() > 1) {
@@ -69,7 +69,7 @@ public class ClusterUtils {
    * @param <D> Any Class that implements {@link Distance} interface.
    * @return true if the list of clusters contains empty clusters, otherwise false.
    */
-  public static <D extends Distance> boolean emptyClusters(List<Cluster<D>> clusters) {
+  public static <D extends Distance<D>> boolean emptyClusters(List<Cluster<D>> clusters) {
     boolean rv = false;
 
     for (Cluster c : clusters) {
@@ -90,7 +90,7 @@ public class ClusterUtils {
    * @param <D> Any Class that implements {@link Distance} interface.
    * @return
    */
-  public static <D extends Distance> double avgSilhouette(List<Cluster<D>> clusters) {
+  public static <D extends Distance<D>> double avgSilhouette(List<Cluster<D>> clusters) {
     double rv = -1.0, count = 0;
 
     if (clusters.size() > 1) {

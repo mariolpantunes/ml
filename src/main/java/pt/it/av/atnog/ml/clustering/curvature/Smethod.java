@@ -87,15 +87,15 @@ public class Smethod extends BaseCurvature {
     double msel = 0.0, msec=0.0, mser = 0.0;
 
     for(int i = 0; i < p1+1; i++) {
-      msel += Math.pow(y[i]-(lrl[0]*x[i]+lrl[1]) ,2.0);
+      msel += Math.pow(y[i] - (lrl[0] * x[i] + lrl[1]), 2.0);
     }
 
     for (int i = p1; i < p2 + 1; i++) {
-      msec += Math.pow(y[i]-(lrc[0]*x[i]+lrc[1]) ,2.0);
+      msec += Math.pow(y[i] - (lrc[0] * x[i] + lrc[1]), 2.0);
     }
 
     for (int i = p2; i < length; i++) {
-      mser += Math.pow(y[i]-(lrr[0]*x[i]+lrr[1]) ,2.0);
+      mser += Math.pow(y[i] - (lrr[0] * x[i] + lrr[1]), 2.0);
     }
 
     return (p1 * Math.sqrt(msel) + (p2-p1) * Math.sqrt(msec) +(length-p2) * Math.sqrt(mser))/length;

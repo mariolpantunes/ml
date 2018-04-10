@@ -19,25 +19,19 @@ public class Rmethod extends BaseCurvature {
 
   @Override
   public int find_knee(double[] x, double[] y) {
+    int rv = -1;
     double lnr[] = ArrayUtils.lnr(x, y);
-    double f[] = new double[y.length];
 
     //System.out.println("f(x)="+lnr[0]+"ln(x)+"+lnr[1]);
-
-    for (int i = 0; i < x.length; i++) {
-      f[i] = lnr[0] * Math.log(x[i]) + lnr[1];
-    }
-
-    double r2 = ArrayUtils.r2(y, f);
-
     //System.out.println("R2="+r2);
-    double a = lnr[0];
+    double a = lnr[0], r2 = lnr[2];
     //System.out.println("A=" + a);
 
-    double rx = x[0];
+    if (r2 >= 0.8) {
 
-    // Newtom method
+      // Newtom method
     /*System.out.println("F("+rx+") = "+flnr(rx,a));
+    double rx = x[0];
     int c = 0;
     while (!MathUtils.equals(flnr(rx, a), 0.0, 0.01)) {
       rx = rx - (flnr(rx, a) / f1lnr(rx, a));
@@ -45,11 +39,13 @@ public class Rmethod extends BaseCurvature {
     }
     System.out.println("F("+rx+") = "+flnr(rx,a)+" ("+c+")");*/
 
-    // Ln alternative close formula
-    rx = a / Math.sqrt(2.0);
-    //System.out.println("FLN(" + rx + ") = " + flnr(rx, a));
+      // Ln alternative close formula
+      double rx = a / Math.sqrt(2.0);
+      rv = ArrayUtils.findClose(rx, x);
+      //System.out.println("FLN(" + rx + ") = " + flnr(rx, a));
+    }
 
-    return ArrayUtils.findCloseSorted(rx, x);
+    return rv;
   }
 
   private double flnr(double rx, double a) {
@@ -65,33 +61,35 @@ public class Rmethod extends BaseCurvature {
     int rv = -1;
     double pr[] = ArrayUtils.pr(x, y);
 
+    double a = pr[0], b = pr[1], r2 = pr[2];
+    System.out.println("\t\tR2 = " + r2);
+    if (r2 >= 0.8) {
+      double u = a * b, v = u * (b - 1), w = v * (b - 2);
+      //double z = w * u * u - 3 * v * v * u;
+      double z = u * (w * u - 3 * v * v);
 
-    double a = pr[0], b = pr[1];
-    double u = a * b, v = u * (b - 1), k = v * (b - 2);
-    double z = k * u * u - 3 * v * v * u;
+      //System.out.println("A=" + a);
+      //System.out.println("B=" + b);
+      //System.out.println("U=" + u);
+      //System.out.println("V=" + v);
+      //System.out.println("K=" + k);
+      //System.out.println("Z=" + z);
 
-    //System.out.println("A=" + a);
-    //System.out.println("B=" + b);
-    //System.out.println("U=" + u);
-    //System.out.println("V=" + v);
-    //System.out.println("K=" + k);
-    //System.out.println("Z=" + z);
-
-    double rx = x[0];
-
-    // Newton Method
-    //System.out.println("F("+rx+") = "+fpr(rx,k,z,b));
-    /*int c = 0;
+      // Newton Method
+      //System.out.println("F("+rx+") = "+fpr(rx,k,z,b));
+    /*double rx = x[0];
+    int c = 0;
     while (!MathUtils.equals(fpr(rx, k, z, b), 0.0, 0.1)) {
       rx = rx - (fpr(rx, k, z, b) / f1pr(rx, k, z, b));
       c++;
     }*/
-    //System.out.println("F("+rx+") = "+fpr(rx,k,z,b)+" ("+c+")");*/
+      //System.out.println("F("+rx+") = "+fpr(rx,k,z,b)+" ("+c+")");*/
 
-    // Ln alternative
-    rx = Math.pow((k / -z), (1.0 / (2 * b - 2)));
-    //System.out.println("FLN(" + rx + ") = " + fpr(rx, k, z, b));
-    rv = ArrayUtils.findCloseSorted(rx, x);
+      // Ln alternative
+      double rx = Math.pow((-w / z), (1.0 / (2 * b - 2)));
+      //System.out.println("FLN(" + rx + ") = " + fpr(rx, k, z, b));
+      rv = ArrayUtils.findClose(rx, x);
+    }
 
     return rv;
   }

@@ -7,7 +7,7 @@ import java.util.List;
 
 public class SLINK implements Hierarchical{
 
-  public <D extends Distance> int[][] clustering(final List<D> dps) {
+  public <D extends Distance<? super D>> int[][] clustering(final List<D> dps) {
     double height[] = new double[dps.size()],
         mus[] = new double[dps.size()];
     int parent[] = new int[dps.size()];

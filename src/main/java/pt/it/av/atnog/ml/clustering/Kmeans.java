@@ -23,5 +23,5 @@ public interface Kmeans {
      * @param <D>
      * @return
      */
-    <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int k);
+    <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps, final int k);
 }

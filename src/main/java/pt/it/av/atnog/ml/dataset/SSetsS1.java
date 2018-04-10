@@ -1,5 +1,6 @@
 package pt.it.av.atnog.ml.dataset;
 
+import pt.it.av.atnog.utils.bla.Vector;
 import pt.it.av.atnog.utils.structures.Point2D;
 
 import java.io.BufferedReader;
@@ -9,10 +10,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SSetsS1 implements Dataset<Point2D> {
+public class SSetsS1 implements Dataset<Vector> {
   @Override
-  public List<Point2D> load() {
-    List<Point2D> dataset = new ArrayList<>(5000);
+  public List<Vector> load() {
+    List<Vector> dataset = new ArrayList<>(5000);
     String fileName = getClass().getResource("s1.csv").getFile();
     try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
       String line = br.readLine();

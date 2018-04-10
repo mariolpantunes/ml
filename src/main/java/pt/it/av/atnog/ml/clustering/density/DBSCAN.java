@@ -16,12 +16,12 @@ import java.util.*;
  */
 public class DBSCAN implements Density{
 
-  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int minPts) {
+  public <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps, final int minPts) {
     return clustering(dps, minPts, new Lmethod());
   }
 
-  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final int minPts,
-                                                          final Curvature curvature) {
+  public <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps, final int minPts,
+                                                             final Curvature curvature) {
     // array with average distance to closest minPts
     double dist[] = new double[dps.size()];
     double x[] = new double[dps.size()];
@@ -41,7 +41,7 @@ public class DBSCAN implements Density{
     return clustering(dps, dist[curvature.elbow(x, dist)], minPts);
   }
 
-  public static <D extends Distance> double[] kCloserPoints(List<D> dps, final int idx, final int k) {
+  public static <D extends Distance<D>> double[] kCloserPoints(List<D> dps, final int idx, final int k) {
     double rv[] = new double[k];
 
     D dp = dps.get(idx);
@@ -80,8 +80,8 @@ public class DBSCAN implements Density{
    * @param <D>
    * @return
    */
-  public <D extends Distance> List<Cluster<D>> clustering(final List<D> dps, final double eps,
-                                                          final int minPts) {
+  public <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps, final double eps,
+                                                             final int minPts) {
     int clusterCount = -1;
     int mapping[] = new int[dps.size()];
     Arrays.fill(mapping, -1);
@@ -137,8 +137,8 @@ public class DBSCAN implements Density{
    * @param <D>
    * @return
    */
-  private <D extends Distance> List<Integer> rangeQuery(final int idx, final List<D> dps,
-                                                        final double eps) {
+  private <D extends Distance<D>> List<Integer> rangeQuery(final int idx, final List<D> dps,
+                                                           final double eps) {
     List<Integer> rv = new ArrayList<>();
     D dp = dps.get(idx);
 

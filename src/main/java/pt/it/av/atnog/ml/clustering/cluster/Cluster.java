@@ -10,7 +10,7 @@ import java.util.List;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
-public class Cluster<D extends Distance> extends ArrayList<D> {
+public class Cluster<D extends Distance<D>> extends ArrayList<D> {
 
   /**
    * Creates an empty cluster.
@@ -32,7 +32,7 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
    * @param <D>
    * @return
    */
-  private static <D extends Distance> D center(List<D> dps) {
+  private static <D extends Distance<D>> D center(List<D> dps) {
     D rv = null;
 
     switch (dps.size()) {
@@ -79,7 +79,7 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
    * @param <D>
    * @return
    */
-  private static <D extends Distance> double distortion(List<D> dps, D center) {
+  private static <D extends Distance<D>> double distortion(List<D> dps, D center) {
     double rv = 0.0;
     for (int i = 0; i < dps.size(); i++) {
       rv += Math.pow(center.distanceTo(dps.get(i)), 2.0);
@@ -93,7 +93,7 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
    * @param <D>
    * @return
    */
-  private static <D extends Distance> double maxRadius(List<D> dps, D center) {
+  private static <D extends Distance<D>> double maxRadius(List<D> dps, D center) {
     double rv = center.distanceTo(dps.get(0));
     for (int i = 1; i < dps.size(); i++) {
       double t = center.distanceTo(dps.get(i));
@@ -110,7 +110,7 @@ public class Cluster<D extends Distance> extends ArrayList<D> {
    * @param <D>
    * @return
    */
-  private static <D extends Distance> double avgRadius(List<D> dps, D center) {
+  private static <D extends Distance<D>> double avgRadius(List<D> dps, D center) {
     double rv = center.distanceTo(dps.get(0));
     for (int i = 1; i < dps.size(); i++) {
       rv += center.distanceTo(dps.get(i));

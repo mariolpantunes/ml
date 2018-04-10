@@ -1,8 +1,6 @@
 package pt.it.av.atnog.ml.tm;
 
-import pt.it.av.atnog.ml.tm.StopWords.BlacklistStopWords;
 import pt.it.av.atnog.ml.tm.StopWords.EnglishStopWords;
-import pt.it.av.atnog.ml.tm.StopWords.StopWords;
 import pt.it.av.atnog.ml.tm.lexicalPattern.LexicalPattern;
 import pt.it.av.atnog.ml.tm.ngrams.NGram;
 import pt.it.av.atnog.ml.tm.stemmer.PorterStemmer;
@@ -38,7 +36,7 @@ public class Hypernyms {
 
     public NGram hypernym(NGram term) {
         NGram t = term.toLowerCase();
-        Map<NGram, Count> m = new HashMap();
+      Map<NGram, Count> m = new HashMap<>();
         Parameters param = new Parameters();
         Stemmer stemmer = new PorterStemmer();
 

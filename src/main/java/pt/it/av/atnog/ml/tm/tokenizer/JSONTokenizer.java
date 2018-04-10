@@ -79,7 +79,7 @@ public class JSONTokenizer implements Tokenizer{
     public List<String> tokenize(JSONObject json) {
         List<String> rv = new ArrayList<>();
 
-        Deque<JSONValue> stack = new ArrayDeque();
+      Deque<JSONValue> stack = new ArrayDeque<>();
         stack.push(json);
 
         while(!stack.isEmpty()) {

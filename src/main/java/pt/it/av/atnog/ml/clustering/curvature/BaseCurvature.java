@@ -11,12 +11,13 @@ import pt.it.av.atnog.utils.ArrayUtils;
 public abstract class BaseCurvature implements Curvature{
   @Override
   public final int knee(double[] x, double[] y) {
-    double slope = (y[y.length-1] - y[0]) / (x[x.length-1] - x[0]);
-
     int rv = -1;
+    double slope = (y[y.length - 1] - y[0]) / (x[x.length - 1] - x[0]);
+
+
     if(slope < 0) {
       double yr[] = ArrayUtils.reverse(y);
-      rv = find_knee(x, yr);
+      rv = x.length - find_knee(x, yr) - 1;
     } else {
       rv = find_knee(x, y);
     }
@@ -26,12 +27,13 @@ public abstract class BaseCurvature implements Curvature{
 
   @Override
   public final int elbow(double[] x, double[] y) {
-    double slope = (y[y.length-1] - y[0]) / (x[x.length-1] - x[0]);
-
     int rv = -1;
+    double slope = (y[y.length - 1] - y[0]) / (x[x.length - 1] - x[0]);
+
     if(slope > 0) {
       double yr[] = ArrayUtils.reverse(y);
-      rv = find_elbow(x, yr);
+//      rv = find_elbow(x, y);
+      rv = x.length - find_elbow(x, yr) - 1;
     } else {
       rv = find_elbow(x, y);
     }
