@@ -33,7 +33,6 @@ public class DFDT extends BaseCurvature {
       System.out.println("LastCurve = " + lastCurve + " Curve = " + curve + " Cutoff = " + cutoff + " Length = " + (y.length - cutoff));
     } while (lastCurve < curve);
 
-    curve = dfdt(x, y, cutoff, y.length - cutoff);
     return curve;
   }
 

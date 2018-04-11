@@ -33,7 +33,6 @@ public class DSDT extends BaseCurvature {
       System.out.println("LastCurve = " + lastCurve + " Curve = " + curve + " Cutoff = " + cutoff + " Length = " + (y.length - cutoff));
     } while (lastCurve < curve);
 
-    //curve = dsdt(x, y, cutoff, y.length - cutoff);
     return curve;
   }
 
