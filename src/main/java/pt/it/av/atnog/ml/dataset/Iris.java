@@ -1,6 +1,5 @@
 package pt.it.av.atnog.ml.dataset;
 
-import pt.it.av.atnog.utils.bla.Vector;
 import pt.it.av.atnog.utils.structures.Point4D;
 
 import java.io.BufferedReader;
@@ -16,13 +15,13 @@ import java.util.List;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
-public class Iris implements Dataset<Vector> {
+public class Iris implements Dataset<Point4D> {
   @Override
-  public List<Vector> load() {
+  public List<Point4D> load() {
     ClassLoader classloader = Thread.currentThread().getContextClassLoader();
     String fileName = classloader.getResource("iris.csv").getFile();
     //String fileName = getClass().getResource("iris.csv").getFile();
-    List<Vector> data = new ArrayList<>(150);
+    List<Point4D> data = new ArrayList<>(150);
     try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
       String line = br.readLine();
       while (line != null) {

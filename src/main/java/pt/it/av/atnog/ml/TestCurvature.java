@@ -14,6 +14,7 @@ import pt.it.av.atnog.utils.MathUtils;
 import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.bla.Vector;
 import pt.it.av.atnog.utils.structures.Distance;
+import pt.it.av.atnog.utils.structures.Point4D;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class TestCurvature {
     double x[] = {-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
         y[] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 107, 122, 145, 176, 215, 262, 317, 380, 451, 530};
 
+    ArrayUtils.replace(y, 0, 10);
 
     System.out.println(x.length + " " + y.length);
 
@@ -63,9 +65,9 @@ public class TestCurvature {
 
     // IRIS
     System.out.println("Iris dataset (3)");
-    Dataset<Vector> iris = new Iris();
+    Dataset<Point4D> iris = new Iris();
 
-    List<Vector> irisDps = iris.load();
+    List<Point4D> irisDps = iris.load();
 
     System.out.println("K-means++");
     elbowTest(kmeans, irisDps, (int) (Math.round(iris.classes() / 2.0)), iris.classes() * 2, reps);
