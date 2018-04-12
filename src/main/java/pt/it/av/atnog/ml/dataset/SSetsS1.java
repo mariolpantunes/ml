@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SSetsS1 implements Dataset<Vector> {
+public class SSetsS1 implements Dataset<Point2D> {
   @Override
-  public List<Vector> load() {
-    List<Vector> dataset = new ArrayList<>(5000);
+  public List<Point2D> load() {
+    List<Point2D> dataset = new ArrayList<>(5000);
     String fileName = getClass().getResource("s1.csv").getFile();
     try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
       String line = br.readLine();

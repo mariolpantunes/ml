@@ -14,6 +14,7 @@ import pt.it.av.atnog.utils.MathUtils;
 import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.bla.Vector;
 import pt.it.av.atnog.utils.structures.Distance;
+import pt.it.av.atnog.utils.structures.Point2D;
 import pt.it.av.atnog.utils.structures.Point4D;
 
 import java.util.ArrayList;
@@ -136,9 +137,9 @@ public class TestCurvature {
     // A-Set A1 Dataset
     System.out.println();
     System.out.println("A-sets A1 dataset (20)");
-    Dataset<Vector> a1 = new ASetsA1();
+    Dataset<Point2D> a1 = new ASetsA1();
 
-    List<Vector> a1Dps = a1.load();
+    List<Point2D> a1Dps = a1.load();
 
     System.out.println("K-means++");
     elbowTest(kmeans, a1Dps, (int) (Math.round(a1.classes() / 2.0)), a1.classes() * 2, reps);
@@ -150,9 +151,9 @@ public class TestCurvature {
     // A-Set A2 Dataset
     System.out.println();
     System.out.println("A-sets A2 dataset (35)");
-    Dataset<Vector> a2 = new ASetsA2();
+    Dataset<Point2D> a2 = new ASetsA2();
 
-    List<Vector> a2Dps = a2.load();
+    List<Point2D> a2Dps = a2.load();
 
     System.out.println("K-means++");
     elbowTest(kmeans, a2Dps, (int) (Math.round(a2.classes() / 2.0)), a2.classes() * 2, reps);
@@ -164,9 +165,9 @@ public class TestCurvature {
     // A-Set A3 Dataset
     System.out.println();
     System.out.println("A-sets A3 dataset (50)");
-    Dataset<Vector> a3 = new ASetsA3();
+    Dataset<Point2D> a3 = new ASetsA3();
 
-    List<Vector> a3Dps = a3.load();
+    List<Point2D> a3Dps = a3.load();
 
     System.out.println("K-means++");
     elbowTest(kmeans, a3Dps, (int) (Math.round(a3.classes() / 2.0)), a3.classes() * 2, reps);

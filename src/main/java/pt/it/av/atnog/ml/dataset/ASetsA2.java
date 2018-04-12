@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ASetsA2 implements Dataset<Vector> {
+public class ASetsA2 implements Dataset<Point2D> {
   @Override
-  public List<Vector> load() {
+  public List<Point2D> load() {
     //String fileName = getClass().getResource("a2.csv").getFile();
     ClassLoader classloader = Thread.currentThread().getContextClassLoader();
     String fileName = classloader.getResource("a2.csv").getFile();
-    List<Vector> dataset = new ArrayList<>(5250);
+    List<Point2D> dataset = new ArrayList<>(5250);
     try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
       String line = br.readLine();
       while (line != null) {

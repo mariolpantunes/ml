@@ -35,6 +35,8 @@ public class Rmethod extends BaseCurvature {
   @Override
   public int find_elbow(double[] x, double[] y) {
     int rv = -1;
+    System.err.println(PrintUtils.array(x));
+    System.err.println(PrintUtils.array(y));
     double pr[] = ArrayUtils.pr(x, y);
     double er[] = ArrayUtils.er(x, y);
 
