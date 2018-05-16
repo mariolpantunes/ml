@@ -5,7 +5,7 @@ import pt.it.av.atnog.utils.ArrayUtils;
 /**
  * S-method to detect knee/elbow points.
  * <p>
- *   Slips method.
+ *   Slide method.
  *   It expands the idea of the L-method, but considers three parts instead of two.
  * </p>
  *
