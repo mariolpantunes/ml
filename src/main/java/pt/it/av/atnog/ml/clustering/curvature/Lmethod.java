@@ -38,7 +38,7 @@ public class Lmethod extends BaseCurvature {
       lastCurve = curve;
       curve = lMethod(x, y, cutoff);
       cutoff = curve * 2;
-      //System.out.println("\t\tLastCurve = "+lastCurve+" Curve = "+curve+" Cutoff = "+cutoff+" Length = "+(y.length - cutoff));
+      System.out.println("\t\tLastCurve = " + lastCurve + " Curve = " + curve + " Cutoff = " + cutoff + " Length = " + (y.length - cutoff));
     } while (lastCurve > curve);
 
     return curve;
