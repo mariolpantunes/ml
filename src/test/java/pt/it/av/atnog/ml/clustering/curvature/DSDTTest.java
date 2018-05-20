@@ -10,15 +10,13 @@ public class DSDTTest {
   public void test_elbow() {
     Curvature alg = new DSDT();
     int elbow = alg.elbow(CurvatureTest.elbow_x, CurvatureTest.elbow_y);
-    assertTrue(elbow == 5);
-    //System.out.println(CurvatureTest.elbow_x[elbow]);
+    assertTrue(elbow == 8);
   }
 
   @Test
   public void test_knee() {
     Curvature alg = new DSDT();
     int knee = alg.knee(CurvatureTest.knee_x, CurvatureTest.knee_y);
-    assertTrue(knee == 9);
-    //System.out.println(CurvatureTest.knee_x[knee]);
+    assertTrue(knee == 10);
   }
 }
