@@ -1,4 +1,4 @@
-package pt.it.av.atnog.ml;
+package pt.it.av.atnog.ml.regression;
 
 import pt.it.av.atnog.ml.optimization.Optimization;
 import pt.it.av.atnog.utils.bla.Matrix;
