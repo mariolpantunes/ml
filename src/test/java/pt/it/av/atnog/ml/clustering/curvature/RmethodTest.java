@@ -2,7 +2,7 @@ package pt.it.av.atnog.ml.clustering.curvature;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class RmethodTest {
 
@@ -10,13 +10,13 @@ public class RmethodTest {
   public void test_elbow() {
     Curvature alg = new Rmethod();
     int elbow = alg.elbow(CurvatureTest.elbow_x, CurvatureTest.elbow_y);
-    assertTrue(elbow == 9);
+    assertEquals(9, elbow);
   }
 
   @Test
   public void test_knee() {
     Curvature alg = new Rmethod();
     int knee = alg.knee(CurvatureTest.knee_x, CurvatureTest.knee_y);
-    assertTrue(knee == 2);
+    assertEquals(2, knee);
   }
 }

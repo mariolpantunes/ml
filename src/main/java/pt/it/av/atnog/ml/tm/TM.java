@@ -6,7 +6,7 @@ import pt.it.av.atnog.ml.tm.stemmer.Stemmer;
 import pt.it.av.atnog.ml.tm.tokenizer.Tokenizer;
 import pt.it.av.atnog.utils.StringUtils;
 import pt.it.av.atnog.utils.parallel.Pipeline;
-import pt.it.av.atnog.utils.structures.CircularQueue;
+import pt.it.av.atnog.utils.structures.queue.CircularQueue;
 import pt.it.av.atnog.utils.structures.mutableNumber.MutableDouble;
 
 import java.util.ArrayList;

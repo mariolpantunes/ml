@@ -1,5 +1,6 @@
 package pt.it.av.atnog.ml.clustering.curvature;
 
+import pt.it.av.atnog.ml.regression.UnivariateRegression;
 import pt.it.av.atnog.utils.ArrayUtils;
 
 /**
@@ -22,8 +23,8 @@ public class Smethod extends BaseCurvature {
       lastCurve = curve;
       curve = sMethod(x, y, cutoff)[0];
       cutoff = curve * 2;
-      //System.out.println("LastCurve = "+lastCurve+" Curve = "+curve+" Cutoff = "+cutoff+" Length = "+(y.length - cutoff));
-    } while (lastCurve > curve);
+      //System.out.println("LastCurve = "+lastCurve+" Curve = "+curve+" Cutoff = "+cutoff);
+    } while (lastCurve > curve && cutoff >= Lmethod.MINCUTOFF);
 
     return curve;
   }
@@ -36,8 +37,8 @@ public class Smethod extends BaseCurvature {
       lastCurve = curve;
       curve = sMethod(x, y, cutoff)[1];
       cutoff = curve * 2;
-      //System.out.println("LastCurve = "+lastCurve+" Curve = "+curve+" Cutoff = "+cutoff+" Length = "+(y.length - cutoff));
-    } while (lastCurve > curve);
+      //System.out.println("LastCurve = "+lastCurve+" Curve = "+curve+" Cutoff = "+cutoff);
+    } while (lastCurve > curve && cutoff >= Lmethod.MINCUTOFF);
 
     return curve;
   }
@@ -50,19 +51,19 @@ public class Smethod extends BaseCurvature {
    */
   private int[] sMethod(final double x[], final double[] y, final int length) {
     int p[] = {1, 2};
-    double rmse = Double.POSITIVE_INFINITY;
+    double smetric = Double.POSITIVE_INFINITY;
 
     for(int i = 1; i < length - 3; i++) {
+      UnivariateRegression.LR lrl = UnivariateRegression.lr(x, y, 0, 0, i + 1);
       for (int j = i + 1; j < length - 2; j++) {
-        double lrl[] = ArrayUtils.lr(x, y, 0, 0, i + 1),
-            lrc[] = ArrayUtils.lr(x, y, i, i, j - (i + 1)),
-            lrr[] = ArrayUtils.lr(x, y, j, j, length - (j + 1));
+        UnivariateRegression.LR lrm = UnivariateRegression.lr(x, y, i, i, j - (i + 1)),
+            lrr = UnivariateRegression.lr(x, y, j, j, length - (j + 1));
 
-        double crmse = rmse(x, y, lrl, lrc, lrr, i, j, length);
-        if (crmse < rmse) {
+        double crmse = sMetric(x, y, lrl, lrm, lrr, i, j, length);
+        if (crmse < smetric) {
           p[0] = i;
           p[1] = j;
-          rmse = crmse;
+          smetric = crmse;
         }
       }
     }
@@ -81,23 +82,13 @@ public class Smethod extends BaseCurvature {
    * @param p2
    * @return
    */
-  private double rmse(final double x[], final double[] y, final double lrl[],
-                      final double lrc[], final double lrr[],
+  private double sMetric(final double x[], final double[] y, final UnivariateRegression.LR lrl,
+                         final UnivariateRegression.LR lrm, final UnivariateRegression.LR lrr,
                       final int p1, final int p2, final int length) {
-    double msel = 0.0, msec=0.0, mser = 0.0;
+    double rmsel = Lmethod.rmse(x,y,lrl,0,p1+1),
+        rmsem = Lmethod.rmse(x,y,lrm,p1,p2+1),
+        rmser = Lmethod.rmse(x,y,lrr,p2,length);
 
-    for(int i = 0; i < p1+1; i++) {
-      msel += Math.pow(y[i] - (lrl[0] * x[i] + lrl[1]), 2.0);
-    }
-
-    for (int i = p1; i < p2 + 1; i++) {
-      msec += Math.pow(y[i] - (lrc[0] * x[i] + lrc[1]), 2.0);
-    }
-
-    for (int i = p2; i < length; i++) {
-      mser += Math.pow(y[i] - (lrr[0] * x[i] + lrr[1]), 2.0);
-    }
-
-    return (p1 * Math.sqrt(msel) + (p2-p1) * Math.sqrt(msec) +(length-p2) * Math.sqrt(mser))/length;
+    return (p1 * rmsel + (p2-p1) * rmsem +(length-p2) * rmser)/length;
   }
 }

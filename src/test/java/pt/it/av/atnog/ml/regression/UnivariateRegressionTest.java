@@ -5,6 +5,7 @@ import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.MathUtils;
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class UnivariateRegressionTest {
@@ -13,9 +14,9 @@ public class UnivariateRegressionTest {
     double x[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
         y[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     UnivariateRegression.LR lr = UnivariateRegression.lr(x, y);
-    assertTrue(lr.a() == 1.0);
-    assertTrue(lr.b() == 0.0);
-    assertTrue(lr.r2() == 1.0);
+    assertEquals(lr.a(), 1.0, 0.01);
+    assertEquals(lr.b(), 0.0, 0.01);
+    assertEquals(lr.r2(), 1.0, 0.01);
   }
 
   @Test
@@ -23,9 +24,9 @@ public class UnivariateRegressionTest {
     double x[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
         y[] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
     UnivariateRegression.LR lr = UnivariateRegression.lr(x, y);
-    assertTrue(lr.a() == -1.0);
-    assertTrue(lr.b() == 9.0);
-    assertTrue(lr.r2() == 1.0);
+    assertEquals(lr.a(), -1.0, 0.01);
+    assertEquals(lr.b(), 9.0, 0.01);
+    assertEquals(lr.r2(), 1.0, 0.01);
   }
 
   @Test

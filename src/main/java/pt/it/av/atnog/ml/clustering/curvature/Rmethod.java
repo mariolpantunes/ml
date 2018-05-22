@@ -1,5 +1,6 @@
 package pt.it.av.atnog.ml.clustering.curvature;
 
+import pt.it.av.atnog.ml.regression.UnivariateRegression;
 import pt.it.av.atnog.utils.ArrayUtils;
 import pt.it.av.atnog.utils.PrintUtils;
 
@@ -21,11 +22,10 @@ public class Rmethod extends BaseCurvature {
   @Override
   public int find_knee(double[] x, double[] y) {
     int rv = -1;
-    double lnr[] = ArrayUtils.lnr(x, y);
-    double a = lnr[0], r2 = lnr[2];
+    UnivariateRegression.LNR lnr = UnivariateRegression.lnr(x, y);
 
-    if (r2 >= 0.8) {
-      double rx = a / Math.sqrt(2.0);
+    if (lnr.r2() >= 0.8) {
+      double rx = lnr.a() / Math.sqrt(2.0);
       rv = ArrayUtils.findClose(rx, x);
     }
 
@@ -37,30 +37,27 @@ public class Rmethod extends BaseCurvature {
     int rv = -1;
     System.err.println(PrintUtils.array(x));
     System.err.println(PrintUtils.array(y));
-    double pr[] = ArrayUtils.pr(x, y);
-    double er[] = ArrayUtils.er(x, y);
+    UnivariateRegression.PR pr = UnivariateRegression.pr(x, y);
+    UnivariateRegression.ER er = UnivariateRegression.er(x, y);
 
     System.out.println("\t\t X=" + PrintUtils.array(x));
     System.out.println("\t\t Y=" + PrintUtils.array(y));
 
-    double er2 = er[2], pr2 = pr[2];
-    System.out.println("\t\t Power R2       = " + pr2);
-    System.out.println("\t\t Exponencial R2 = " + er2);
 
-    if (pr2 >= 0.8 && pr2 > er2) {
-      double a = pr[0], b = pr[1];
+    System.out.println("\t\t"+pr);
+    System.out.println("\t\t"+er);
+
+    if (pr.r2() >= 0.8 && pr.r2() > er.r2()) {
+      double a = pr.a(), b = pr.b();
       double u = a * b, v = u * (b - 1), w = v * (b - 2);
       //double z = w * u * u - 3 * v * v * u;
       double z = u * (w * u - 3 * v * v);
-
       double rx = Math.pow((-w / z), (1.0 / (2 * b - 2)));
       //System.out.println("FLN(" + rx + ") = " + fpr(rx, k, z, b));
       rv = ArrayUtils.findClose(rx, x);
-    } else if (er2 > 0.8) {
-      double a = er[0], b = er[1];
-      System.out.println("\t\tf(x) = " + a + "e^x" + b);
+    } else if (er.r2() > 0.8) {
+      double a = er.a(), b = er.b();
       double rx = (-Math.log(2 * Math.pow(a, 2.0) * Math.pow(b, 2))) / (2 * b);
-      System.out.println("\t\t RX = " + rx);
       rv = ArrayUtils.findClose(rx, x);
     }
 
