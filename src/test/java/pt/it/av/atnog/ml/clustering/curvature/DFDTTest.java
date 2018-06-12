@@ -10,8 +10,25 @@ public class DFDTTest {
   public void test_elbow() {
     Curvature alg = new DFDT();
     int elbow = alg.elbow(CurvatureTest.elbow_x, CurvatureTest.elbow_y);
-    System.out.println(elbow);
     assertEquals(8, elbow);
+  }
+
+  @Test
+  public void test_elbow_slope_zero() {
+    Curvature alg = new DFDT();
+    final double[] x = new double[]{1, 2, 3};
+    final double[] y = new double[]{0, 0, 0};
+    int elbow = alg.elbow(x, y);
+    assertEquals(-1, elbow);
+  }
+
+  @Test
+  public void test_elbow_0() {
+    Curvature alg = new DFDT();
+    final double[] x = new double[]{1, 2, 3};
+    final double[] y = new double[]{0, 0.1, 0.1};
+    int elbow = alg.elbow(x, y);
+    assertEquals(1, elbow);
   }
 
   @Test
@@ -19,5 +36,23 @@ public class DFDTTest {
     Curvature alg = new DFDT();
     int knee = alg.knee(CurvatureTest.knee_x, CurvatureTest.knee_y);
     assertEquals(14, knee);
+  }
+
+  @Test
+  public void test_knee_slope_zero() {
+    Curvature alg = new DFDT();
+    final double[] x = new double[]{1, 2, 3};
+    final double[] y = new double[]{0, 0, 0};
+    int elbow = alg.knee(x, y);
+    assertEquals(-1, elbow);
+  }
+
+  @Test
+  public void test_knee_0() {
+    Curvature alg = new DFDT();
+    final double[] x = new double[]{1, 2, 3};
+    final double[] y = new double[]{0, 0.1, 0.1};
+    int elbow = alg.knee(x, y);
+    assertEquals(1, elbow);
   }
 }

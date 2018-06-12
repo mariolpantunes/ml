@@ -30,8 +30,8 @@ public class DFDT extends BaseCurvature {
       lastCurve = curve;
       curve = dfdt(x, y, cutoff, y.length - cutoff);
       cutoff = (int) Math.ceil(curve / 2.0);
-      System.out.println("LastCurve = " + lastCurve + " Curve = " + curve + " Cutoff = " + cutoff + " Length = " + (y.length - cutoff));
-    } while (lastCurve < curve);
+      //System.out.println("LastCurve = " + lastCurve + " Curve = " + curve + " Cutoff = " + cutoff + " Length = " + (y.length - cutoff));
+    } while (lastCurve < curve && (y.length - cutoff) > Lmethod.MINCUTOFF);
 
     return curve;
   }
