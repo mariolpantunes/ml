@@ -27,13 +27,24 @@ public class TestCurvature {
     Kmeans kmeans = new Kmeanspp();
     SLINK slink = new SLINK();
 
-    // TODO:REMOVE
-    double x[] = {-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-        y[] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 107, 122, 145, 176, 215, 262, 317, 380, 451, 530};
-
-    ArrayUtils.replace(y, 0, 10);
-
-    System.out.println(x.length + " " + y.length);
+    double cfd[] = {0.3333333333,
+        0.125,
+        0.06666666667,
+        0.04166666667,
+        0.02857142857,
+        0.02083333333,
+        0.01587301587,
+        0.0125,
+        0.0101010101,
+        0.008333333333,
+        0.006993006993,
+        0.005952380952,
+        0.005128205128,
+        0.004464285714,
+        0.003921568627,
+        0.003472222222,
+        0.003095975232,
+        0.002777777778};
 
     List<String> header = new ArrayList<>();
     header.add("Kneedle");
@@ -54,15 +65,6 @@ public class TestCurvature {
     curv.add(new DSDT());
     curv.add(new Rmethod());
     curv.add(new DKmethod());
-
-    for (int i = 0; i < curv.size(); i++) {
-      int idx = curv.get(i).elbow(x, y);
-      if (idx >= 0 && idx < x.length) {
-        System.out.println("\t" + header.get(i) + " -> " + x[idx]);
-      } else {
-        System.out.println("\t" + header.get(i) + " -> NA");
-      }
-    }
 
     // IRIS
     System.out.println("Iris dataset (3)");
