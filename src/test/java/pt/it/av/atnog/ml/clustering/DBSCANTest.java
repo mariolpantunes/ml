@@ -4,7 +4,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import pt.it.av.atnog.ml.clustering.cluster.Cluster;
 import pt.it.av.atnog.ml.clustering.density.DBSCAN;
-import pt.it.av.atnog.utils.structures.Point2D;
+import pt.it.av.atnog.utils.structures.point.Point2D;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -15,12 +15,12 @@ public class DSDT extends BaseCurvature {
 
   @Override
   public int find_knee(final double[] x, final double y[]) {
-    return itRefinement(x, y);
+    return ((x.length > 2)?itRefinement(x, y):-1);
   }
 
   @Override
   public int find_elbow(final double[] x, final double[] y) {
-    return itRefinement(x, y);
+    return ((x.length > 2)?itRefinement(x, y):-1);
   }
 
   private int itRefinement(final double x[], final double[] y) {

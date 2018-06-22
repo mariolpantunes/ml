@@ -2,7 +2,7 @@ package pt.it.av.atnog.ml.clustering;
 
 import org.junit.BeforeClass;
 import pt.it.av.atnog.ml.clustering.cluster.Cluster;
-import pt.it.av.atnog.utils.structures.Point2D;
+import pt.it.av.atnog.utils.structures.point.Point2D;
 
 import java.util.ArrayList;
 import java.util.Iterator;

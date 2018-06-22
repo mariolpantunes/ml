@@ -3,8 +3,8 @@ package pt.it.av.atnog.ml.clustering;
 import org.junit.Test;
 
 import pt.it.av.atnog.ml.clustering.cluster.Cluster;
-import pt.it.av.atnog.utils.structures.Point1D;
-import pt.it.av.atnog.utils.structures.Point2D;
+import pt.it.av.atnog.utils.structures.point.Point1D;
+import pt.it.av.atnog.utils.structures.point.Point2D;
 
 import static org.junit.Assert.assertTrue;
 

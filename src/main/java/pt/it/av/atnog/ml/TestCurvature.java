@@ -14,8 +14,8 @@ import pt.it.av.atnog.utils.MathUtils;
 import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.bla.Vector;
 import pt.it.av.atnog.utils.structures.Distance;
-import pt.it.av.atnog.utils.structures.Point2D;
-import pt.it.av.atnog.utils.structures.Point4D;
+import pt.it.av.atnog.utils.structures.point.Point2D;
+import pt.it.av.atnog.utils.structures.point.Point4D;
 
 import java.util.ArrayList;
 import java.util.List;

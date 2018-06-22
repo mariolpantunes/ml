@@ -48,11 +48,20 @@ public class DFDTTest {
   }
 
   @Test
-  public void test_knee_0() {
+  public void test_knee_minimal() {
     Curvature alg = new DFDT();
     final double[] x = new double[]{1, 2, 3};
     final double[] y = new double[]{0, 0.1, 0.1};
-    int elbow = alg.knee(x, y);
-    assertEquals(1, elbow);
+    int knee = alg.knee(x, y);
+    assertEquals(1, knee);
+  }
+
+  @Test
+  public void test_knee_few() {
+    Curvature alg = new DFDT();
+    final double[] x = new double[]{1, 2};
+    final double[] y = new double[]{0.1934, 0.193};
+    int knee = alg.knee(x, y);
+    assertEquals(-1, knee);
   }
 }

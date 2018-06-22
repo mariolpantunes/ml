@@ -2,8 +2,10 @@ package pt.it.av.atnog.ml.clustering.density;
 
 import pt.it.av.atnog.ml.clustering.cluster.Cluster;
 import pt.it.av.atnog.ml.clustering.curvature.Curvature;
+import pt.it.av.atnog.ml.clustering.curvature.DFDT;
 import pt.it.av.atnog.ml.clustering.curvature.Lmethod;
 import pt.it.av.atnog.utils.ArrayUtils;
+import pt.it.av.atnog.utils.PrintUtils;
 import pt.it.av.atnog.utils.structures.Distance;
 
 import java.util.*;
@@ -17,7 +19,7 @@ import java.util.*;
 public class DBSCAN implements Density{
 
   public <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps, final int minPts) {
-    return clustering(dps, minPts, new Lmethod());
+    return clustering(dps, minPts, new DFDT());
   }
 
   public <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps, final int minPts,
@@ -34,11 +36,12 @@ public class DBSCAN implements Density{
     // Sort distances
     Arrays.sort(dist);
 
-    //System.err.println(PrintUtils.array(dist));
-    //System.err.println("EPS = "+dist[AutoThres.curvature(x, dist)]);
+    // Find ideal EPS with elbow detection or Median
+    int elbow = curvature.elbow(x, dist);
+    double eps = (elbow>-1)?dist[elbow]:ArrayUtils.median(dist);
 
     // Find curvature and use it as EPS
-    return clustering(dps, dist[curvature.elbow(x, dist)], minPts);
+    return clustering(dps, eps, minPts);
   }
 
   public static <D extends Distance<D>> double[] kCloserPoints(List<D> dps, final int idx, final int k) {

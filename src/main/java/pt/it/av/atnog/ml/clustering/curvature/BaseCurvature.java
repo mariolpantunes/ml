@@ -17,7 +17,8 @@ public abstract class BaseCurvature implements Curvature{
     if (slope != 0) {
       if (slope < 0) {
         double yr[] = ArrayUtils.reverse(y);
-        rv = x.length - find_knee(x, yr) - 1;
+        int knee = find_knee(x, yr);
+        rv = (knee > -1)?x.length - knee - 1:-1;
       } else {
         rv = find_knee(x, y);
       }
@@ -34,7 +35,8 @@ public abstract class BaseCurvature implements Curvature{
     if (slope != 0) {
       if (slope > 0) {
         double yr[] = ArrayUtils.reverse(y);
-        rv = x.length - find_elbow(x, yr) - 1;
+        int elbow = find_elbow(x, yr);
+        rv = (elbow > -1)?x.length - elbow - 1:-1;
       } else {
         rv = find_elbow(x, y);
       }

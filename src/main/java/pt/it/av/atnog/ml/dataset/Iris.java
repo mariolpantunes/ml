@@ -1,6 +1,6 @@
 package pt.it.av.atnog.ml.dataset;
 
-import pt.it.av.atnog.utils.structures.Point4D;
+import pt.it.av.atnog.utils.structures.point.Point4D;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
