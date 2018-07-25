@@ -18,201 +18,208 @@ import java.util.regex.Pattern;
  * @version 1.0
  */
 public class TextTokenizer implements Tokenizer {
-    private final Locale locale;
-    private final Pattern norm, text;
+  private static Tokenizer t;
+  private final Locale locale;
+  private final Pattern norm, text;
 
-    /**
-     *
-     * @param locale
-     */
-    public TextTokenizer(Locale locale) {
-        this.locale = locale;
-        norm = Pattern.compile("[\\p{InCombiningDiacriticalMarks}]");
-        text = Pattern.compile("('s|[^a-zA-Z-]+)");
-    }
+  /**
+   * @param locale
+   */
+  public TextTokenizer(Locale locale) {
+    this.locale = locale;
+    norm = Pattern.compile("[\\p{InCombiningDiacriticalMarks}]");
+    text = Pattern.compile("('s|[^a-zA-Z-]+)");
+  }
 
-    /**
-     *
-     */
-    public TextTokenizer() {
-        this(Locale.getDefault());
-    }
+  /**
+   *
+   */
+  public TextTokenizer() {
+    this(Locale.getDefault());
+  }
 
-    /**
-     *
-     * @param input
-     * @return
-     */
-    private String normalize(String input) {
-        String lowerCase = input.toLowerCase(locale);
-        String normalize = Normalizer.normalize(lowerCase, Normalizer.Form.NFD);
-        Matcher matcher = norm.matcher(normalize);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find())
-            matcher.appendReplacement(sb, "");
-        matcher.appendTail(sb);
-        return sb.toString();
+  /**
+   * @param input
+   * @return
+   */
+  private String normalize(String input) {
+    String lowerCase = input.toLowerCase(locale);
+    String normalize = Normalizer.normalize(lowerCase, Normalizer.Form.NFD);
+    Matcher matcher = norm.matcher(normalize);
+    StringBuffer sb = new StringBuffer();
+    while (matcher.find())
+      matcher.appendReplacement(sb, "");
+    matcher.appendTail(sb);
+    return sb.toString();
+  }
+
+  @Override
+  public Iterator<String> tokenizeIt(String input) {
+    return new TextTokenizerIteratorString(normalize(input));
+  }
+
+  /**
+   * @param input
+   * @param n
+   * @return
+   */
+  public Iterator<NGram> tokenizeIt(String input, int n) {
+    return new TextTokenizerIteratorNGram(normalize(input), n);
+  }
+
+  @Override
+  public List<String> tokenize(String input) {
+    Iterator<String> it = this.tokenizeIt(input);
+    List<String> rv = new ArrayList<>();
+    while (it.hasNext())
+      rv.add(it.next());
+    return rv;
+  }
+
+  /**
+   * @param input
+   * @param n
+   * @return
+   */
+  public List<NGram> tokenize(String input, int n) {
+    Iterator<NGram> it = this.tokenizeIt(input, n);
+    List<NGram> rv = new ArrayList<>();
+    while (it.hasNext())
+      rv.add(it.next());
+    return rv;
+  }
+
+  /**
+   *
+   */
+  private class TextTokenizerIteratorString implements Iterator<String> {
+    private final String input;
+    private final IteratorParameters p;
+    private boolean hasNext = true;
+
+    public TextTokenizerIteratorString(String input) {
+      this.input = input;
+      p = new IteratorParameters(BreakIterator.getWordInstance(locale), input);
+      findNext(input, p);
+      if (p.token == null)
+        hasNext = false;
     }
 
     @Override
-    public Iterator<String> tokenizeIt(String input) {
-        return new TextTokenizerIteratorString(normalize(input));
-    }
-
-    /**
-     *
-     * @param input
-     * @param n
-     * @return
-     */
-    public Iterator<NGram> tokenizeIt(String input, int n) {
-        return new TextTokenizerIteratorNGram(normalize(input), n);
+    public boolean hasNext() {
+      return hasNext;
     }
 
     @Override
-    public List<String> tokenize(String input) {
-        Iterator<String> it = this.tokenizeIt(input);
-        List<String> rv = new ArrayList<>();
-        while(it.hasNext())
-            rv.add(it.next());
-        return rv;
+    public String next() {
+      String rv = p.token;
+      findNext(input, p);
+      if (p.token == null)
+        hasNext = false;
+      return rv;
+    }
+  }
+
+  /**
+   *
+   */
+  private class TextTokenizerIteratorNGram implements Iterator<NGram> {
+    private final String input;
+    private final IteratorParameters p;
+    private final List<String> buffer;
+    private boolean hasNext = true;
+    private int idx = 0, n;
+
+    public TextTokenizerIteratorNGram(String input, int n) {
+      this.input = input;
+      this.n = n;
+      buffer = new ArrayList<>(n);
+      p = new IteratorParameters(BreakIterator.getWordInstance(locale), input);
+      for (int i = 0; i < n && hasNext; i++) {
+        findNext(input, p);
+        if (p.token != null)
+          buffer.add(p.token);
+        else
+          hasNext = false;
+      }
     }
 
-    /**
-     *
-     * @param input
-     * @param n
-     * @return
-     */
-    public List<NGram> tokenize(String input, int n) {
-        Iterator<NGram> it = this.tokenizeIt(input, n);
-        List<NGram> rv = new ArrayList<>();
-        while(it.hasNext())
-            rv.add(it.next());
-        return rv;
+    @Override
+    public boolean hasNext() {
+      return hasNext;
     }
 
-    /**
-     *
-     */
-    private class TextTokenizerIteratorString implements Iterator<String> {
-        private final String input;
-        private final IteratorParameters p;
-        private boolean hasNext = true;
-
-        public TextTokenizerIteratorString(String input) {
-            this.input = input;
-            p = new IteratorParameters(BreakIterator.getWordInstance(locale), input);
-            findNext(input, p);
-            if (p.token == null)
-                hasNext = false;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return hasNext;
-        }
-
-        @Override
-        public String next() {
-            String rv = p.token;
-            findNext(input, p);
-            if (p.token == null)
-                hasNext = false;
-            return rv;
-        }
+    @Override
+    public NGram next() {
+      NGram rv = null;
+      if (idx < n) {
+        rv = new NGram(buffer.subList(0, idx + 1));
+        idx++;
+      } else {
+        idx = 0;
+        findNext(input, p);
+        if (p.token != null) {
+          buffer.remove(0);
+          buffer.add(p.token);
+          rv = new NGram(buffer.subList(0, idx + 1));
+          idx++;
+        } else
+          hasNext = false;
+      }
+      return rv;
     }
+  }
 
-    /**
-     *
-     */
-    private class TextTokenizerIteratorNGram implements Iterator<NGram> {
-        private final String input;
-        private final IteratorParameters p;
-        private final List<String> buffer;
-        private boolean hasNext = true;
-        private int idx = 0, n;
+  /**
+   * @param input
+   * @param p
+   */
+  private void findNext(String input, IteratorParameters p) {
+    p.token = null;
+    boolean done = false;
 
-        public TextTokenizerIteratorNGram(String input, int n) {
-            this.input = input;
-            this.n = n;
-            buffer = new ArrayList<>(n);
-            p = new IteratorParameters(BreakIterator.getWordInstance(locale), input);
-            for (int i = 0; i < n && hasNext; i++) {
-                findNext(input, p);
-                if (p.token != null)
-                    buffer.add(p.token);
-                else
-                    hasNext = false;
-            }
-        }
+    while (p.end != BreakIterator.DONE && !done) {
+      String candidate = input.substring(p.start, p.end);
+      Matcher matcher = text.matcher(candidate);
 
-        @Override
-        public boolean hasNext() {
-            return hasNext;
-        }
+      StringBuffer sb = new StringBuffer();
+      while (matcher.find())
+        matcher.appendReplacement(sb, "");
+      matcher.appendTail(sb);
 
-        @Override
-        public NGram next() {
-            NGram rv = null;
-            if (idx < n) {
-                rv = new NGram(buffer.subList(0, idx + 1));
-                idx++;
-            } else {
-                idx = 0;
-                findNext(input, p);
-                if (p.token != null) {
-                    buffer.remove(0);
-                    buffer.add(p.token);
-                    rv = new NGram(buffer.subList(0, idx + 1));
-                    idx++;
-                } else
-                    hasNext = false;
-            }
-            return rv;
-        }
+      p.start = p.end;
+      p.end = p.it.next();
+      if (sb.length() > 0) {
+        done = true;
+        p.token = sb.toString();
+      }
     }
+  }
 
-    /**
-     *
-     * @param input
-     * @param p
-     */
-    private void findNext(String input, IteratorParameters p) {
-        p.token = null;
-        boolean done = false;
+  /**
+   *
+   */
+  private class IteratorParameters {
+    protected BreakIterator it;
+    protected int start, end;
+    protected String token = null;
 
-        while (p.end != BreakIterator.DONE && !done) {
-            String candidate = input.substring(p.start, p.end);
-            Matcher matcher = text.matcher(candidate);
-
-            StringBuffer sb = new StringBuffer();
-            while (matcher.find())
-                matcher.appendReplacement(sb, "");
-            matcher.appendTail(sb);
-
-            p.start = p.end;
-            p.end = p.it.next();
-            if (sb.length() > 0) {
-                done = true;
-                p.token = sb.toString();
-            }
-        }
+    public IteratorParameters(BreakIterator it, String input) {
+      this.it = it;
+      it.setText(input);
+      start = it.first();
+      end = it.next();
     }
+  }
 
-    /**
-     *
-     */
-    private class IteratorParameters {
-        protected BreakIterator it;
-        protected int start, end;
-        protected String token = null;
-
-        public IteratorParameters(BreakIterator it, String input) {
-            this.it = it;
-            it.setText(input);
-            start = it.first();
-            end = it.next();
-        }
+  /**
+   *
+   * @return
+   */
+  public synchronized static Tokenizer build() {
+    if(t == null) {
+      t = new TextTokenizer();
     }
+    return t;
+  }
 }

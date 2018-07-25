@@ -1,5 +1,7 @@
-package pt.it.av.tnav.ml.tm.dp;
+package pt.it.av.tnav.ml.tm.dp.dpwOpt;
 
+import pt.it.av.tnav.ml.tm.dp.DPW;
+import pt.it.av.tnav.ml.tm.ngrams.NGram;
 import pt.it.av.tnav.utils.bla.Vector;
 
 import java.util.Collections;
@@ -12,7 +14,7 @@ import java.util.List;
  * @author Mário Antunes
  * @version 1.0
  */
-public class DPWElbowOptmization implements DPWOptimization {
+public class DPWElbowOptmization implements DPWOpt {
   private final int min;
 
   //TODO: Added kneedle algorithm in where...
@@ -25,7 +27,7 @@ public class DPWElbowOptmization implements DPWOptimization {
   }
 
   @Override
-  public List<DPW.DpDimension> optimize(List<DPW.DpDimension> dpDimensions) {
+  public List<DPW.DpDimension> optimize(final NGram term, final List<DPW.DpDimension> dpDimensions) {
     if (dpDimensions.size() > min) {
       Comparator<DPW.DpDimension> c = (DPW.DpDimension a, DPW.DpDimension b) -> (Double.compare(b.value, a.value));
       Collections.sort(dpDimensions, c);

@@ -1,12 +1,35 @@
 package pt.it.av.tnav.ml.tm.dp;
 
+import pt.it.av.tnav.ml.tm.StopWords.EnglishStopWords;
+import pt.it.av.tnav.ml.tm.StopWords.StopWords;
+import pt.it.av.tnav.ml.tm.TM;
+import pt.it.av.tnav.ml.tm.corpus.Corpus;
+import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWOpt;
+import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWStatisticOpt;
+import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWStemmOpt;
+import pt.it.av.tnav.ml.tm.stemmer.PorterStemmer;
+import pt.it.av.tnav.ml.tm.stemmer.Stemmer;
+import pt.it.av.tnav.ml.tm.tokenizer.TextTokenizer;
 import pt.it.av.tnav.utils.bla.Vector;
+import pt.it.av.tnav.utils.json.JSONArray;
+import pt.it.av.tnav.utils.json.JSONObject;
+import pt.it.av.tnav.utils.json.JSONValue;
+import pt.it.av.tnav.utils.parallel.pipeline.Pipeline;
 import pt.it.av.tnav.utils.structures.Similarity;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
+import pt.it.av.tnav.utils.structures.mutableNumber.MutableDouble;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Distributional Profile of a Word ({@link NGram}).
@@ -14,7 +37,8 @@ import java.util.List;
  * @author Mário Antunes
  * @version 1.0
  */
-public class DPW implements Similarity<DPW> {
+public class DPW implements Similarity<DPW>, Comparable<DPW>{
+  protected static final int ESW = 3, ELW = 14, N=5, NG=1;
   private final NGram term;
   private List<DpDimension> dpDimensions;
 
@@ -56,7 +80,7 @@ public class DPW implements Similarity<DPW> {
   public double dimention(NGram term) {
     double rv = 0.0;
     Comparator<DpDimension> c = (DpDimension a, DpDimension b) -> (a.term.compareTo(b.term));
-    Collections.sort(dpDimensions, c);
+    dpDimensions.sort(c);
     int idx = Collections.binarySearch(dpDimensions, new DpDimension(term, term, 0), c);
     if (idx >= 0)
       rv = dpDimensions.get(idx).value;
@@ -89,8 +113,8 @@ public class DPW implements Similarity<DPW> {
    */
   public static double similarity(List<DpDimension> coor1, List<DpDimension> coor2) {
     Comparator<DpDimension> c = (DpDimension a, DpDimension b) -> (a.term.compareTo(b.term));
-    Collections.sort(coor1, c);
-    Collections.sort(coor2, c);
+    coor1.sort(c);
+    coor2.sort(c);
 
     double dataA[] = new double[coor1.size() + coor2.size()],
         dataB[] = new double[coor1.size() + coor2.size()];
@@ -136,7 +160,7 @@ public class DPW implements Similarity<DPW> {
    */
   protected static String coordinatesToString(List<DpDimension> dpDimensions) {
     Comparator<DpDimension> c = (DpDimension a, DpDimension b) -> (Double.compare(b.value, a.value));
-    Collections.sort(dpDimensions, c);
+    dpDimensions.sort(c);
     StringBuilder sb = new StringBuilder();
     sb.append("[");
     int i = 0;
@@ -149,18 +173,25 @@ public class DPW implements Similarity<DPW> {
   }
 
   /**
-   * Applies an {@link DPWOptimization} to the profile.
+   * Applies an {@link DPWOpt} to the profile.
    *
-   * @param dpOptimizer instance of{@link DPWOptimization}
+   * @param dpOptimizer instance of{@link DPWOpt}
    */
-  public void optimize(DPWOptimization dpOptimizer) {
-    dpDimensions = dpOptimizer.optimize(dpDimensions);
+  public void optimize(DPWOpt dpOptimizer) {
+    dpDimensions = dpOptimizer.optimize(term, dpDimensions);
+  }
+
+  @Override
+  public int compareTo(DPW o) {
+    return term.compareTo(o.term);
   }
 
   /**
    *
+   * @author Mário Antunes
+   * @version 1.0
    */
-  public static class DpDimension {
+  public static class DpDimension implements Comparable<DpDimension>{
     public final NGram term;
     public final NGram stemm;
     public final double value;
@@ -201,5 +232,108 @@ public class DPW implements Similarity<DPW> {
       }
       return rv;
     }
+
+    @Override
+    public int compareTo(DpDimension o) {
+      return Double.compare(this.value, o.value);
+    }
+  }
+
+  /**
+   *
+   * @param ngram
+   * @param corpus
+   * @return
+   */
+  public static DPW learn(final NGram ngram, final Corpus corpus) {
+    return learn(ngram, corpus, EnglishStopWords.build(), PorterStemmer.build(), ESW, ELW, N, NG);
+  }
+
+  /**
+   *
+   * @param ngram
+   * @param corpus
+   * @param stw
+   * @param st
+   * @param sw
+   * @param lw
+   * @param n
+   * @param ng
+   * @return
+   */
+  public static DPW learn(final NGram ngram, final Corpus corpus, final StopWords stw,
+                          final Stemmer st, final int sw, final int lw, final int n, final int ng) {
+    Iterator<String> aIt = corpus.iterator(ngram);
+    Map<NGram, MutableDouble> ma = new HashMap<>();
+    Pipeline pipeline = TM.DPPipeline(ngram, TextTokenizer.build(), stw
+        , sw , lw, n, ng, st, ma);
+    BlockingQueue<Object> sink = pipeline.sink();
+    pipeline.start();
+
+    while (aIt.hasNext()) {
+      String txt;
+      try {
+        txt = aIt.next();
+      } catch (Exception e) {
+        e.printStackTrace();
+        txt = null;
+      }
+      if (!txt.isEmpty())
+        sink.add(txt);
+    }
+
+    try {
+      pipeline.join();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    List<DPW.DpDimension> profile = new ArrayList<>();
+    Iterator<Map.Entry<NGram, MutableDouble>> mIt = ma.entrySet().iterator();
+    while (mIt.hasNext()) {
+      Map.Entry<NGram, MutableDouble> entry = mIt.next();
+      NGram nGramP = entry.getKey();
+      double d = entry.getValue().doubleValue();
+      profile.add(new DPW.DpDimension(nGramP, PorterStemmer.build().stem(nGramP), d));
+    }
+
+    DPW dpw = new DPW(ngram, profile);
+
+    dpw.optimize(DPWStemmOpt.build());
+    dpw.optimize(DPWStatisticOpt.build());
+
+    return dpw;
+  }
+
+  public static DPW load(Reader in) throws IOException {
+    JSONObject json = JSONObject.read(in);
+
+    NGram term = NGram.Unigram(json.get("ngram").asString());
+    List<DPW.DpDimension> dimensions = new ArrayList<>();
+
+    for(JSONValue d: json.asObject().get("dimentions").asArray()) {
+        JSONObject jd = d.asObject();
+        dimensions.add(new DPW.DpDimension(NGram.Unigram(jd.get("term").asString()),
+            NGram.Unigram(jd.get("stemm").asString()), jd.get("value").asDouble()));
+    }
+
+    return new DPW(term, dimensions);
+  }
+
+  public static void store(DPW dpw, Writer out) throws IOException {
+    JSONObject json = new JSONObject();
+
+    JSONArray dimentions = new JSONArray();
+    for(DPW.DpDimension d : dpw.dpDimensions) {
+        JSONObject dimention = new JSONObject();
+        dimention.put("stemm", d.stemm.toString());
+        dimention.put("term",d.term.toString());
+        dimention.put("value",d.value);
+        dimentions.add(dimention);
+    }
+    json.put("dimentions", dimentions);
+    json.put("term", dpw.term.toString());
+
+    json.write(out);
   }
 }

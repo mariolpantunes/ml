@@ -3,6 +3,7 @@ package pt.it.av.tnav.ml.tm;
 import pt.it.av.tnav.utils.MathUtils;
 import pt.it.av.tnav.utils.PrintUtils;
 import pt.it.av.tnav.utils.StringUtils;
+import pt.it.av.tnav.utils.Utils;
 import pt.it.av.tnav.utils.parallel.Worker;
 import pt.it.av.tnav.utils.parallel.pipeline.Pipeline;
 import pt.it.av.tnav.utils.structures.tuple.Pair;
@@ -66,7 +67,7 @@ public class Hypernyms {
 
             // Remove stop words and words that are too small or too big
             pipeline.addLast((Object o, List<Object> l) -> {
-                List<String> tokens = (List<String>) o;
+                List<String> tokens = Utils.cast(o);
 
                 tokens.removeIf(x -> Collections.binarySearch(sw, x) >= 0);
                 tokens.removeIf(x -> x.length() < min || x.length() > max);
@@ -76,14 +77,14 @@ public class Hypernyms {
 
             // Use Lexical Pattern p to extract relevant candidate Classe c
             pipeline.addLast((Object o, List<Object> l) -> {
-                List<String> tokens = (List<String>) o;
+                List<String> tokens = Utils.cast(o);
                 List<NGram> c = p.extract(tokens, N);
                 l.add(c);
             });
 
             // Count candidate Classe c
             pipeline.addLast((Object o, List<Object> l) -> {
-                List<NGram> candidates = (List<NGram>) o;
+                List<NGram> candidates = Utils.cast(o);
                 for(NGram c : candidates) {
                     NGram stemmed = stemmer.stem(c);
                     if (!m.containsKey(stemmed)) {

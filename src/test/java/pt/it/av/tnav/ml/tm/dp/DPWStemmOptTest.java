@@ -1,5 +1,6 @@
 package pt.it.av.tnav.ml.tm.dp;
 
+import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWStemmOpt;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import static org.junit.Assert.assertTrue;
  * @author Mário Antunes
  * @version 1.0
  */
-public class DPWStemmOptimizationTest {
+public class DPWStemmOptTest {
     @org.junit.Test
     public void test_similarity() {
         List<DPW.DpDimension> dpDimensions = new ArrayList<>();
@@ -25,7 +26,7 @@ public class DPWStemmOptimizationTest {
         dpDimensions.add(new DPW.DpDimension(NGram.Unigram("drivers"), NGram.Unigram("driver"), 3.0));
 
         DPW DPW = new DPW(NGram.Unigram("car"), dpDimensions);
-        DPW.optimize(new DPWStemmOptimization());
+        DPW.optimize(new DPWStemmOpt());
         List<DPW.DpDimension> opt_dpDimensions = DPW.dimentions();
 
         assertTrue(opt_dpDimensions.size() == 3);

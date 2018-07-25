@@ -1,6 +1,7 @@
 package pt.it.av.tnav.ml.clustering;
 
 import pt.it.av.tnav.utils.ArrayUtils;
+import pt.it.av.tnav.utils.Utils;
 import pt.it.av.tnav.utils.structures.Distance;
 import pt.it.av.tnav.ml.clustering.cluster.Cluster;
 import pt.it.av.tnav.ml.clustering.cluster.ClusterUtils;
@@ -41,7 +42,7 @@ public class AutoK {
   final List<D> dps, final int min, final int max, final int reps){
     final int kmax = (max < dps.size())?max:dps.size()-1;
     double sil[] = new double[(kmax - min) + 1];
-    List<Cluster<D>> allClusters[] = new List[(kmax - min) + 1];
+    List<Cluster<D>> allClusters[] = Utils.cast(new List[(kmax - min) + 1]);
 
     int i = 0;
     for (int k = min; k <= kmax; k++, i++) {
@@ -104,7 +105,7 @@ public class AutoK {
     final int kmax = (max < dps.size())?max:dps.size()-1;
     double wsss[] = new double[(kmax - min) + 1],
         x[] = new double[(kmax - min) + 1];
-    List<Cluster<D>> allClusters[] = new List[(kmax - min) + 1];
+    List<Cluster<D>> allClusters[] = Utils.cast(new List[(kmax - min) + 1]);
 
     int i = 0;
     for (int k = min; k <= kmax; k++, i++) {
@@ -163,7 +164,7 @@ public class AutoK {
     double fk[] = new double[(kmax - min) + 1];
     double Sk[] = new double[(kmax - min) + 1];
     double ak[] = new double[(kmax - min) + 1];
-    List<Cluster<D>> allClusters[] = new List[(kmax - min) + 1];
+    List<Cluster<D>> allClusters[] = Utils.cast(new List[(kmax - min) + 1]);
 
     int i = 0;
     for (int k = min; k <= kmax; k++, i++) {

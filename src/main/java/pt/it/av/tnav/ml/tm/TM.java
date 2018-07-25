@@ -1,6 +1,7 @@
 package pt.it.av.tnav.ml.tm;
 
 import pt.it.av.tnav.utils.StringUtils;
+import pt.it.av.tnav.utils.Utils;
 import pt.it.av.tnav.utils.parallel.pipeline.Pipeline;
 import pt.it.av.tnav.utils.structures.queue.CircularQueue;
 import pt.it.av.tnav.utils.structures.mutableNumber.MutableDouble;
@@ -146,7 +147,7 @@ public class TM {
 
         // Count Raw Frequency
         pipeline.addLast((Object o, List<Object> l) -> {
-            List<NGram> candidates = (List<NGram>) o;
+            List<NGram> candidates = Utils.cast(o);
             for (NGram ngram : candidates) {
                 if (!m.containsKey(ngram))
                     m.put(ngram, new MutableDouble());

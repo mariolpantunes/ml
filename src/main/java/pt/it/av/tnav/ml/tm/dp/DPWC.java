@@ -1,12 +1,24 @@
 package pt.it.av.tnav.ml.tm.dp;
 
+import pt.it.av.tnav.ml.tm.dp.cache.DPWPCache;
+import pt.it.av.tnav.ml.tm.dp.dppoint.CachePoint;
+import pt.it.av.tnav.ml.tm.dp.dppoint.CoOccPoint;
+import pt.it.av.tnav.ml.tm.dp.dppoint.DPPoint;
 import pt.it.av.tnav.utils.ArrayUtils;
 import pt.it.av.tnav.utils.PrintUtils;
+import pt.it.av.tnav.utils.bla.Matrix;
+import pt.it.av.tnav.utils.json.JSONArray;
+import pt.it.av.tnav.utils.json.JSONObject;
+import pt.it.av.tnav.utils.json.JSONValue;
 import pt.it.av.tnav.utils.structures.Similarity;
 import pt.it.av.tnav.ml.clustering.cluster.Cluster;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 //TODO: until find a better solution -> Build DPWC with single clusters
@@ -231,5 +243,138 @@ public class DPWC implements Similarity<DPWC> {
       }
       return rv;
     }
+  }
+
+  /**
+   *
+   * @param file
+   * @return
+   */
+  public static DPWC load(Reader in) throws IOException {
+    JSONObject json = JSONObject.read(in);
+
+    List<Category> categories = new ArrayList<>();
+    NGram term = NGram.Unigram(json.get("ngram").asString());
+
+    JSONArray cats = json.get("categories").asArray();
+    for(JSONValue c : cats) {
+      List<DPW.DpDimension> dimensions = new ArrayList<>();
+      for(JSONValue d: c.asObject().get("dimentions").asArray()) {
+        JSONObject jd = d.asObject();
+        dimensions.add(new DPW.DpDimension(NGram.Unigram(jd.get("term").asString()),
+            NGram.Unigram(jd.get("stemm").asString()), jd.get("value").asDouble()));
+      }
+      categories.add(new Category(dimensions, c.asObject().get("affinity").asDouble()));
+    }
+
+    return new DPWC(term, categories);
+  }
+
+  public static DPWC learn(final NGram ngram, final DPWPCache dpwpCache) {
+    DPWC rv = null;
+
+    // Learn basic DPW
+    DPW dpw = dpwpCache.fetch(ngram);
+
+    // Learn Context DPWs
+    List<DPW> context = new ArrayList<>(dpw.size());
+    for (DPW.DpDimension dimension : dpw.dimentions()) {
+      context.add(dpwpCache.fetch(dimension.term));
+    }
+
+    // Map NGrams to Indexes
+    List<String> map = new ArrayList<>();
+    context.add(dpw);
+    Collections.sort(context);
+
+    for(DPW d : context) {
+      map.add(d.term().toString());
+    }
+
+    // Build co-occurence points to learn latent information
+
+    double maxCo[] = new double[context.size()];
+    for (int i = 0; i < dpw.dimentions().size(); i++) {
+      maxCo[i] = Collections.max(context.get(i).dimentions()).value;;
+    }
+
+    int maxCoIdx = ArrayUtils.max(maxCo);
+
+    List<CachePoint<CoOccPoint>> points = new ArrayList<>();
+    // Initialize the co-occurrence points for clustering
+    for (int i = 0; i < dpw.dimentions().size(); i++) {
+      if (maxCo[i] > 0.0) {
+        points.add(new CachePoint<>(new CoOccPoint(context.get(i), maxCo[maxCoIdx])));
+      }
+    }
+
+    // Learn latent information with NMF
+    Matrix sim = Matrix.identity(context.size());
+
+    for (int i = 0; i < context.size() - 1; i++) {
+      for (int j = i + 1; j < context.size(); j++) {
+        double similarity = points.get(i).similarityTo(points.get(j));
+        sim.set(i, j, similarity);
+        sim.set(j, i, similarity);
+      }
+    }
+
+    Matrix wh[] = sim.nmf(points.size() / 2);
+    Matrix nf = wh[0].mul(wh[1]);
+    double bcost = sim.euclideanDistance(nf);
+
+    for (int d = 3; d <= 5; d++) {
+      for (int i = 1; i < 5; i++) {
+        wh = sim.nmf(points.size() / d);
+        Matrix tnf = wh[0].mul(wh[1]);
+        double cost = sim.euclideanDistance(tnf);
+        if (cost < bcost) {
+          nf = tnf;
+          bcost = cost;
+        }
+      }
+    }
+
+    context.remove(dpw);
+
+    // Rebuild Points with latent information
+
+
+    // Cluster DP Points into categories
+
+
+    return rv;
+  }
+
+  //private static List<>
+
+  /**
+   * Stores a {@link DPWC} in JSON format inside a compressed file.
+   *
+   * @param dpwc
+   * @param out
+   */
+  public static void store(DPWC dpwc, Writer out) throws IOException {
+    JSONObject json = new JSONObject();
+    JSONArray categories = new JSONArray();
+
+    for(Category c :dpwc.categories) {
+      JSONObject category = new JSONObject();
+      JSONArray dimentions = new JSONArray();
+      for(DPW.DpDimension d : c.dpDimensions) {
+        JSONObject dimention = new JSONObject();
+        dimention.put("stemm", d.stemm.toString());
+        dimention.put("term",d.term.toString());
+        dimention.put("value",d.value);
+        dimentions.add(dimention);
+      }
+      category.put("afinity", c.affinity);
+      category.put("dimentions", dimentions);
+    }
+
+    json.put("categories", categories);
+    json.put("term", dpwc.term.toString());
+
+    json.write(out);
   }
 }

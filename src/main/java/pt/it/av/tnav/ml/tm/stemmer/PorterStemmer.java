@@ -11,6 +11,8 @@ import pt.it.av.tnav.ml.tm.ngrams.NGram;
  * </p>
  */
 public class PorterStemmer implements Stemmer {
+    private static Stemmer s = null;
+
     private char[] b;
     private int i,     /* offset into b */
             i_end, /* offset to end of stemmed word */
@@ -514,5 +516,12 @@ public class PorterStemmer implements Stemmer {
         for(int i = 0; i < term.length; i++)
             term[i] = stem(term[i]);
         return term;
+    }
+
+    public synchronized static Stemmer build() {
+      if(s == null) {
+        s = new PorterStemmer();
+      }
+      return s;
     }
 }
