@@ -9,6 +9,7 @@ import pt.it.av.tnav.utils.ArrayUtils;
  * @version 1.0
  */
 public abstract class BaseCurvature implements Curvature{
+
   @Override
   public final int knee(double[] x, double[] y) {
     int rv = -1;

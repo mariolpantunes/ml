@@ -2,6 +2,8 @@ package pt.it.av.tnav.ml.clustering.curvature;
 
 import pt.it.av.tnav.ml.regression.UnivariateRegression;
 
+import java.lang.ref.WeakReference;
+
 /**
  * L-method to detect knee/elbow points.
  * <p>
@@ -12,6 +14,7 @@ import pt.it.av.tnav.ml.regression.UnivariateRegression;
  * @version 2.0
  */
 public class Lmethod extends BaseCurvature {
+  private static WeakReference<Curvature> wrc = null;
   protected static final int MINCUTOFF = 20;
 
   @Override
@@ -103,5 +106,29 @@ public class Lmethod extends BaseCurvature {
     }
 
     return Math.sqrt(mse);
+  }
+
+  /**
+   * Builds a static {@link WeakReference} to a {@link Curvature} class.
+   * <p>
+   *   This method should be used whenever the {@link Curvature} will be built and destroy multiple times.
+   *   It will also share a single stemmer through several process/threads.
+   * </p>
+   *
+   * @return {@link Curvature} reference that points to a {@link Lmethod}.
+   */
+  public synchronized static Curvature build() {
+    Curvature rv = null;
+    if (wrc == null) {
+      rv = new DFDT();
+      wrc = new WeakReference<>(rv);
+    } else {
+      rv = wrc.get();
+      if(rv == null) {
+        rv = new DFDT();
+        wrc = new WeakReference<>(rv);
+      }
+    }
+    return rv;
   }
 }

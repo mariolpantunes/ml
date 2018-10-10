@@ -2,6 +2,8 @@ package pt.it.av.tnav.ml.clustering.curvature;
 
 import pt.it.av.tnav.utils.ArrayUtils;
 
+import java.lang.ref.WeakReference;
+
 /**
  * DSDT-method (Dynamic Second Derivative Threshold)
  * <p>
@@ -12,6 +14,7 @@ import pt.it.av.tnav.utils.ArrayUtils;
  * @version 2.0
  */
 public class DSDT extends BaseCurvature {
+  private static WeakReference<Curvature> wrc = null;
 
   @Override
   public int find_knee(final double[] x, final double y[]) {
@@ -36,10 +39,42 @@ public class DSDT extends BaseCurvature {
     return curve;
   }
 
+  /**
+   *
+   * @param x
+   * @param y
+   * @param bIdx
+   * @param len
+   * @return
+   */
   public int dsdt(final double[] x, final double[] y, final int bIdx, final int len) {
     double m[] = ArrayUtils.csd(x, y, bIdx, bIdx, len);
     double t = ArrayUtils.isoData(m);
     int idx = ArrayUtils.findClose(t, m);
     return idx + 1 + bIdx;
+  }
+
+  /**
+   * Builds a static {@link WeakReference} to a {@link Curvature} class.
+   * <p>
+   *   This method should be used whenever the {@link Curvature} will be built and destroy multiple times.
+   *   It will also share a single stemmer through several process/threads.
+   * </p>
+   *
+   * @return {@link Curvature} reference that points to a {@link DSDT}.
+   */
+  public synchronized static Curvature build() {
+    Curvature rv = null;
+    if (wrc == null) {
+      rv = new DFDT();
+      wrc = new WeakReference<>(rv);
+    } else {
+      rv = wrc.get();
+      if(rv == null) {
+        rv = new DFDT();
+        wrc = new WeakReference<>(rv);
+      }
+    }
+    return rv;
   }
 }

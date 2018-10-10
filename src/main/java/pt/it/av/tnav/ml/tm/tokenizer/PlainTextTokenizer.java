@@ -2,6 +2,7 @@ package pt.it.av.tnav.ml.tm.tokenizer;
 
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
 
+import java.lang.ref.WeakReference;
 import java.text.BreakIterator;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -17,15 +18,15 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
-public class TextTokenizer implements Tokenizer {
-  private static Tokenizer t;
+public class PlainTextTokenizer implements Tokenizer {
+  private static WeakReference<Tokenizer> wrt = null;
   private final Locale locale;
   private final Pattern norm, text;
 
   /**
    * @param locale
    */
-  public TextTokenizer(Locale locale) {
+  public PlainTextTokenizer(Locale locale) {
     this.locale = locale;
     norm = Pattern.compile("[\\p{InCombiningDiacriticalMarks}]");
     text = Pattern.compile("('s|[^a-zA-Z-]+)");
@@ -34,7 +35,7 @@ public class TextTokenizer implements Tokenizer {
   /**
    *
    */
-  public TextTokenizer() {
+  public PlainTextTokenizer() {
     this(Locale.getDefault());
   }
 
@@ -213,13 +214,26 @@ public class TextTokenizer implements Tokenizer {
   }
 
   /**
+   * Builds a static {@link WeakReference} to a {@link Tokenizer} class.
+   * <p>
+   *   This method should be used whenever the {@link Tokenizer} will be built and destroy multiple times.
+   *   It will also share a single stemmer through several process/threads.
+   * </p>
    *
-   * @return
+   * @return {@link Tokenizer} reference that points to a {@link PlainTextTokenizer}
    */
   public synchronized static Tokenizer build() {
-    if(t == null) {
-      t = new TextTokenizer();
+    Tokenizer rv = null;
+    if (wrt == null) {
+      rv = new PlainTextTokenizer();
+      wrt = new WeakReference<>(rv);
+    } else {
+      rv = wrt.get();
+      if(rv == null) {
+        rv = new PlainTextTokenizer();
+        wrt = new WeakReference<>(rv);
+      }
     }
-    return t;
+    return rv;
   }
 }

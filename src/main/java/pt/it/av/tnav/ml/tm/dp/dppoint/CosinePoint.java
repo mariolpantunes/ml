@@ -40,17 +40,13 @@ public class CosinePoint implements DPPoint<CosinePoint> {
   }
 
   @Override
-  public double affinity(final DPW dpw) {
-    return this.dpw.similarityTo(dpw);
-  }
-
-  /**
-   * Returns the {@link DPW} associated with the point.
-   *
-   * @return the {@link DPW} associated with the point.
-   */
   public DPW dpw() {
     return dpw;
+  }
+
+  @Override
+  public double affinity(final DPW dpw) {
+    return this.dpw.similarityTo(dpw);
   }
 
   @Override

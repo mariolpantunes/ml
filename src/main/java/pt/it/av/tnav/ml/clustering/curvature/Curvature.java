@@ -1,5 +1,7 @@
 package pt.it.av.tnav.ml.clustering.curvature;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Implements methods to detect knee and curvature points in error curves.
  *

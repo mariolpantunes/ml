@@ -36,6 +36,11 @@ public class CachePoint<P extends DPPoint<P>> implements DPPoint<CachePoint<P>> 
   }
 
   @Override
+  public DPW dpw() {
+    return point.dpw();
+  }
+
+  @Override
   public double affinity(final DPW dpw) {
     return point.affinity(dpw);
   }

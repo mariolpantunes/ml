@@ -4,7 +4,13 @@ import pt.it.av.tnav.utils.json.JSONObject;
 import pt.it.av.tnav.utils.json.JSONValue;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Implements a tokenizer specific for JSON documents.
@@ -14,95 +20,93 @@ import java.util.*;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
-public class JSONTokenizer implements Tokenizer{
-    private final Tokenizer t;
+public class JSONTokenizer implements Tokenizer {
+  private final Tokenizer t;
 
-    /**
-     *
-     * @param t
-     */
-    public JSONTokenizer(final Tokenizer t) {
-        this.t = t;
+  /**
+   * @param t
+   */
+  public JSONTokenizer(final Tokenizer t) {
+    this.t = t;
+  }
+
+  /**
+   * @param locale
+   */
+  public JSONTokenizer(Locale locale) {
+    this(new PlainTextTokenizer(locale));
+  }
+
+  /**
+   *
+   */
+  public JSONTokenizer() {
+    this(new PlainTextTokenizer());
+  }
+
+  @Override
+  public Iterator<String> tokenizeIt(String input) {
+    return tokenize(input).iterator();
+  }
+
+  /**
+   * @param json
+   * @return
+   */
+  public Iterator<String> tokenizeIt(JSONObject json) {
+    return tokenize(json).iterator();
+  }
+
+  @Override
+  public List<String> tokenize(String input) {
+    List<String> rv = null;
+    JSONObject json = null;
+
+    try {
+      json = JSONObject.read(input);
+    } catch (IOException e) {
+      e.printStackTrace();
+      json = null;
+      rv = new ArrayList<>(0);
     }
 
-    /**
-     *
-     * @param locale
-     */
-    public JSONTokenizer(Locale locale) {
-        this(new TextTokenizer(locale));
-    }
+    if (json != null)
+      rv = tokenize(json);
 
-    /**
-     *
-     */
-    public JSONTokenizer() {
-        this(new TextTokenizer());
-    }
+    return rv;
+  }
 
-    @Override
-    public Iterator<String> tokenizeIt(String input) {
-        return tokenize(input).iterator();
-    }
+  /**
+   * @param json
+   * @return
+   */
+  public List<String> tokenize(JSONObject json) {
+    List<String> rv = new ArrayList<>();
 
-    /**
-     *
-     * @param json
-     * @return
-     */
-    public Iterator<String> tokenizeIt(JSONObject json) { return tokenize(json).iterator(); }
+    Deque<JSONValue> stack = new ArrayDeque<>();
+    stack.push(json);
 
-    @Override
-    public List<String> tokenize(String input) {
-        List<String> rv = null;
-        JSONObject json = null;
-
-        try {
-            json = JSONObject.read(input);
-        } catch (IOException e) {
-            e.printStackTrace();
-            json = null;
-            rv = new ArrayList<>(0);
+    while (!stack.isEmpty()) {
+      JSONValue values = stack.pop();
+      if (values.isArray()) {
+        for (JSONValue v : values.asArray()) {
+          if (v.isString())
+            rv.addAll(t.tokenize(v.asString()));
+          else if (v.isObject() || v.isArray())
+            stack.add(v);
         }
-
-        if(json != null)
-            rv = tokenize(json);
-
-        return rv;
-    }
-
-    /**
-     *
-     * @param json
-     * @return
-     */
-    public List<String> tokenize(JSONObject json) {
-        List<String> rv = new ArrayList<>();
-
-      Deque<JSONValue> stack = new ArrayDeque<>();
-        stack.push(json);
-
-        while(!stack.isEmpty()) {
-            JSONValue values = stack.pop();
-            if(values.isArray()) {
-                for(JSONValue v : values.asArray()) {
-                    if(v.isString())
-                        rv.addAll(t.tokenize(v.asString()));
-                    else if(v.isObject() || v.isArray())
-                        stack.add(v);
-                }
-            } else if(values.isObject()) {
-                for(Map.Entry<String, JSONValue> e : values.asObject().entrySet()) {
-                    rv.addAll(t.tokenize(e.getKey()));
-                    JSONValue v = e.getValue();
-                    if (v.isString())
-                        rv.addAll(t.tokenize(v.asString()));
-                    else if(v.isObject() || v.isArray())
-                        stack.add(v);
-                }
-            }
+      } else if (values.isObject()) {
+        for (Map.Entry<String, JSONValue> e : values.asObject().entrySet()) {
+          rv.addAll(t.tokenize(e.getKey()));
+          JSONValue v = e.getValue();
+          if (v.isString())
+            rv.addAll(t.tokenize(v.asString()));
+          else if (v.isObject() || v.isArray())
+            stack.add(v);
         }
-
-        return rv;
+      }
     }
+
+    return rv;
+  }
 }

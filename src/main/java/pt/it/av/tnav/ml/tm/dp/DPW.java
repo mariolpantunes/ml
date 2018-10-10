@@ -9,12 +9,13 @@ import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWStatisticOpt;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWStemmOpt;
 import pt.it.av.tnav.ml.tm.stemmer.PorterStemmer;
 import pt.it.av.tnav.ml.tm.stemmer.Stemmer;
-import pt.it.av.tnav.ml.tm.tokenizer.TextTokenizer;
+import pt.it.av.tnav.ml.tm.tokenizer.PlainTextTokenizer;
 import pt.it.av.tnav.utils.bla.Vector;
 import pt.it.av.tnav.utils.json.JSONArray;
 import pt.it.av.tnav.utils.json.JSONObject;
 import pt.it.av.tnav.utils.json.JSONValue;
 import pt.it.av.tnav.utils.parallel.pipeline.Pipeline;
+import pt.it.av.tnav.utils.structures.Distance;
 import pt.it.av.tnav.utils.structures.Similarity;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
 import pt.it.av.tnav.utils.structures.mutableNumber.MutableDouble;
@@ -37,9 +38,9 @@ import java.util.concurrent.BlockingQueue;
  * @author Mário Antunes
  * @version 1.0
  */
-public class DPW implements Similarity<DPW>, Comparable<DPW>{
-  protected static final int ESW = 3, ELW = 14, N=5, NG=1;
-  private final NGram term;
+public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
+  public static final int ESW = 3, ELW = 14, N=5, NG=1;
+  private final NGram term, stem;
   private List<DpDimension> dpDimensions;
 
   /**
@@ -50,16 +51,39 @@ public class DPW implements Similarity<DPW>, Comparable<DPW>{
    */
   public DPW(final NGram term, List<DpDimension> dpDimensions) {
     this.term = term;
+    this.stem = PorterStemmer.build().stem(term);
     this.dpDimensions = dpDimensions;
   }
 
   /**
-   * Returns the {@link NGram}.
+   * {@link DPW} constructor.
    *
-   * @return the {@link NGram}
+   * @param term {@link NGram} represented by the profile
+   * @param stem term stem ({@link NGram})
+   * @param dpDimensions {@link List} of the {@link DpDimension}
+   */
+  public DPW(final NGram term, final NGram stem, List<DpDimension> dpDimensions) {
+    this.term = term;
+    this.stem = stem;
+    this.dpDimensions = dpDimensions;
+  }
+
+  /**
+   * Returns the term ({@link NGram}).
+   *
+   * @return the term ({@link NGram})
    */
   public NGram term() {
     return term;
+  }
+
+  /**
+   * Returns the term stem ({@link NGram}).
+   *
+   * @return the term stem ({@link NGram})
+   */
+  public NGram stem() {
+    return stem;
   }
 
   /**
@@ -99,10 +123,26 @@ public class DPW implements Similarity<DPW>, Comparable<DPW>{
   @Override
   public double similarityTo(DPW dpw) {
     double rv = 0.0;
-    if (term.equals(dpw.term))
+
+    if(term.equals(dpw.term)) {
       rv = 1.0;
-    else
+    } else {
       rv = similarity(dpDimensions, dpw.dpDimensions);
+    }
+
+    return rv;
+  }
+
+  @Override
+  public double distanceTo(DPW dpw) {
+    double rv = 1.0;
+
+    if(term.equals(dpw.term)) {
+      rv = 0.0;
+    } else {
+      rv = 1.0 - similarity(dpDimensions, dpw.dpDimensions);
+    }
+
     return rv;
   }
 
@@ -188,13 +228,122 @@ public class DPW implements Similarity<DPW>, Comparable<DPW>{
 
   /**
    *
+   * @param ngram
+   * @param corpus
+   * @return
+   */
+  public static DPW learn(final NGram ngram, final Corpus corpus) {
+    return learn(ngram, corpus, EnglishStopWords.build(), PorterStemmer.build(), ESW, ELW, N, NG);
+  }
+
+  /**
+   *
+   * @param ngram
+   * @param corpus
+   * @param stw
+   * @param st
+   * @param sw
+   * @param lw
+   * @param n
+   * @param ng
+   * @return
+   */
+  public static DPW learn(final NGram ngram, final Corpus corpus, final StopWords stw,
+                          final Stemmer st, final int sw, final int lw, final int n, final int ng) {
+    Iterator<String> aIt = corpus.iterator(ngram);
+    Map<NGram, MutableDouble> ma = new HashMap<>();
+    Pipeline pipeline = TM.DPPipeline(ngram, PlainTextTokenizer.build(), stw
+        , sw , lw, n, ng, st, ma);
+    BlockingQueue<Object> sink = pipeline.sink();
+    pipeline.start();
+
+    while (aIt.hasNext()) {
+      String txt;
+      try {
+        txt = aIt.next();
+      } catch (Exception e) {
+        e.printStackTrace();
+        txt = null;
+      }
+      if (!txt.isEmpty())
+        sink.add(txt);
+    }
+
+    try {
+      pipeline.join();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    List<DPW.DpDimension> profile = new ArrayList<>();
+    Iterator<Map.Entry<NGram, MutableDouble>> mIt = ma.entrySet().iterator();
+    while (mIt.hasNext()) {
+      Map.Entry<NGram, MutableDouble> entry = mIt.next();
+      NGram nGramP = entry.getKey();
+      double d = entry.getValue().doubleValue();
+      profile.add(new DPW.DpDimension(nGramP, PorterStemmer.build().stem(nGramP), d));
+    }
+
+    DPW dpw = new DPW(ngram, st.stem(ngram), profile);
+
+    dpw.optimize(DPWStemmOpt.build());
+    dpw.optimize(DPWStatisticOpt.build());
+
+    return dpw;
+  }
+
+  public static DPW load(Reader in) throws IOException {
+    JSONObject json = JSONObject.read(in);
+
+    NGram term = NGram.Unigram(json.get("term").asString());
+    NGram stem = NGram.Unigram(json.get("stem").asString());
+    List<DPW.DpDimension> dimensions = new ArrayList<>();
+
+    for(JSONValue d: json.asObject().get("dimentions").asArray()) {
+        JSONObject jd = d.asObject();
+        dimensions.add(new DPW.DpDimension(NGram.Unigram(jd.get("term").asString()),
+            NGram.Unigram(jd.get("stemm").asString()), jd.get("value").asDouble()));
+    }
+
+    return new DPW(term, stem, dimensions);
+  }
+
+  public static void store(DPW dpw, Writer out) throws IOException {
+    JSONObject json = new JSONObject();
+
+    JSONArray dimentions = new JSONArray();
+    for(DPW.DpDimension d : dpw.dpDimensions) {
+        JSONObject dimention = new JSONObject();
+        dimention.put("stemm", d.stemm.toString());
+        dimention.put("term",d.term.toString());
+        dimention.put("value",d.value);
+        dimentions.add(dimention);
+    }
+    json.put("dimentions", dimentions);
+    json.put("term", dpw.term.toString());
+    json.put("stem", dpw.stem.toString());
+
+    json.write(out);
+  }
+
+  /**
+   *
    * @author Mário Antunes
    * @version 1.0
    */
   public static class DpDimension implements Comparable<DpDimension>{
-    public final NGram term;
-    public final NGram stemm;
+    public final NGram term, stemm;
     public final double value;
+
+    /**
+     * @param term
+     * @param value
+     */
+    public DpDimension(final NGram term, final double value) {
+      this.term = term;
+      this.stemm = PorterStemmer.build().stem(term);
+      this.value = value;
+    }
 
     /**
      * @param term
@@ -237,103 +386,5 @@ public class DPW implements Similarity<DPW>, Comparable<DPW>{
     public int compareTo(DpDimension o) {
       return Double.compare(this.value, o.value);
     }
-  }
-
-  /**
-   *
-   * @param ngram
-   * @param corpus
-   * @return
-   */
-  public static DPW learn(final NGram ngram, final Corpus corpus) {
-    return learn(ngram, corpus, EnglishStopWords.build(), PorterStemmer.build(), ESW, ELW, N, NG);
-  }
-
-  /**
-   *
-   * @param ngram
-   * @param corpus
-   * @param stw
-   * @param st
-   * @param sw
-   * @param lw
-   * @param n
-   * @param ng
-   * @return
-   */
-  public static DPW learn(final NGram ngram, final Corpus corpus, final StopWords stw,
-                          final Stemmer st, final int sw, final int lw, final int n, final int ng) {
-    Iterator<String> aIt = corpus.iterator(ngram);
-    Map<NGram, MutableDouble> ma = new HashMap<>();
-    Pipeline pipeline = TM.DPPipeline(ngram, TextTokenizer.build(), stw
-        , sw , lw, n, ng, st, ma);
-    BlockingQueue<Object> sink = pipeline.sink();
-    pipeline.start();
-
-    while (aIt.hasNext()) {
-      String txt;
-      try {
-        txt = aIt.next();
-      } catch (Exception e) {
-        e.printStackTrace();
-        txt = null;
-      }
-      if (!txt.isEmpty())
-        sink.add(txt);
-    }
-
-    try {
-      pipeline.join();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    List<DPW.DpDimension> profile = new ArrayList<>();
-    Iterator<Map.Entry<NGram, MutableDouble>> mIt = ma.entrySet().iterator();
-    while (mIt.hasNext()) {
-      Map.Entry<NGram, MutableDouble> entry = mIt.next();
-      NGram nGramP = entry.getKey();
-      double d = entry.getValue().doubleValue();
-      profile.add(new DPW.DpDimension(nGramP, PorterStemmer.build().stem(nGramP), d));
-    }
-
-    DPW dpw = new DPW(ngram, profile);
-
-    dpw.optimize(DPWStemmOpt.build());
-    dpw.optimize(DPWStatisticOpt.build());
-
-    return dpw;
-  }
-
-  public static DPW load(Reader in) throws IOException {
-    JSONObject json = JSONObject.read(in);
-
-    NGram term = NGram.Unigram(json.get("ngram").asString());
-    List<DPW.DpDimension> dimensions = new ArrayList<>();
-
-    for(JSONValue d: json.asObject().get("dimentions").asArray()) {
-        JSONObject jd = d.asObject();
-        dimensions.add(new DPW.DpDimension(NGram.Unigram(jd.get("term").asString()),
-            NGram.Unigram(jd.get("stemm").asString()), jd.get("value").asDouble()));
-    }
-
-    return new DPW(term, dimensions);
-  }
-
-  public static void store(DPW dpw, Writer out) throws IOException {
-    JSONObject json = new JSONObject();
-
-    JSONArray dimentions = new JSONArray();
-    for(DPW.DpDimension d : dpw.dpDimensions) {
-        JSONObject dimention = new JSONObject();
-        dimention.put("stemm", d.stemm.toString());
-        dimention.put("term",d.term.toString());
-        dimention.put("value",d.value);
-        dimentions.add(dimention);
-    }
-    json.put("dimentions", dimentions);
-    json.put("term", dpw.term.toString());
-
-    json.write(out);
   }
 }

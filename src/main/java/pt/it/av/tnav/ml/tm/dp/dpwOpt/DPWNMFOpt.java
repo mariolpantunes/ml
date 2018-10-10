@@ -8,11 +8,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ *
+ */
 public class DPWNMFOpt implements DPWOpt {
   private final Matrix nf;
   private final List<String> map;
 
-  public DPWNMFOpt(final Matrix nf, List<String> map) {
+  /**
+   *
+   * @param nf
+   * @param map
+   */
+  public DPWNMFOpt(final Matrix nf, final List<String> map) {
     this.nf = nf;
     this.map = map;
   }

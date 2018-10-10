@@ -1,5 +1,6 @@
 package pt.it.av.tnav.ml.tm;
 
+import pt.it.av.tnav.ml.tm.tokenizer.PlainTextTokenizer;
 import pt.it.av.tnav.utils.MathUtils;
 import pt.it.av.tnav.utils.PrintUtils;
 import pt.it.av.tnav.utils.StringUtils;
@@ -13,7 +14,6 @@ import pt.it.av.tnav.ml.tm.lexicalPattern.LexicalPattern;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
 import pt.it.av.tnav.ml.tm.stemmer.PorterStemmer;
 import pt.it.av.tnav.ml.tm.stemmer.Stemmer;
-import pt.it.av.tnav.ml.tm.tokenizer.TextTokenizer;
 import pt.it.av.tnav.ml.tm.tokenizer.Tokenizer;
 
 import java.math.BigDecimal;
@@ -42,7 +42,7 @@ public class Hypernyms {
         Stemmer stemmer = new PorterStemmer();
 
         int min = 3, max = 7;
-        Tokenizer tokenizer = new TextTokenizer();
+        Tokenizer tokenizer = new PlainTextTokenizer();
         List<String> sw = new EnglishStopWords().stopWords();
 
         for (LexicalPattern p : patterns) {

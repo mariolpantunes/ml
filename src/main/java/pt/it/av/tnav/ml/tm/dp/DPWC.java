@@ -1,15 +1,21 @@
 package pt.it.av.tnav.ml.tm.dp;
 
+import pt.it.av.tnav.ml.clustering.hierarchical.Hierarchical;
+import pt.it.av.tnav.ml.clustering.hierarchical.SLINK;
 import pt.it.av.tnav.ml.tm.dp.cache.DPWPCache;
 import pt.it.av.tnav.ml.tm.dp.dppoint.CachePoint;
 import pt.it.av.tnav.ml.tm.dp.dppoint.CoOccPoint;
 import pt.it.av.tnav.ml.tm.dp.dppoint.DPPoint;
+import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWNMFOpt;
+import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWOpt;
 import pt.it.av.tnav.utils.ArrayUtils;
 import pt.it.av.tnav.utils.PrintUtils;
 import pt.it.av.tnav.utils.bla.Matrix;
+import pt.it.av.tnav.utils.bla.Vector;
 import pt.it.av.tnav.utils.json.JSONArray;
 import pt.it.av.tnav.utils.json.JSONObject;
 import pt.it.av.tnav.utils.json.JSONValue;
+import pt.it.av.tnav.utils.structures.Distance;
 import pt.it.av.tnav.utils.structures.Similarity;
 import pt.it.av.tnav.ml.clustering.cluster.Cluster;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
@@ -28,7 +34,9 @@ import java.util.List;
  * @author Mário Antunes
  * @version 1.0
  */
-public class DPWC implements Similarity<DPWC> {
+public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> {
+  private static final int MIN_LAT=3, MAX_LAT=5, NMF_REPS=5;
+  private static final double RATIO = 1.5;
   private final NGram term;
   private List<Category> categories;
 
@@ -64,18 +72,50 @@ public class DPWC implements Similarity<DPWC> {
   }
 
   @Override
-  public double similarityTo(DPWC dpc) {
+  public double similarityTo(DPWC dpwc) {
     double rv = 0.0;
 
-    for (Category c1 : categories) {
-      for (Category c2 : dpc.categories) {
-        double s = DPW.similarity(c1.dpDimensions, c2.dpDimensions) * ((c1.affinity + c2.affinity) / 2.0);
-        if (s > rv)
-          rv = s;
+    if(term.equals(dpwc.term)) {
+      rv = 1.0;
+    } else {
+      for (Category c1 : categories) {
+        for (Category c2 : dpwc.categories) {
+          double s = DPW.similarity(c1.dpDimensions, c2.dpDimensions)
+              * ((c1.affinity + c2.affinity) / 2.0);
+          if (s > rv) {
+            rv = s;
+          }
+        }
       }
     }
 
     return rv;
+  }
+
+  @Override
+  public double distanceTo(DPWC dpwc) {
+    double rv = 1.0;
+
+    if(term.equals(dpwc.term)) {
+      rv = 0.0;
+    } else {
+      for (Category c1 : categories) {
+        for (Category c2 : dpwc.categories) {
+          double d = 1.0 - (DPW.similarity(c1.dpDimensions, c2.dpDimensions)
+              * ((c1.affinity + c2.affinity) / 2.0));
+          if (d < rv) {
+            rv = d;
+          }
+        }
+      }
+    }
+
+    return rv;
+  }
+
+  @Override
+  public int compareTo(DPWC o) {
+    return term.compareTo(o.term);
   }
 
   @Override
@@ -271,62 +311,70 @@ public class DPWC implements Similarity<DPWC> {
   }
 
   public static DPWC learn(final NGram ngram, final DPWPCache dpwpCache) {
-    DPWC rv = null;
+    return learn(ngram, dpwpCache, MIN_LAT, MAX_LAT, NMF_REPS, RATIO);
+  }
 
+  public static DPWC learn(final NGram ngram, final DPWPCache dpwpCache,
+                           final int minLat, final int maxLat, final int reps, final double ratio) {
     // Learn basic DPW
     DPW dpw = dpwpCache.fetch(ngram);
 
     // Learn Context DPWs
-    List<DPW> context = new ArrayList<>(dpw.size());
+    List<DPW> context = new ArrayList<>(dpw.size()+1);
+    context.add(dpw);
     for (DPW.DpDimension dimension : dpw.dimentions()) {
       context.add(dpwpCache.fetch(dimension.term));
     }
-
-    // Map NGrams to Indexes
-    List<String> map = new ArrayList<>();
-    context.add(dpw);
     Collections.sort(context);
 
-    for(DPW d : context) {
-      map.add(d.term().toString());
-    }
-
     // Build co-occurence points to learn latent information
-
     double maxCo[] = new double[context.size()];
     for (int i = 0; i < dpw.dimentions().size(); i++) {
       maxCo[i] = Collections.max(context.get(i).dimentions()).value;;
     }
-
     int maxCoIdx = ArrayUtils.max(maxCo);
-
     List<CachePoint<CoOccPoint>> points = new ArrayList<>();
     // Initialize the co-occurrence points for clustering
-    for (int i = 0; i < dpw.dimentions().size(); i++) {
+    for (int i = 0; i < context.size(); i++) {
       if (maxCo[i] > 0.0) {
         points.add(new CachePoint<>(new CoOccPoint(context.get(i), maxCo[maxCoIdx])));
       }
     }
 
-    // Learn latent information with NMF
-    Matrix sim = Matrix.identity(context.size());
+    // Map NGrams to Indexes
+    List<String> map = new ArrayList<>(points.size());
+    for(int i = 0; i < points.size(); i++) {
+      map.add(points.get(i).term().toString());
+    }
 
-    for (int i = 0; i < context.size() - 1; i++) {
-      for (int j = i + 1; j < context.size(); j++) {
+    // Learn latent information with NMF
+    Matrix sim = Matrix.identity(points.size());
+
+    for (int i = 0; i < points.size() - 1; i++) {
+      for (int j = i + 1; j < points.size(); j++) {
         double similarity = points.get(i).similarityTo(points.get(j));
         sim.set(i, j, similarity);
         sim.set(j, i, similarity);
       }
     }
 
-    Matrix wh[] = sim.nmf(points.size() / 2);
-    Matrix nf = wh[0].mul(wh[1]);
+    Matrix wh[] = sim.nmf(points.size() / minLat);
+    Matrix nf = wh[0].mul(wh[1]), tnf = null;
     double bcost = sim.euclideanDistance(nf);
+    for (int i = 1; i < reps; i++) {
+      wh = sim.nmf(points.size() / minLat);
+      tnf = wh[0].mul(wh[1]);
+      double cost = sim.euclideanDistance(tnf);
+      if (cost < bcost) {
+        nf = tnf;
+        bcost = cost;
+      }
+    }
 
-    for (int d = 3; d <= 5; d++) {
-      for (int i = 1; i < 5; i++) {
+    for (int d = minLat+1; d <= maxLat; d++) {
+      for (int i = 0; i < reps; i++) {
         wh = sim.nmf(points.size() / d);
-        Matrix tnf = wh[0].mul(wh[1]);
+        tnf = wh[0].mul(wh[1]);
         double cost = sim.euclideanDistance(tnf);
         if (cost < bcost) {
           nf = tnf;
@@ -335,15 +383,25 @@ public class DPWC implements Similarity<DPWC> {
       }
     }
 
-    context.remove(dpw);
+    // Optimize Points with latent information
+    DPWOpt opt = new DPWNMFOpt(nf, map);
+    int dpwIdx = Collections.binarySearch(map, dpw.term().toString());
+    dpw.optimize(opt);
+    context.remove(dpwIdx);
 
-    // Rebuild Points with latent information
-
+    for(DPPoint p : points) {
+      p.dpw().optimize(opt);
+    }
 
     // Cluster DP Points into categories
+    Hierarchical hc = SLINK.build();
+    int max = (int)Math.round(points.size()/ratio),
+        kmax = (max < points.size())?max:points.size()-1;
+    List<Cluster<CachePoint<CoOccPoint>>> clusters = hc.clustering(points, 2, kmax);
 
+    DPWC dpwc = DPWC.buildDPWC(dpw, clusters);
 
-    return rv;
+    return dpwc;
   }
 
   //private static List<>

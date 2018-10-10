@@ -22,4 +22,11 @@ public interface DPPoint<P extends DPPoint> extends Distance<P>, Similarity<P> {
    * @return
    */
   double affinity(final DPW dpw);
+
+  /**
+   * Returns the {@link DPW} associated with the point.
+   *
+   * @return the {@link DPW} associated with the point.
+   */
+  DPW dpw();
 }

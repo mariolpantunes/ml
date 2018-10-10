@@ -2,6 +2,7 @@ package pt.it.av.tnav.ml.clustering.curvature;
 
 import pt.it.av.tnav.utils.ArrayUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,8 @@ import java.util.List;
  * @version 1.0
  */
 public class Kneedle extends BaseCurvature{
+  private static WeakReference<Curvature> wrc = null;
+
   /**
    * Find a single knee (the best one) in a batch manner.
    * Since it work on a batch manner it becomes simpler than the conventional algorithm.
@@ -254,5 +257,29 @@ public class Kneedle extends BaseCurvature{
         throw new IllegalArgumentException("x values must be sorted and increasing");
       }
     }
+  }
+
+  /**
+   * Builds a static {@link WeakReference} to a {@link Curvature} class.
+   * <p>
+   *   This method should be used whenever the {@link Curvature} will be built and destroy multiple times.
+   *   It will also share a single stemmer through several process/threads.
+   * </p>
+   *
+   * @return {@link Curvature} reference that points to a {@link Kneedle}.
+   */
+  public synchronized static Curvature build() {
+    Curvature rv = null;
+    if (wrc == null) {
+      rv = new DFDT();
+      wrc = new WeakReference<>(rv);
+    } else {
+      rv = wrc.get();
+      if(rv == null) {
+        rv = new DFDT();
+        wrc = new WeakReference<>(rv);
+      }
+    }
+    return rv;
   }
 }

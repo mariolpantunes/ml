@@ -1,5 +1,7 @@
 package pt.it.av.tnav.ml.clustering.curvature;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Menger Curvature method to detect knee/elbow points.
  * <p>
@@ -10,6 +12,8 @@ package pt.it.av.tnav.ml.clustering.curvature;
  * @version 2.0
  */
 public class MengerCurvature extends BaseCurvature {
+  private static WeakReference<Curvature> wrc = null;
+
   @Override
   public int find_knee(final double[] x, final double[] y) {
     int idx = 1;
@@ -58,5 +62,29 @@ public class MengerCurvature extends BaseCurvature {
         B = Math.pow(pq, 2.0) + Math.pow(qr, 2.0) - Math.pow(rp, 2.0);
 
     return Math.sqrt(A-Math.pow(B,2.0))/(pq*qr*rp);
+  }
+
+  /**
+   * Builds a static {@link WeakReference} to a {@link Curvature} class.
+   * <p>
+   *   This method should be used whenever the {@link Curvature} will be built and destroy multiple times.
+   *   It will also share a single stemmer through several process/threads.
+   * </p>
+   *
+   * @return {@link Curvature} reference that points to a {@link MengerCurvature}.
+   */
+  public synchronized static Curvature build() {
+    Curvature rv = null;
+    if (wrc == null) {
+      rv = new DFDT();
+      wrc = new WeakReference<>(rv);
+    } else {
+      rv = wrc.get();
+      if(rv == null) {
+        rv = new DFDT();
+        wrc = new WeakReference<>(rv);
+      }
+    }
+    return rv;
   }
 }

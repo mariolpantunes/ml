@@ -14,7 +14,7 @@ public class TokenizerTest {
 
     @Test
     public void test_unigram() {
-        Tokenizer tk = new TextTokenizer();
+        Tokenizer tk = new PlainTextTokenizer();
         Iterator<String> it = tk.tokenizeIt(Sample1);
         int i = 0;
         while (it.hasNext())
