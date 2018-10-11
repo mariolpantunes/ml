@@ -43,7 +43,11 @@ public class CoOccPoint implements DPPoint<CoOccPoint> {
 
   @Override
   public double affinity(final DPW dpw) {
-    return (coOcc(dpw.term()) +  dpw.dimention(this.dpw.term())) / (2.0*max);
+    double rv = 1.0;
+    if(this.dpw.term().equals(dpw.term())) {
+      rv = (coOcc(dpw.term()) +  dpw.dimention(this.dpw.term())) / (2.0*max);
+    }
+    return rv;
   }
 
   /**
@@ -58,11 +62,7 @@ public class CoOccPoint implements DPPoint<CoOccPoint> {
 
   @Override
   public double distanceTo(CoOccPoint point) {
-    double rv = 0.0;
-    if(!point.term().equals(dpw.term())) {
-      rv = Math.sqrt(1.0 - similarityTo(point));
-    }
-    return rv;
+    return 1.0 - similarityTo(point);
   }
 
   @Override

@@ -3,6 +3,7 @@ package pt.it.av.tnav.ml.tm.dp.dpwOpt;
 import pt.it.av.tnav.ml.tm.dp.DPW;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -10,6 +11,7 @@ import java.util.List;
  * @version 1.0
  */
 public class DPWStemmOpt implements DPWOpt {
+  private static WeakReference<DPWOpt> wro = null;
   private static DPWOpt o = null;
 
   @Override
@@ -33,13 +35,26 @@ public class DPWStemmOpt implements DPWOpt {
   }
 
   /**
+   * Builds a static {@link WeakReference} to a {@link DPWOpt} class.
+   * <p>
+   *   This method should be used whenever the {@link DPWOpt} will be built and destroy multiple times.
+   *   It will also share a single stemmer through several process/threads.
+   * </p>
    *
-   * @return
+   * @return {@link DPWOpt} reference that points to a {@link DPWStemmOpt}.
    */
   public synchronized static DPWOpt build() {
-    if(o == null) {
-      o = new DPWStemmOpt();
+    DPWOpt rv = null;
+    if (wro == null) {
+      rv = new DPWStemmOpt();
+      wro = new WeakReference<>(rv);
+    } else {
+      rv = wro.get();
+      if(rv == null) {
+        rv = new DPWStemmOpt();
+        wro = new WeakReference<>(rv);
+      }
     }
-    return o;
+    return rv;
   }
 }

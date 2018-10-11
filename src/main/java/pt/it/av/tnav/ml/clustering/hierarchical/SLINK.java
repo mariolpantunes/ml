@@ -6,6 +6,7 @@ import pt.it.av.tnav.ml.clustering.curvature.Curvature;
 import pt.it.av.tnav.ml.clustering.curvature.DSDT;
 import pt.it.av.tnav.utils.ArrayUtils;
 import pt.it.av.tnav.utils.MathUtils;
+import pt.it.av.tnav.utils.PrintUtils;
 import pt.it.av.tnav.utils.structures.Distance;
 
 import java.lang.ref.WeakReference;
@@ -117,19 +118,20 @@ public class SLINK implements Hierarchical {
     }
     ArrayUtils.replace(y, 0, MathUtils.eps());
     int idx = curv.elbow(x, y);
+    int nC = (idx >= 0)?(int)x[idx]:max;
 
-    // Rebuild the cluster to the ideal number
+    // Rebuild the cluster to the correct number
     clusters.clear();
     for (i = 0; i < dps.size(); i++) {
       clusters.add(new Cluster<D>(dps.get(i)));
     }
+
     i = 0;
     cSize = dps.size();
-    for (; cSize > x[idx]; i++, cSize--) {
+    for (; cSize > nC; i++, cSize--) {
       clusters.get(d[i][1]).addAll(clusters.get(d[i][0]));
       clusters.set(d[i][0], null);
     }
-
     clusters.removeIf(Objects::isNull);
 
     return clusters;

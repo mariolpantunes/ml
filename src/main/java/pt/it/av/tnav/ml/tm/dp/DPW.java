@@ -4,12 +4,16 @@ import pt.it.av.tnav.ml.tm.StopWords.EnglishStopWords;
 import pt.it.av.tnav.ml.tm.StopWords.StopWords;
 import pt.it.av.tnav.ml.tm.TM;
 import pt.it.av.tnav.ml.tm.corpus.Corpus;
+import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWElbowOpt;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWOpt;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWStatisticOpt;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWStemmOpt;
 import pt.it.av.tnav.ml.tm.stemmer.PorterStemmer;
 import pt.it.av.tnav.ml.tm.stemmer.Stemmer;
 import pt.it.av.tnav.ml.tm.tokenizer.PlainTextTokenizer;
+import pt.it.av.tnav.utils.MathUtils;
+import pt.it.av.tnav.utils.PrintUtils;
+import pt.it.av.tnav.utils.Utils;
 import pt.it.av.tnav.utils.bla.Vector;
 import pt.it.av.tnav.utils.json.JSONArray;
 import pt.it.av.tnav.utils.json.JSONObject;
@@ -39,7 +43,7 @@ import java.util.concurrent.BlockingQueue;
  * @version 1.0
  */
 public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
-  public static final int ESW = 3, ELW = 14, N=5, NG=1;
+  public static final int ESW = 3, ELW = 16, N=7, NG=1;
   private final NGram term, stem;
   private List<DpDimension> dpDimensions;
 
@@ -103,11 +107,13 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
    */
   public double dimention(NGram term) {
     double rv = 0.0;
-    Comparator<DpDimension> c = (DpDimension a, DpDimension b) -> (a.term.compareTo(b.term));
-    dpDimensions.sort(c);
-    int idx = Collections.binarySearch(dpDimensions, new DpDimension(term, term, 0), c);
-    if (idx >= 0)
-      rv = dpDimensions.get(idx).value;
+    DpDimension dp = dpDimensions.stream()
+        .filter(d -> d.term.equals(term))
+        .findAny()
+        .orElse(null);
+    if (dp != null) {
+      rv = dp.value;
+    }
     return rv;
   }
 
@@ -123,13 +129,11 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
   @Override
   public double similarityTo(DPW dpw) {
     double rv = 0.0;
-
     if(term.equals(dpw.term)) {
       rv = 1.0;
     } else {
       rv = similarity(dpDimensions, dpw.dpDimensions);
     }
-
     return rv;
   }
 
@@ -143,6 +147,24 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
       rv = 1.0 - similarity(dpDimensions, dpw.dpDimensions);
     }
 
+    return rv;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    boolean rv = true;
+    if (this == o) {
+      rv = true;
+    } else if (o == null) {
+      rv = false;
+    } else if (getClass() != o.getClass()) {
+      rv = false;
+    } else {
+      DPW dpw = (DPW) o;
+      rv = term.equals(dpw.term)
+          && stem.equals(dpw.stem)
+          && Utils.equals(dpDimensions,dpw.dpDimensions);
+    }
     return rv;
   }
 
@@ -287,7 +309,7 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
     DPW dpw = new DPW(ngram, st.stem(ngram), profile);
 
     dpw.optimize(DPWStemmOpt.build());
-    dpw.optimize(DPWStatisticOpt.build());
+    dpw.optimize(DPWElbowOpt.build());
 
     return dpw;
   }
@@ -376,7 +398,7 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
           DpDimension c = (DpDimension) o;
           rv = this.term.equals(c.term) &&
               this.stemm.equals(c.stemm) &&
-              this.value == c.value;
+              MathUtils.equals(this.value, c.value, 0.01);
         }
       }
       return rv;

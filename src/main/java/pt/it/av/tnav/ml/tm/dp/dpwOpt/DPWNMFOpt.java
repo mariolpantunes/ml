@@ -4,12 +4,16 @@ import pt.it.av.tnav.ml.tm.dp.DPW;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
 import pt.it.av.tnav.utils.bla.Matrix;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
+ * Implements a Distributional Profile optimizer based on latent variables.
  *
+ * @author Mário Antunes
+ * @version 1.0
  */
 public class DPWNMFOpt implements DPWOpt {
   private final Matrix nf;
@@ -26,7 +30,8 @@ public class DPWNMFOpt implements DPWOpt {
   }
 
   @Override
-  public List<DPW.DpDimension> optimize(final NGram term, final List<DPW.DpDimension> dpDimensions) {
+  public List<DPW.DpDimension> optimize(final NGram term,
+                                        final List<DPW.DpDimension> dpDimensions) {
     int i = Collections.binarySearch(map, term.toString());
     List<DPW.DpDimension> dimensions = new ArrayList<>(dpDimensions.size());
 

@@ -6,10 +6,13 @@ import pt.it.av.tnav.ml.tm.dp.cache.DPWPCache;
 import pt.it.av.tnav.ml.tm.dp.dppoint.CachePoint;
 import pt.it.av.tnav.ml.tm.dp.dppoint.CoOccPoint;
 import pt.it.av.tnav.ml.tm.dp.dppoint.DPPoint;
+import pt.it.av.tnav.ml.tm.dp.dppoint.MatrixPoint;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWNMFOpt;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWOpt;
 import pt.it.av.tnav.utils.ArrayUtils;
+import pt.it.av.tnav.utils.MathUtils;
 import pt.it.av.tnav.utils.PrintUtils;
+import pt.it.av.tnav.utils.Utils;
 import pt.it.av.tnav.utils.bla.Matrix;
 import pt.it.av.tnav.utils.bla.Vector;
 import pt.it.av.tnav.utils.json.JSONArray;
@@ -25,6 +28,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 //TODO: until find a better solution -> Build DPWC with single clusters
@@ -35,7 +39,7 @@ import java.util.List;
  * @version 1.0
  */
 public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> {
-  private static final int MIN_LAT=3, MAX_LAT=5, NMF_REPS=5;
+  private static final int MIN_LAT=2, MAX_LAT=5, NMF_REPS=5;
   private static final double RATIO = 1.5;
   private final NGram term;
   private List<Category> categories;
@@ -94,23 +98,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
 
   @Override
   public double distanceTo(DPWC dpwc) {
-    double rv = 1.0;
-
-    if(term.equals(dpwc.term)) {
-      rv = 0.0;
-    } else {
-      for (Category c1 : categories) {
-        for (Category c2 : dpwc.categories) {
-          double d = 1.0 - (DPW.similarity(c1.dpDimensions, c2.dpDimensions)
-              * ((c1.affinity + c2.affinity) / 2.0));
-          if (d < rv) {
-            rv = d;
-          }
-        }
-      }
-    }
-
-    return rv;
+    return 1.0-similarityTo(dpwc);
   }
 
   @Override
@@ -125,6 +113,23 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     for (Category category : categories)
       sb.append(category.toString() + System.getProperty("line.separator"));
     return sb.toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    boolean rv = true;
+    if (this == o) {
+      rv = true;
+    } else if (o == null) {
+      rv = false;
+    } else if (getClass() != o.getClass()) {
+      rv = false;
+    } else {
+      DPWC dpwc = (DPWC) o;
+      rv = term.equals(dpwc.term) &&
+          Utils.equals(categories, dpwc.categories);
+    }
+    return rv;
   }
 
   /**
@@ -218,6 +223,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
       }
       categories.add(new DPWC.Category(dpDimensions, a[i++]));
     }
+    Collections.sort(categories, Collections.reverseOrder());
     return new DPWC(dpw.term(), categories);
   }
 
@@ -233,15 +239,16 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
         rv = dimension;
         break;
       }
-    if (rv == null)
+    if (rv == null) {
       System.err.println("NULL -> " + point);
+    }
     return rv;
   }
 
   /**
    *
    */
-  public static class Category {
+  public static class Category implements Comparable<Category> {
     public final List<DPW.DpDimension> dpDimensions;
     public final double affinity;
 
@@ -278,10 +285,16 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
           rv = true;
         else if (o instanceof Category) {
           Category c = (Category) o;
-          rv = this.dpDimensions.equals(c.dpDimensions) && this.affinity == c.affinity;
+          rv = Utils.equals(this.dpDimensions, c.dpDimensions) &&
+              MathUtils.equals(this.affinity,c.affinity, 0.01);
         }
       }
       return rv;
+    }
+
+    @Override
+    public int compareTo(Category o) {
+      return Double.compare(affinity, o.affinity);
     }
   }
 
@@ -321,17 +334,20 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
 
     // Learn Context DPWs
     List<DPW> context = new ArrayList<>(dpw.size()+1);
-    context.add(dpw);
     for (DPW.DpDimension dimension : dpw.dimentions()) {
       context.add(dpwpCache.fetch(dimension.term));
+    }
+    if(!context.contains(dpw)) {
+      context.add(dpw);
     }
     Collections.sort(context);
 
     // Build co-occurence points to learn latent information
     double maxCo[] = new double[context.size()];
-    for (int i = 0; i < dpw.dimentions().size(); i++) {
-      maxCo[i] = Collections.max(context.get(i).dimentions()).value;;
+    for (int i = 0; i < context.size(); i++) {
+      maxCo[i] = Collections.max(context.get(i).dimentions()).value;
     }
+
     int maxCoIdx = ArrayUtils.max(maxCo);
     List<CachePoint<CoOccPoint>> points = new ArrayList<>();
     // Initialize the co-occurrence points for clustering
@@ -358,11 +374,11 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
       }
     }
 
-    Matrix wh[] = sim.nmf(points.size() / minLat);
+    Matrix wh[] = sim.nmf((int)Math.round(points.size() / (double)minLat));
     Matrix nf = wh[0].mul(wh[1]), tnf = null;
     double bcost = sim.euclideanDistance(nf);
     for (int i = 1; i < reps; i++) {
-      wh = sim.nmf(points.size() / minLat);
+      wh = sim.nmf((int)Math.round(points.size() / (double)minLat));
       tnf = wh[0].mul(wh[1]);
       double cost = sim.euclideanDistance(tnf);
       if (cost < bcost) {
@@ -371,9 +387,9 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
       }
     }
 
-    for (int d = minLat+1; d <= maxLat; d++) {
+    for (int d = minLat+1; d <= maxLat && d < points.size(); d++) {
       for (int i = 0; i < reps; i++) {
-        wh = sim.nmf(points.size() / d);
+        wh = sim.nmf((int)Math.round(points.size() / (double)d));
         tnf = wh[0].mul(wh[1]);
         double cost = sim.euclideanDistance(tnf);
         if (cost < bcost) {
@@ -383,24 +399,23 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
       }
     }
 
-    // Optimize Points with latent information
+    // Optimize DPW profile with latent information
     DPWOpt opt = new DPWNMFOpt(nf, map);
-    int dpwIdx = Collections.binarySearch(map, dpw.term().toString());
     dpw.optimize(opt);
-    context.remove(dpwIdx);
 
-    for(DPPoint p : points) {
-      p.dpw().optimize(opt);
+    // Generate new points with latent information
+    List<MatrixPoint> mpoints = new ArrayList<>();
+    for(int i = 0; i < points.size(); i++) {
+      DPPoint p = points.get(i);
+      mpoints.add(new MatrixPoint(p.dpw(), nf, map));
     }
 
     // Cluster DP Points into categories
     Hierarchical hc = SLINK.build();
-    int max = (int)Math.round(points.size()/ratio),
-        kmax = (max < points.size())?max:points.size()-1;
-    List<Cluster<CachePoint<CoOccPoint>>> clusters = hc.clustering(points, 2, kmax);
-
+    int max = (int)Math.round(mpoints.size()/ratio),
+        kmax = (max < mpoints.size())?max:mpoints.size()-1;
+    List<Cluster<MatrixPoint>> clusters = hc.clustering(mpoints, 2, kmax);
     DPWC dpwc = DPWC.buildDPWC(dpw, clusters);
-
     return dpwc;
   }
 

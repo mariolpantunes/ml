@@ -4,6 +4,7 @@ import pt.it.av.tnav.ml.tm.dp.DPW;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
 import pt.it.av.tnav.utils.MathUtils;
 
+import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -16,8 +17,8 @@ import java.util.stream.Collectors;
  * @version 1.0
  */
 public class DPWStatisticOpt implements DPWOpt {
-  private static DPWOpt o = null;
-  private static final int MD = 10;
+  private static WeakReference<DPWOpt> wro = null;
+  protected static final int MD = 10;
   private static final double CP = 0.01;
 
   private final int min, neighborhood;
@@ -30,7 +31,8 @@ public class DPWStatisticOpt implements DPWOpt {
   }
 
   @Override
-  public List<DPW.DpDimension> optimize(final NGram term, final List<DPW.DpDimension> dpDimensions) {
+  public List<DPW.DpDimension> optimize(final NGram term,
+                                        final List<DPW.DpDimension> dpDimensions) {
     List<DPW.DpDimension> rv = dpDimensions;
     if (dpDimensions.size() > min) {
       int vocabulary = dpDimensions.size(), total = 0;
@@ -38,7 +40,8 @@ public class DPWStatisticOpt implements DPWOpt {
         total += c.value - c.term.size() + 1;
       int partitions = total;
       //dpDimensions.removeIf(p -> probs((int) p.value, partitions, vocabulary) >= alpha);
-      rv = dpDimensions.parallelStream().filter(p -> probs((int) p.value, partitions, vocabulary) < alpha).
+      rv = dpDimensions.parallelStream().
+          filter(p -> probs((int) p.value, partitions, vocabulary) < alpha).
           collect(Collectors.toList());
     }
     return rv;
@@ -83,12 +86,26 @@ public class DPWStatisticOpt implements DPWOpt {
   }
 
   /**
-   * @return
+   * Builds a static {@link WeakReference} to a {@link DPWOpt} class.
+   * <p>
+   *   This method should be used whenever the {@link DPWOpt} will be built and destroy multiple times.
+   *   It will also share a single stemmer through several process/threads.
+   * </p>
+   *
+   * @return {@link DPWOpt} reference that points to a {@link DPWStatisticOpt}.
    */
   public synchronized static DPWOpt build() {
-    if (o == null) {
-      o = new DPWStatisticOpt(MD, DPW.N, CP);
+    DPWOpt rv = null;
+    if (wro == null) {
+      rv = new DPWStatisticOpt(MD,DPW.N,CP);
+      wro = new WeakReference<>(rv);
+    } else {
+      rv = wro.get();
+      if(rv == null) {
+        rv = new DPWStatisticOpt(MD,DPW.N,CP);
+        wro = new WeakReference<>(rv);
+      }
     }
-    return o;
+    return rv;
   }
 }
