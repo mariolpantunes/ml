@@ -11,6 +11,7 @@ import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWStemmOpt;
 import pt.it.av.tnav.ml.tm.stemmer.PorterStemmer;
 import pt.it.av.tnav.ml.tm.stemmer.Stemmer;
 import pt.it.av.tnav.ml.tm.tokenizer.PlainTextTokenizer;
+import pt.it.av.tnav.utils.CollectionsUtils;
 import pt.it.av.tnav.utils.MathUtils;
 import pt.it.av.tnav.utils.PrintUtils;
 import pt.it.av.tnav.utils.Utils;
@@ -163,7 +164,7 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
       DPW dpw = (DPW) o;
       rv = term.equals(dpw.term)
           && stem.equals(dpw.stem)
-          && Utils.equals(dpDimensions,dpw.dpDimensions);
+          && CollectionsUtils.equals(dpDimensions,dpw.dpDimensions);
     }
     return rv;
   }

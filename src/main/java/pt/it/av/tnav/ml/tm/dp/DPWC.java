@@ -10,6 +10,7 @@ import pt.it.av.tnav.ml.tm.dp.dppoint.MatrixPoint;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWNMFOpt;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWOpt;
 import pt.it.av.tnav.utils.ArrayUtils;
+import pt.it.av.tnav.utils.CollectionsUtils;
 import pt.it.av.tnav.utils.MathUtils;
 import pt.it.av.tnav.utils.PrintUtils;
 import pt.it.av.tnav.utils.Utils;
@@ -127,7 +128,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     } else {
       DPWC dpwc = (DPWC) o;
       rv = term.equals(dpwc.term) &&
-          Utils.equals(categories, dpwc.categories);
+          CollectionsUtils.equals(categories, dpwc.categories);
     }
     return rv;
   }
@@ -285,7 +286,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
           rv = true;
         else if (o instanceof Category) {
           Category c = (Category) o;
-          rv = Utils.equals(this.dpDimensions, c.dpDimensions) &&
+          rv = CollectionsUtils.equals(this.dpDimensions, c.dpDimensions) &&
               MathUtils.equals(this.affinity,c.affinity, 0.01);
         }
       }
