@@ -31,6 +31,7 @@ public class DPWNMFOpt implements DPWOpt {
 
   @Override
   public List<DPW.DpDimension> optimize(final NGram term,
+                                        final NGram stemm,
                                         final List<DPW.DpDimension> dpDimensions) {
     int i = Collections.binarySearch(map, term.toString());
     List<DPW.DpDimension> dimensions = new ArrayList<>(dpDimensions.size());

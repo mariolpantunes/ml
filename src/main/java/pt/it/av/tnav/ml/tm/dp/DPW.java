@@ -6,15 +6,12 @@ import pt.it.av.tnav.ml.tm.TM;
 import pt.it.av.tnav.ml.tm.corpus.Corpus;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWElbowOpt;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWOpt;
-import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWStatisticOpt;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWStemmOpt;
 import pt.it.av.tnav.ml.tm.stemmer.PorterStemmer;
 import pt.it.av.tnav.ml.tm.stemmer.Stemmer;
 import pt.it.av.tnav.ml.tm.tokenizer.PlainTextTokenizer;
 import pt.it.av.tnav.utils.CollectionsUtils;
 import pt.it.av.tnav.utils.MathUtils;
-import pt.it.av.tnav.utils.PrintUtils;
-import pt.it.av.tnav.utils.Utils;
 import pt.it.av.tnav.utils.bla.Vector;
 import pt.it.av.tnav.utils.json.JSONArray;
 import pt.it.av.tnav.utils.json.JSONObject;
@@ -29,7 +26,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,7 +41,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
   public static final int ESW = 3, ELW = 16, N=7, NG=1;
-  private final NGram term, stem;
+  private final NGram term, stemm;
   private List<DpDimension> dpDimensions;
 
   /**
@@ -56,7 +52,7 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
    */
   public DPW(final NGram term, List<DpDimension> dpDimensions) {
     this.term = term;
-    this.stem = PorterStemmer.build().stem(term);
+    this.stemm = PorterStemmer.build().stem(term);
     this.dpDimensions = dpDimensions;
   }
 
@@ -64,12 +60,12 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
    * {@link DPW} constructor.
    *
    * @param term {@link NGram} represented by the profile
-   * @param stem term stem ({@link NGram})
+   * @param stem term stemm ({@link NGram})
    * @param dpDimensions {@link List} of the {@link DpDimension}
    */
   public DPW(final NGram term, final NGram stem, List<DpDimension> dpDimensions) {
     this.term = term;
-    this.stem = stem;
+    this.stemm = stem;
     this.dpDimensions = dpDimensions;
   }
 
@@ -83,12 +79,12 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
   }
 
   /**
-   * Returns the term stem ({@link NGram}).
+   * Returns the term stemm ({@link NGram}).
    *
-   * @return the term stem ({@link NGram})
+   * @return the term stemm ({@link NGram})
    */
   public NGram stem() {
-    return stem;
+    return stemm;
   }
 
   /**
@@ -163,7 +159,7 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
     } else {
       DPW dpw = (DPW) o;
       rv = term.equals(dpw.term)
-          && stem.equals(dpw.stem)
+          && stemm.equals(dpw.stemm)
           && CollectionsUtils.equals(dpDimensions,dpw.dpDimensions);
     }
     return rv;
@@ -241,7 +237,7 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
    * @param dpOptimizer instance of{@link DPWOpt}
    */
   public void optimize(DPWOpt dpOptimizer) {
-    dpDimensions = dpOptimizer.optimize(term, dpDimensions);
+    dpDimensions = dpOptimizer.optimize(term, stemm, dpDimensions);
   }
 
   @Override
@@ -309,8 +305,12 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
 
     DPW dpw = new DPW(ngram, st.stem(ngram), profile);
 
+    System.err.println(dpw);
+
     dpw.optimize(DPWStemmOpt.build());
     dpw.optimize(DPWElbowOpt.build());
+
+    System.err.println(dpw);
 
     return dpw;
   }
@@ -319,7 +319,7 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
     JSONObject json = JSONObject.read(in);
 
     NGram term = NGram.Unigram(json.get("term").asString());
-    NGram stem = NGram.Unigram(json.get("stem").asString());
+    NGram stem = NGram.Unigram(json.get("stemm").asString());
     List<DPW.DpDimension> dimensions = new ArrayList<>();
 
     for(JSONValue d: json.asObject().get("dimentions").asArray()) {
@@ -344,7 +344,7 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
     }
     json.put("dimentions", dimentions);
     json.put("term", dpw.term.toString());
-    json.put("stem", dpw.stem.toString());
+    json.put("stemm", dpw.stemm.toString());
 
     json.write(out);
   }

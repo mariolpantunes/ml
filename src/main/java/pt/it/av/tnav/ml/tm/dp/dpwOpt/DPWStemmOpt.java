@@ -4,6 +4,7 @@ import pt.it.av.tnav.ml.tm.dp.DPW;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,17 +16,23 @@ public class DPWStemmOpt implements DPWOpt {
   private static DPWOpt o = null;
 
   @Override
-  public List<DPW.DpDimension> optimize(final NGram term, final List<DPW.DpDimension> dpDimensions) {
+  public List<DPW.DpDimension> optimize(final NGram term,
+                                        final NGram stemm,
+                                        final List<DPW.DpDimension> dpDimensions) {
+    List<DPW.DpDimension> dimensions = new ArrayList<>();
     for (int i = 0; i < dpDimensions.size() - 1; i++) {
       DPW.DpDimension a = dpDimensions.get(i);
       for (int j = i + 1; j < dpDimensions.size(); j++) {
         DPW.DpDimension b = dpDimensions.get(j);
         if (a.stemm.equals(b.stemm)) {
           double total = a.value + b.value;
-          if (a.term.length() < b.term.length())
+          if (a.stemm.equals(stemm)) {
+            dpDimensions.set(i, new DPW.DpDimension(term, stemm, total));
+          } else if (a.term.length() < b.term.length()) {
             dpDimensions.set(i, new DPW.DpDimension(a.term, a.stemm, total));
-          else
+          } else {
             dpDimensions.set(i, new DPW.DpDimension(b.term, b.stemm, total));
+          }
           a = dpDimensions.get(i);
           dpDimensions.remove(j);
         }
@@ -37,8 +44,8 @@ public class DPWStemmOpt implements DPWOpt {
   /**
    * Builds a static {@link WeakReference} to a {@link DPWOpt} class.
    * <p>
-   *   This method should be used whenever the {@link DPWOpt} will be built and destroy multiple times.
-   *   It will also share a single stemmer through several process/threads.
+   * This method should be used whenever the {@link DPWOpt} will be built and destroy multiple times.
+   * It will also share a single stemmer through several process/threads.
    * </p>
    *
    * @return {@link DPWOpt} reference that points to a {@link DPWStemmOpt}.
@@ -50,7 +57,7 @@ public class DPWStemmOpt implements DPWOpt {
       wro = new WeakReference<>(rv);
     } else {
       rv = wro.get();
-      if(rv == null) {
+      if (rv == null) {
         rv = new DPWStemmOpt();
         wro = new WeakReference<>(rv);
       }

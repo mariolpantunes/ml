@@ -11,8 +11,13 @@ import java.util.List;
  */
 public interface DPWOpt {
   /**
+   *
+   * @param term
+   * @param stem
    * @param dpDimensions
    * @return
    */
-  List<DPW.DpDimension> optimize(final NGram term, final List<DPW.DpDimension> dpDimensions);
+  List<DPW.DpDimension> optimize(final NGram term,
+                                 final NGram stemm,
+                                 final List<DPW.DpDimension> dpDimensions);
 }

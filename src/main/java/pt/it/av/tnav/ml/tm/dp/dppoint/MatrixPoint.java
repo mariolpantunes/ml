@@ -10,13 +10,13 @@ public class MatrixPoint implements DPPoint<MatrixPoint>{
   private final DPW dpw;
   private final Matrix matrix;
   private final List<String> map;
-  private final int selfId;
+  private final int selfIdx;
 
   public MatrixPoint(final DPW dpw, final Matrix matrix, final List<String> map) {
     this.dpw = dpw;
     this.matrix = matrix;
     this.map = map;
-    this.selfId = map.indexOf(dpw.term().toString());
+    this.selfIdx = map.indexOf(dpw.term().toString());
   }
 
   @Override
@@ -29,7 +29,7 @@ public class MatrixPoint implements DPPoint<MatrixPoint>{
     double rv = 1.0;
     if(!this.dpw.term().equals(dpw.term())) {
       int p2 = map.indexOf(dpw.term().toString());
-      rv = matrix.get(selfId, p2);
+      rv = matrix.get(selfIdx, p2);
     }
     return rv;
   }
@@ -49,7 +49,7 @@ public class MatrixPoint implements DPPoint<MatrixPoint>{
     double rv = 1.0;
     if(!point.term().equals(dpw.term())) {
       int p2 = map.indexOf(point.term().toString());
-      rv = matrix.get(selfId, p2);
+      rv = matrix.get(selfIdx, p2);
     }
     return rv;
   }

@@ -32,6 +32,7 @@ public class DPWStatisticOpt implements DPWOpt {
 
   @Override
   public List<DPW.DpDimension> optimize(final NGram term,
+                                        final NGram stemm,
                                         final List<DPW.DpDimension> dpDimensions) {
     List<DPW.DpDimension> rv = dpDimensions;
     if (dpDimensions.size() > min) {

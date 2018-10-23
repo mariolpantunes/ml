@@ -30,6 +30,7 @@ public class DPWElbowOpt implements DPWOpt {
 
   @Override
   public List<DPW.DpDimension> optimize(final NGram term,
+                                        final NGram stemm,
                                         final List<DPW.DpDimension> dpDimensions) {
     if (dpDimensions.size() > min) {
       Comparator<DPW.DpDimension> c =

@@ -224,7 +224,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
       }
       categories.add(new DPWC.Category(dpDimensions, a[i++]));
     }
-    Collections.sort(categories, Collections.reverseOrder());
+    categories.sort(Collections.reverseOrder());
     return new DPWC(dpw.term(), categories);
   }
 
@@ -308,7 +308,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     JSONObject json = JSONObject.read(in);
 
     List<Category> categories = new ArrayList<>();
-    NGram term = NGram.Unigram(json.get("ngram").asString());
+    NGram term = NGram.Unigram(json.get("term").asString());
 
     JSONArray cats = json.get("categories").asArray();
     for(JSONValue c : cats) {
@@ -360,8 +360,8 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
 
     // Map NGrams to Indexes
     List<String> map = new ArrayList<>(points.size());
-    for(int i = 0; i < points.size(); i++) {
-      map.add(points.get(i).term().toString());
+    for(DPPoint p : points) {
+      map.add(p.term().toString());
     }
 
     // Learn latent information with NMF
@@ -442,8 +442,9 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
         dimention.put("value",d.value);
         dimentions.add(dimention);
       }
-      category.put("afinity", c.affinity);
+      category.put("affinity", c.affinity);
       category.put("dimentions", dimentions);
+      categories.add(category);
     }
 
     json.put("categories", categories);
