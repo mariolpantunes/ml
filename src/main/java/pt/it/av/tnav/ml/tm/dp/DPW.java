@@ -305,12 +305,8 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
 
     DPW dpw = new DPW(ngram, st.stem(ngram), profile);
 
-    System.err.println(dpw);
-
     dpw.optimize(DPWStemmOpt.build());
     dpw.optimize(DPWElbowOpt.build());
-
-    System.err.println(dpw);
 
     return dpw;
   }

@@ -2,6 +2,7 @@ package pt.it.av.tnav.ml.tm.dp;
 
 import pt.it.av.tnav.ml.clustering.hierarchical.Hierarchical;
 import pt.it.av.tnav.ml.clustering.hierarchical.SLINK;
+import pt.it.av.tnav.ml.dreduction.Latent;
 import pt.it.av.tnav.ml.tm.dp.cache.DPWPCache;
 import pt.it.av.tnav.ml.tm.dp.dppoint.CachePoint;
 import pt.it.av.tnav.ml.tm.dp.dppoint.CoOccPoint;
@@ -32,7 +33,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-//TODO: until find a better solution -> Build DPWC with single clusters
 /**
  * Distributional Profile of multiple Word Categories.
  *
@@ -365,40 +365,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     }
 
     // Learn latent information with NMF
-    Matrix sim = Matrix.identity(points.size());
-
-    for (int i = 0; i < points.size() - 1; i++) {
-      for (int j = i + 1; j < points.size(); j++) {
-        double similarity = points.get(i).similarityTo(points.get(j));
-        sim.set(i, j, similarity);
-        sim.set(j, i, similarity);
-      }
-    }
-
-    Matrix wh[] = sim.nmf((int)Math.round(points.size() / (double)minLat));
-    Matrix nf = wh[0].mul(wh[1]), tnf = null;
-    double bcost = sim.euclideanDistance(nf);
-    for (int i = 1; i < reps; i++) {
-      wh = sim.nmf((int)Math.round(points.size() / (double)minLat));
-      tnf = wh[0].mul(wh[1]);
-      double cost = sim.euclideanDistance(tnf);
-      if (cost < bcost) {
-        nf = tnf;
-        bcost = cost;
-      }
-    }
-
-    for (int d = minLat+1; d <= maxLat && d < points.size(); d++) {
-      for (int i = 0; i < reps; i++) {
-        wh = sim.nmf((int)Math.round(points.size() / (double)d));
-        tnf = wh[0].mul(wh[1]);
-        double cost = sim.euclideanDistance(tnf);
-        if (cost < bcost) {
-          nf = tnf;
-          bcost = cost;
-        }
-      }
-    }
+    Matrix nf = Latent.nmf(points, minLat, maxLat, reps);
 
     // Optimize DPW profile with latent information
     DPWOpt opt = new DPWNMFOpt(nf, map);
@@ -419,8 +386,6 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     DPWC dpwc = DPWC.buildDPWC(dpw, clusters);
     return dpwc;
   }
-
-  //private static List<>
 
   /**
    * Stores a {@link DPWC} in JSON format inside a compressed file.

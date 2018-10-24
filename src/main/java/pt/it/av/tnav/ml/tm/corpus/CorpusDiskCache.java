@@ -4,6 +4,7 @@ import pt.it.av.tnav.ml.tm.ngrams.NGram;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -32,6 +33,10 @@ public class CorpusDiskCache implements Corpus {
   public CorpusDiskCache(Corpus c, Path cache) {
     this.c = c;
     this.pCache = cache;
+    File directory = cache.toFile();
+    if(!directory.exists()) {
+      directory.mkdir();
+    }
   }
 
   @Override
