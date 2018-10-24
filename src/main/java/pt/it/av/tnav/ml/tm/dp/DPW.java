@@ -6,6 +6,7 @@ import pt.it.av.tnav.ml.tm.TM;
 import pt.it.av.tnav.ml.tm.corpus.Corpus;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWElbowOpt;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWOpt;
+import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWSelfOpt;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWStemmOpt;
 import pt.it.av.tnav.ml.tm.stemmer.PorterStemmer;
 import pt.it.av.tnav.ml.tm.stemmer.Stemmer;
@@ -307,8 +308,7 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
 
     dpw.optimize(DPWStemmOpt.build());
     dpw.optimize(DPWElbowOpt.build());
-
-
+    dpw.optimize(DPWSelfOpt.build());
 
     return dpw;
   }
