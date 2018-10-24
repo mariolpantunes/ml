@@ -308,6 +308,8 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
     dpw.optimize(DPWStemmOpt.build());
     dpw.optimize(DPWElbowOpt.build());
 
+
+
     return dpw;
   }
 
