@@ -1,5 +1,7 @@
 package pt.it.av.tnav.ml.regression;
 
+import pt.it.av.tnav.utils.PrintUtils;
+
 /**
  * Univariate Regression.
  * <p>
@@ -69,7 +71,7 @@ public class UnivariateRegression {
       sst += Math.pow(y[i + bY] - my, 2);
     }
 
-    return new LNR(m,b,1 - (sse / sst));
+    return new LNR(m,b,1 - (sse / sst), Math.sqrt(1/(l-1)*sse));
   }
 
   /**
@@ -125,7 +127,7 @@ public class UnivariateRegression {
       sst += Math.pow(v - my, 2);
     }
 
-    return new ER(Math.exp(b), m, 1 - (sse / sst));
+    return new ER(Math.exp(b), m, 1 - (sse / sst), Math.sqrt(1/(l-1)*sse));
   }
 
   /**
@@ -187,7 +189,7 @@ public class UnivariateRegression {
       sst += Math.pow(v - my, 2);
     }
 
-    return new PR(Math.exp(b), m, 1 - (sse / sst));
+    return new PR(Math.exp(b), m, 1 - (sse / sst), Math.sqrt(1/(l-1)*sse));
   }
 
   /**
@@ -241,9 +243,10 @@ public class UnivariateRegression {
       double f = m * x[i + bX] + b;
       sse += Math.pow(y[i + bY] - f, 2);
       sst += Math.pow(y[i + bY] - my, 2);
+
     }
 
-    return new LR(m, b, 1 - (sse / sst));
+    return new LR(m, b, 1 - (sse / sst), Math.sqrt(1/(l-1)*sse));
   }
 
   /**
@@ -270,22 +273,29 @@ public class UnivariateRegression {
     double b();
 
     /**
-     *
+     * R-squared
      * @return
      */
     double r2();
+
+    /**
+     * Standard Error of the Regression
+     * @return
+     */
+    double s();
   }
 
   /**
    *
    */
   public static abstract class BRM implements URM {
-    protected final double a, b, r2;
+    protected final double a, b, r2, s;
 
-    public BRM(final double a, final double b, final double r2) {
+    public BRM(final double a, final double b, final double r2, final double s) {
       this.a = a;
       this.b = b;
       this.r2 = r2;
+      this.s = s;
     }
 
     @Override
@@ -304,6 +314,11 @@ public class UnivariateRegression {
     @Override
     public double r2() {
       return r2;
+    }
+
+    @Override
+    public double s() {
+      return s;
     }
 
     @Override
@@ -328,6 +343,7 @@ public class UnivariateRegression {
       rv = (31 * rv) + Double.hashCode(a);
       rv = (31 * rv) + Double.hashCode(b);
       rv = (31 * rv) + Double.hashCode(r2);
+      rv = (31 * rv) + Double.hashCode(s);
       return rv;
     }
 
@@ -338,8 +354,8 @@ public class UnivariateRegression {
    */
   public static class LNR extends BRM{
 
-    public LNR(final double a, final double b, final double r2) {
-      super(a,b,r2);
+    public LNR(final double a, final double b, final double r2, final double s) {
+      super(a,b,r2, s);
     }
 
     @Override
@@ -349,7 +365,7 @@ public class UnivariateRegression {
 
     @Override
     public String toString() {
-      return "f(x) = "+a+"ln(x)+"+b+" ("+r2+")";
+      return "f(x) = "+a+"ln(x)+"+b+" ("+r2+", "+s+")";
     }
   }
 
@@ -358,8 +374,8 @@ public class UnivariateRegression {
    */
   public static class ER extends BRM{
 
-    public ER(final double a, final double b, final double r2) {
-      super(a, b, r2);
+    public ER(final double a, final double b, final double r2, final double s) {
+      super(a, b, r2, s);
     }
 
     @Override
@@ -369,7 +385,7 @@ public class UnivariateRegression {
 
     @Override
     public String toString() {
-      return "f(x) = "+a+"e^x+"+b+" ("+r2+")";
+      return "f(x) = "+a+"e^x+"+b+" ("+r2+", "+s+")";
     }
   }
 
@@ -378,8 +394,8 @@ public class UnivariateRegression {
    */
   public static class PR extends BRM{
 
-    public PR(final double a, final double b, final double r2) {
-      super(a,b,r2);
+    public PR(final double a, final double b, final double r2, final double s) {
+      super(a,b,r2, s);
     }
 
     @Override
@@ -389,7 +405,7 @@ public class UnivariateRegression {
 
     @Override
     public String toString() {
-      return "f(x) = "+a+"x^"+b+" ("+r2+")";
+      return "f(x) = "+a+"x^"+b+" ("+r2+", "+s+")";
     }
   }
 
@@ -398,8 +414,8 @@ public class UnivariateRegression {
    */
   public static class LR extends BRM {
 
-    public LR(final double a, final double b, final double r2) {
-      super(a, b, r2);
+    public LR(final double a, final double b, final double r2, final double s) {
+      super(a, b, r2, s);
     }
 
     @Override
@@ -409,7 +425,68 @@ public class UnivariateRegression {
 
     @Override
     public String toString() {
-      return "f(x) = "+a+"x+"+b+" ("+r2+")";
+      return "f(x) = "+a+"x+"+b+" ("+r2+", "+s+")";
     }
+  }
+
+
+  public static PR pr2(final double x[], final double y[]) {
+    System.out.println("X = "+ PrintUtils.array(x));
+    System.out.println("Y = "+ PrintUtils.array(y));
+    PR theta = pr(x,y);
+    System.out.println("Log-Linear Theta "+theta);
+    double a = theta.a, b = theta.b;
+
+    for (int c = 0; c < 100; c++) {
+      double gradient_a = 0.0, gradient_b = 0.0;
+      for (int i = 0; i < x.length; i++) {
+        double delta = a * Math.pow(x[i], b);
+        gradient_a += -1.0 * Math.pow(x[i], b) * (y[i] - delta);
+        gradient_b += -1.0 * delta * Math.log(x[i]) * (y[i] - delta);
+      }
+      gradient_a /= x.length;
+      gradient_b /= x.length;
+
+      a -= gradient_a * 0.01;
+      b -= gradient_b * 0.01;
+    }
+
+    System.out.println("Non-linear theta "+new PR(a, b, theta.r2, theta.s));
+
+    return new PR(a, b, theta.r2, theta.s);
+  }
+
+  public static ER er2(final double x[], final double y[]) {
+    System.out.println("X = "+ PrintUtils.array(x));
+    System.out.println("Y = "+ PrintUtils.array(y));
+    ER theta = er(x,y);
+    System.out.println("Log-Linear Theta "+theta);
+    double a = theta.a, b = theta.b;
+
+    for (int c = 0; c < 10; c++) {
+      double gradient_a = 0.0, gradient_b = 0.0;
+      for (int i = 0; i < x.length; i++) {
+
+        double delta = a * Math.exp(x[i] * b);
+        double residual = y[i] - delta;
+
+
+
+        System.out.println("("+y[i]+", "+delta+", "+residual+")");
+        gradient_a += -2.0 * residual * Math.exp(b*x[i]);
+        gradient_b += -2.0 * residual * a * x[i] * Math.exp(b*x[i]);
+      }
+      gradient_a /= x.length;
+      gradient_b /= x.length;
+
+      System.out.println("Gradient ("+gradient_a+", "+gradient_b+")");
+
+      a -= gradient_a * 0.0001;
+      b -= gradient_b * 0.0001;
+    }
+
+    System.out.println("Non-linear theta "+new ER(a, b, theta.r2, theta.s));
+
+    return new ER(a, b, theta.r2, theta.s);
   }
 }
