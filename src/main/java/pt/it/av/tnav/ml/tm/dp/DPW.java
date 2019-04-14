@@ -40,7 +40,7 @@ import java.util.concurrent.BlockingQueue;
  * @author Mário Antunes
  * @version 1.0
  */
-public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
+public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW> {
   public static final int ESW = 3, ELW = 16, N=7, NG=1;
   private final NGram term, stemm;
   private List<DpDimension> dpDimensions;
@@ -313,6 +313,12 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
     return dpw;
   }
 
+  /**
+   *
+   * @param in
+   * @return
+   * @throws IOException
+   */
   public static DPW load(Reader in) throws IOException {
     JSONObject json = JSONObject.read(in);
 
@@ -329,21 +335,37 @@ public class DPW implements Similarity<DPW>, Distance<DPW>, Comparable<DPW>{
     return new DPW(term, stem, dimensions);
   }
 
-  public static void store(DPW dpw, Writer out) throws IOException {
+  /**
+   *
+   * @param dpw
+   * @return
+   */
+  public static JSONObject toJSON(DPW dpw) {
     JSONObject json = new JSONObject();
 
     JSONArray dimentions = new JSONArray();
     for(DPW.DpDimension d : dpw.dpDimensions) {
-        JSONObject dimention = new JSONObject();
-        dimention.put("stemm", d.stemm.toString());
-        dimention.put("term",d.term.toString());
-        dimention.put("value",d.value);
-        dimentions.add(dimention);
+      JSONObject dimention = new JSONObject();
+      dimention.put("stemm", d.stemm.toString());
+      dimention.put("term",d.term.toString());
+      dimention.put("value",d.value);
+      dimentions.add(dimention);
     }
     json.put("dimentions", dimentions);
     json.put("term", dpw.term.toString());
     json.put("stemm", dpw.stemm.toString());
 
+    return json;
+  }
+
+  /**
+   *
+   * @param dpw
+   * @param out
+   * @throws IOException
+   */
+  public static void store(DPW dpw, Writer out) throws IOException {
+    JSONObject json = DPW.toJSON(dpw);
     json.write(out);
   }
 

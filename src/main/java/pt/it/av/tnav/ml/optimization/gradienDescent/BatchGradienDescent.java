@@ -5,7 +5,7 @@ import pt.it.av.tnav.utils.bla.Vector;
 /**
  *
  */
-public abstract class GradienDescent {
+public abstract class BatchGradienDescent implements GradientDescent{
   protected static final double GRADIENT_NORM_THRESHOLD = 1e-4;
 
   protected abstract Vector theta(Vector delta);
@@ -13,7 +13,7 @@ public abstract class GradienDescent {
   protected abstract void setup();
 
   public Vector optimize(Vector iTheta, Gradient g) {
-    Vector theta = iTheta;
+    /*Vector theta = iTheta;
     setup();
     double gradNorm = 0.0;
     do {
@@ -21,6 +21,7 @@ public abstract class GradienDescent {
       theta = theta(delta);
       gradNorm = g.delta(theta).norm(2);
     } while (gradNorm > GRADIENT_NORM_THRESHOLD);
-    return theta;
+    return theta;*/
+    return null;
   }
 }

@@ -4,18 +4,18 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class LmethodTest {
+public class ALmethodTest {
   @Test
   public void test_elbow() {
-    Curvature alg = new Lmethod();
+    Curvature alg = new ALmethod();
     int elbow = alg.elbow(CurvatureTest.elbow_x, CurvatureTest.elbow_y);
-    assertEquals(4, elbow);
+    assertEquals(7, elbow);
   }
 
   @Test
   public void test_knee() {
-    Curvature alg = new Lmethod();
+    Curvature alg = new ALmethod();
     int knee = alg.knee(CurvatureTest.knee_x, CurvatureTest.knee_y);
-    assertEquals(6, knee);
+    assertEquals(4, knee);
   }
 }

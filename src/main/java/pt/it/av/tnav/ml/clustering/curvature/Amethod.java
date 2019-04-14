@@ -1,5 +1,7 @@
 package pt.it.av.tnav.ml.clustering.curvature;
 
+import pt.it.av.tnav.ml.regression.UnivariateRegression;
+
 import java.lang.ref.WeakReference;
 
 /**
@@ -14,15 +16,81 @@ import java.lang.ref.WeakReference;
  */
 public class Amethod extends BaseCurvature {
   private static WeakReference<Curvature> wrc = null;
+  protected static final int MINCUTOFF = 20;
 
   @Override
-  public int find_knee(double[] x, double[] y) {
-    return 0;
+  public int find_knee(final double x[], final double[] y) {
+    return itRefinement(x, y);
   }
 
   @Override
-  public int find_elbow(double[] x, double[] y) {
-    return 0;
+  public int find_elbow(final double x[], final double[] y) {
+    return itRefinement(x, y);
+  }
+
+  /**
+   *
+   * @param x
+   * @param y
+   * @return
+   */
+  private int itRefinement(final double x[], final double[] y) {
+    int cutoff = x.length, lastPoint, point = x.length;
+
+    do {
+      lastPoint = point;
+      point = aMethod(x, y, cutoff);
+      cutoff = Math.max(MINCUTOFF, Math.min(point * 2, x.length));
+    } while (point < lastPoint && cutoff >= MINCUTOFF);
+
+    return point;
+  }
+
+  /**
+   *
+   * @param x
+   * @param y
+   * @return
+   */
+  private int aMethod(final double x[], final double[] y, final int length) {
+    int idx = 1;
+    UnivariateRegression.LR lrl = UnivariateRegression.lr(x, y,0,0,idx+1),
+        lrr = UnivariateRegression.lr(x, y, idx, idx, length - idx);
+    double lmetric = Math.abs(90.0-lrl.angle(lrr));
+
+    for(int i = 2; i < length-1; i++) {
+      lrl = UnivariateRegression.lr(x, y,0,0,i+1);
+      lrr = UnivariateRegression.lr(x, y, i, i, length - i);
+
+      double clmetric = Math.abs(90.0 - lrl.angle(lrr));
+
+      if(clmetric < lmetric) {
+        idx = i;
+        lmetric = clmetric;
+      }
+    }
+
+    return idx;
+  }
+
+  /**
+   *
+   * @param x
+   * @param y
+   * @param lr
+   * @param idx
+   * @param length
+   * @return
+   */
+  public static double rmse(final double x[], final double[] y, final UnivariateRegression.LR lr,
+                            final int idx, final int length){
+    double mse = 0.0;
+
+    for(int i = idx; i < length; i++) {
+      mse += Math.pow(y[i] - lr.solve(x[i]), 2.0);
+    }
+
+    return Math.sqrt(mse);
   }
 
   /**

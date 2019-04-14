@@ -1,19 +1,22 @@
 package pt.it.av.tnav.ml.clustering.curvature;
 
 import pt.it.av.tnav.ml.regression.UnivariateRegression;
+import pt.it.av.tnav.utils.ArrayUtils;
+import pt.it.av.tnav.utils.PrintUtils;
 
 import java.lang.ref.WeakReference;
 
 /**
- * L-method to detect knee/elbow points.
+ * A-method to detect knee/elbow points.
  * <p>
- *
+ *   Angle based method.
+ *   Based on the definition of function curvature.
  * </p>
  *
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
- * @version 2.0
+ * @version 1.0
  */
-public class Lmethod extends BaseCurvature {
+public class ALmethod extends BaseCurvature {
   private static WeakReference<Curvature> wrc = null;
   protected static final int MINCUTOFF = 20;
 
@@ -38,7 +41,7 @@ public class Lmethod extends BaseCurvature {
 
     do {
       lastPoint = point;
-      point = lMethod(x, y, cutoff);
+      point = alMethod(x, y, cutoff);
       cutoff = Math.max(MINCUTOFF, Math.min(point * 2, x.length));
     } while (point < lastPoint && cutoff >= MINCUTOFF);
 
@@ -51,39 +54,33 @@ public class Lmethod extends BaseCurvature {
    * @param y
    * @return
    */
-  private int lMethod(final double x[], final double[] y, final int length) {
+  private int alMethod(final double x[], final double[] y, final int length) {
     int idx = 1;
     UnivariateRegression.LR lrl = UnivariateRegression.lr(x, y,0,0,idx+1),
-    lrr = UnivariateRegression.lr(x, y, idx, idx, length - (idx+1));
-    double lmetric = lMetric(x, y, lrl, lrr, idx, length);
+        lrr = UnivariateRegression.lr(x, y, idx, idx, length - idx);
+
+    double[] lmetrics = new double[length-2], ametrics =  new double[length-2];
+    lmetrics[0] = lMetric(x, y, lrl, lrr, idx, length);
+    ametrics[0] = Math.abs(90.0 - lrl.angle(lrr));
 
     for(int i = 2; i < length-1; i++) {
       lrl = UnivariateRegression.lr(x, y,0,0,i+1);
-      lrr = UnivariateRegression.lr(x, y, i, i, length - (i + 1));
+      lrr = UnivariateRegression.lr(x, y, i, i, length - i);
 
-      double clmetric = lMetric(x, y, lrl, lrr, i, length);
-      if(clmetric < lmetric) {
-        idx = i;
-        lmetric = clmetric;
-      }
+      lmetrics[i-1] = lMetric(x, y, lrl, lrr, i, length);
+      ametrics[i-1] = Math.abs(90.0 - lrl.angle(lrr));
     }
 
-    return idx;
+    ArrayUtils.rescaling(lmetrics, lmetrics);
+    ArrayUtils.rescaling(ametrics, ametrics);
+    ArrayUtils.add(lmetrics, 0, ametrics, 0, lmetrics, 0, length-3);
+
+    return ArrayUtils.min(lmetrics)+1;
   }
 
-  /**
-   *
-   * @param x
-   * @param y
-   * @param lrl
-   * @param lrr
-   * @param idx
-   * @return
-   */
   private double lMetric(final double x[], final double[] y, final UnivariateRegression.LR lrl,
                          final UnivariateRegression.LR lrr, final int idx, final int length) {
-    double rmsel = rmse(x,y,lrl, 0, idx+1),
-        rmser = rmse(x,y,lrr,idx,length);
+    double rmsel = rmse(x,y,lrl, 0, idx+1), rmser = rmse(x,y,lrr,idx,length);
     return ((idx-1) * rmsel + (length-idx) * rmser)/ (length-1);
   }
 
@@ -114,7 +111,7 @@ public class Lmethod extends BaseCurvature {
    *   It will also share a single stemmer through several process/threads.
    * </p>
    *
-   * @return {@link Curvature} reference that points to a {@link Lmethod}.
+   * @return {@link Curvature} reference that points to a {@link ALmethod}.
    */
   public synchronized static Curvature build() {
     Curvature rv = null;

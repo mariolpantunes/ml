@@ -25,7 +25,7 @@ public class Optimization {
      * @return
      */
     public static Vector GD(Vector iTheta, Gradient g, double alpha) {
-        Vector theta = iTheta;
+        /*Vector theta = iTheta;
         int i = 0;
         do {
             i++;
@@ -38,7 +38,8 @@ public class Optimization {
                 break;
         } while(!theta.equals(iTheta));
         System.err.println("I: "+i);
-        return theta;
+        return theta;*/
+        return null;
     }
 
     public static Vector GD(Vector iTheta, Gradient g) {
@@ -46,37 +47,17 @@ public class Optimization {
     }
 
     public static Vector ADAM(Vector iTheta, Gradient g) {
-        double b1 = 0.1, b2 = 0.001, l = 1e-8;
+
 
         //TODO:
         //if(Math.pow(1.0 - b1,2.0) > Math.sqrt(1.0-b2))
 
 
-        Vector theta = iTheta, m = new Vector(iTheta.size()), v = new Vector(iTheta.size());
-        int i = 0;
-        do {
-            iTheta = theta;
-            i++;
-            double b1_t = 1-((1-b1) * (Math.pow(l,i-1.0)));
-            Vector delta = g.delta(theta);
-            m = delta.mul(b1_t).add(m.mul(1.0-b1_t));
-            v = delta.power(2).mul(b2).add(v.mul(1.0-b2));
 
-            Vector mp = m.div(1.0-(Math.pow(1.0 - b1, i))),
-                    vp = v.div(1.0-(Math.pow(1.0 - b2, i)));
-
-            delta = mp.div(vp.power(0.5).add(E));
-            theta = theta.sub(delta.mul(ALPHA));
-            Vector d = g.delta(theta);
-            double grad_norm = d.norm(2);
-            if(grad_norm < 1e-3)
-                break;
-        } while(!theta.equals(iTheta));
-        System.err.println("I: "+i);
-        return theta;
+        return null;
     }
 
-    public static Vector ADAGRAD(Vector iTheta, Gradient g) {
+    /*public static Vector ADAGRAD(Vector iTheta, Gradient g) {
         Vector theta = iTheta, h = new Vector(iTheta.size());
         int i = 0;
         do {
@@ -93,7 +74,7 @@ public class Optimization {
         } while(!theta.equals(iTheta));
         System.err.println("I: "+i);
         return theta;
-    }
+    }*/
 
     /**
      *

@@ -20,7 +20,7 @@ mvn install
 
 ## Authors
 
-* **[Mário Antunes](https://github.com/mariolpantunes)**
+* **Mário Antunes** - [mariolpantunes](https://github.com/mariolpantunes)
 
 ## License
 

@@ -1,5 +1,7 @@
 package pt.it.av.tnav.ml.regression;
 
+import pt.it.av.tnav.ml.optimization.gradienDescent.ADAM;
+import pt.it.av.tnav.utils.MathUtils;
 import pt.it.av.tnav.utils.PrintUtils;
 
 /**
@@ -30,7 +32,7 @@ public class UnivariateRegression {
    * @param y
    * @return
    */
-  public static LNR lnr(final double x[], final double y[]) {
+  public static LNR lnr(final double[] x, final double[] y) {
     return lnr(x, y, 0, 0, x.length);
   }
 
@@ -49,7 +51,8 @@ public class UnivariateRegression {
    * @param l
    * @return
    */
-  public static LNR lnr(final double x[], final double y[], final int bX, final int bY, final int l) {
+  public static LNR lnr(final double[] x, final double[] y, final int bX, final int bY,
+                        final int l) {
     double sx = 0.0, sy = 0.0, xy = 0.0, x2 = 0.0;
 
     for (int i = 0; i < l; i++) {
@@ -60,18 +63,19 @@ public class UnivariateRegression {
       x2 += Math.pow(u, 2);
     }
 
-    double d = l * x2 - Math.pow(sx, 2.0),
-        m = (l * xy - sx * sy) / d,
-        b = (sy * x2 - sx * xy) / d,
-        my = sy / l, sse = 0.0, sst = 0.0;
+    double d = l * x2 - Math.pow(sx, 2.0), m = (l * xy - sx * sy) / d,
+        b = (sy * x2 - sx * xy) / d, my = sy / l, sse = 0.0, sst = 0.0, s = 0.0;
 
     for (int i = 0; i < l; i++) {
-      double u = Math.log(x[i + bY]), f = m * u + b;
+      double u = Math.log(x[i + bX]), f = m * u + b, f2 = m*Math.log(x[i+bX])+b;
       sse += Math.pow(y[i + bY] - f, 2);
       sst += Math.pow(y[i + bY] - my, 2);
+      s += Math.pow(y[i + bY] - f2, 2);
     }
 
-    return new LNR(m,b,1 - (sse / sst), Math.sqrt(1/(l-1)*sse));
+    double r2 = 1.0 - ((l - 1.0) / (l - 2.0))*(sse / sst);
+
+    return new LNR(m, b,r2, Math.sqrt(s/(l - 2.0)));
   }
 
   /**
@@ -86,7 +90,7 @@ public class UnivariateRegression {
    * @param y
    * @return
    */
-  public static ER er(final double x[], final double y[]) {
+  public static ER er(final double[] x, final double[] y) {
     return er(x, y, 0, 0, x.length);
   }
 
@@ -105,7 +109,7 @@ public class UnivariateRegression {
    * @param l
    * @return
    */
-  public static ER er(final double x[], final double y[], final int bX, final int bY, final int l) {
+  public static ER er(final double[] x, final double[] y, final int bX, final int bY, final int l) {
     double sx = 0.0, sy = 0.0, xy = 0.0, x2 = 0.0;
 
     for (int i = 0; i < l; i++) {
@@ -116,18 +120,19 @@ public class UnivariateRegression {
       x2 += Math.pow(x[i + bX], 2);
     }
 
-    double d = l * x2 - Math.pow(sx, 2.0),
-        m = (l * xy - sx * sy) / d,
-        b = (sy * x2 - sx * xy) / d,
-        my = sy / l, sse = 0.0, sst = 0.0;
+    double d = l * x2 - Math.pow(sx, 2.0), m = (l * xy - sx * sy) / d,
+        b = (sy * x2 - sx * xy) / d, my = sy / l, sse = 0.0, sst = 0.0, s = 0.0;
 
     for (int i = 0; i < l; i++) {
-      double v = Math.log(y[i + bY]), f = m * x[i + bX] + b;
+      double v = Math.log(y[i + bY]), f = m * x[i + bX] + b, f2 = m * Math.exp(x[i + bX] * b);
       sse += Math.pow(v - f, 2);
       sst += Math.pow(v - my, 2);
+      s += Math.pow(f2 - y[i + bY], 2);
     }
 
-    return new ER(Math.exp(b), m, 1 - (sse / sst), Math.sqrt(1/(l-1)*sse));
+    double r2 = 1.0 - ((l - 1.0) / (l - 2.0))*(sse / sst);
+
+    return new ER(Math.exp(b), m, r2, Math.sqrt(s/(l - 2.0)));
   }
 
   /**
@@ -142,7 +147,7 @@ public class UnivariateRegression {
    * @param y
    * @return
    */
-  public static PR pr(final double x[], final double y[]) {
+  public static PR pr(final double[] x, final double[] y) {
     return pr(x, y, 0, 0, x.length);
   }
 
@@ -161,35 +166,31 @@ public class UnivariateRegression {
    * @param l
    * @return
    */
-  public static PR pr(final double x[], final double y[], final int bX, final int bY, final int l) {
+  public static PR pr(final double[] x, final double[] y, final int bX, final int bY, final int l) {
     double sx = 0.0, sy = 0.0, xy = 0.0, x2 = 0.0;
 
     for (int i = 0; i < l; i++) {
-      double u = Math.log(x[i + bX]),
-          v = Math.log(y[i + bY]);
-      //System.out.print("("+u+"; "+v+") ");
+      double u = Math.log(x[i + bX]), v = Math.log(y[i + bY]);
       sx += u;
       sy += v;
       xy += u * v;
       x2 += Math.pow(u, 2);
     }
-    //System.out.println();
-    //System.out.println(sx+" "+sy+" "+xy+" "+x2);
 
-    double d = l * x2 - Math.pow(sx, 2.0),
-        m = (l * xy - sx * sy) / d,
-        b = (sy * x2 - sx * xy) / d,
-        my = sy / l, sse = 0.0, sst = 0.0;
+    double d = l * x2 - Math.pow(sx, 2.0), m = (l * xy - sx * sy) / d,
+        b = (sy * x2 - sx * xy) / d, my = sy / l, sse = 0.0, sst = 0.0, s = 0.0;
 
     for (int i = 0; i < l; i++) {
-      double u = Math.log(x[i + bX]),
-          v = Math.log(y[i + bY]),
-          f = m * u + b;
+      double u = Math.log(x[i + bX]), v = Math.log(y[i + bY]),
+          f = m * u + b, f2 = m*Math.pow(x[i + bX], b);
       sse += Math.pow(v - f, 2);
       sst += Math.pow(v - my, 2);
+      s += Math.pow(y[i + bY] - f2, 2);
     }
 
-    return new PR(Math.exp(b), m, 1 - (sse / sst), Math.sqrt(1/(l-1)*sse));
+    double r2 = 1.0-((l - 1.0) / (l - 2.0))*(sse / sst);
+
+    return new PR(Math.exp(b), m, r2, Math.sqrt(s/(l - 2.0)));
   }
 
   /**
@@ -206,7 +207,7 @@ public class UnivariateRegression {
    * @param l
    * @return
    */
-  public static LR lr(final double x[], final double y[]) {
+  public static LR lr(final double[] x, final double[] y) {
     return lr(x,y,0,0,x.length);
   }
 
@@ -224,7 +225,8 @@ public class UnivariateRegression {
    * @param l
    * @return
    */
-  public static LR lr(final double x[], final double y[], final int bX, final int bY, final int l) {
+  public static LR lr(final double[] x, final double[] y, final int bX, final int bY,
+                      final int l) {
     double sx = 0.0, sy = 0.0, xy = 0.0, x2 = 0.0;
 
     for (int i = 0; i < l; i++) {
@@ -243,10 +245,11 @@ public class UnivariateRegression {
       double f = m * x[i + bX] + b;
       sse += Math.pow(y[i + bY] - f, 2);
       sst += Math.pow(y[i + bY] - my, 2);
-
     }
 
-    return new LR(m, b, 1 - (sse / sst), Math.sqrt(1/(l-1)*sse));
+    double r2 = 1.0 - ((l - 1.0) / (l - 2.0))*(sse / sst);
+
+    return new LR(m, b, r2, Math.sqrt(1.0-r2) * Math.sqrt(sst));
   }
 
   /**
@@ -346,7 +349,6 @@ public class UnivariateRegression {
       rv = (31 * rv) + Double.hashCode(s);
       return rv;
     }
-
   }
 
   /**
@@ -380,12 +382,12 @@ public class UnivariateRegression {
 
     @Override
     public double solve(final double x) {
-      return a*Math.exp(x*b);
+      return a * Math.exp(x * b);
     }
 
     @Override
     public String toString() {
-      return "f(x) = "+a+"e^x+"+b+" ("+r2+", "+s+")";
+      return "f(x) = "+a+"e^"+b+"x ("+r2+", "+s+")";
     }
   }
 
@@ -418,6 +420,15 @@ public class UnivariateRegression {
       super(a, b, r2, s);
     }
 
+    /**
+     * Returns the angle between this line with another.
+     *
+     * @return the angle between this line with another
+     */
+    public double angle(LR l) {
+      return Math.abs(Math.toDegrees(Math.atan((a-l.a)/(1+a*l.a))));
+    }
+
     @Override
     public double solve(final double x) {
       return a*x+b;
@@ -430,25 +441,25 @@ public class UnivariateRegression {
   }
 
 
-  public static PR pr2(final double x[], final double y[]) {
+  public static PR pr2(final double[] x, final double[] y) {
     System.out.println("X = "+ PrintUtils.array(x));
     System.out.println("Y = "+ PrintUtils.array(y));
     PR theta = pr(x,y);
     System.out.println("Log-Linear Theta "+theta);
     double a = theta.a, b = theta.b;
 
-    for (int c = 0; c < 100; c++) {
+    for (int c = 0; c < 1000; c++) {
       double gradient_a = 0.0, gradient_b = 0.0;
       for (int i = 0; i < x.length; i++) {
         double delta = a * Math.pow(x[i], b);
-        gradient_a += -1.0 * Math.pow(x[i], b) * (y[i] - delta);
-        gradient_b += -1.0 * delta * Math.log(x[i]) * (y[i] - delta);
+        gradient_a += -2.0 * (y[i] - delta) * Math.pow(x[i], b);
+        gradient_b += -2.0 * (y[i] - delta) * delta * Math.log(x[i]);
       }
       gradient_a /= x.length;
       gradient_b /= x.length;
 
-      a -= gradient_a * 0.01;
-      b -= gradient_b * 0.01;
+      a -= gradient_a * 0.0001;
+      b -= gradient_b * 0.0001;
     }
 
     System.out.println("Non-linear theta "+new PR(a, b, theta.r2, theta.s));
@@ -456,37 +467,36 @@ public class UnivariateRegression {
     return new PR(a, b, theta.r2, theta.s);
   }
 
-  public static ER er2(final double x[], final double y[]) {
+  public static ER er2(final double[] x, final double[] y) {
     System.out.println("X = "+ PrintUtils.array(x));
     System.out.println("Y = "+ PrintUtils.array(y));
     ER theta = er(x,y);
     System.out.println("Log-Linear Theta "+theta);
-    double a = theta.a, b = theta.b;
+    double[] t = {theta.a, theta.b};
 
-    for (int c = 0; c < 10; c++) {
+    ADAM adam = new ADAM();
+
+    t = adam.optimize(t, (double[] nt) -> {
       double gradient_a = 0.0, gradient_b = 0.0;
       for (int i = 0; i < x.length; i++) {
-
-        double delta = a * Math.exp(x[i] * b);
+        double delta = nt[0] * Math.exp(x[i] * nt[1]);
         double residual = y[i] - delta;
-
-
-
-        System.out.println("("+y[i]+", "+delta+", "+residual+")");
-        gradient_a += -2.0 * residual * Math.exp(b*x[i]);
-        gradient_b += -2.0 * residual * a * x[i] * Math.exp(b*x[i]);
+        gradient_a += -2.0 * residual * Math.exp(nt[1]*x[i]);
+        gradient_b += -2.0 * residual * nt[0] * x[i] * Math.exp(nt[1]*x[i]);
       }
       gradient_a /= x.length;
       gradient_b /= x.length;
+      return new double[] {gradient_a, gradient_b};
+    });
 
-      System.out.println("Gradient ("+gradient_a+", "+gradient_b+")");
-
-      a -= gradient_a * 0.0001;
-      b -= gradient_b * 0.0001;
+    double sse = 0.0;
+    for (int i = 0; i < x.length; i++) {
+      double v = Math.log(y[i]), f = 0;
+      sse += Math.pow(v - f, 2);
     }
 
-    System.out.println("Non-linear theta "+new ER(a, b, theta.r2, theta.s));
+    System.out.println("Non-linear theta "+new ER(t[0], t[1], theta.r2, Math.sqrt(1.0/(x.length-1.0)*sse)));
 
-    return new ER(a, b, theta.r2, theta.s);
+    return new ER(t[0], t[1], theta.r2, Math.sqrt(1.0/(x.length-1.0)*sse));
   }
 }
