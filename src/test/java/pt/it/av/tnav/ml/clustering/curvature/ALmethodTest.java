@@ -9,13 +9,13 @@ public class ALmethodTest {
   public void test_elbow() {
     Curvature alg = new ALmethod();
     int elbow = alg.elbow(CurvatureTest.elbow_x, CurvatureTest.elbow_y);
-    assertEquals(7, elbow);
+    assertEquals(8, elbow);
   }
 
   @Test
   public void test_knee() {
     Curvature alg = new ALmethod();
     int knee = alg.knee(CurvatureTest.knee_x, CurvatureTest.knee_y);
-    assertEquals(4, knee);
+    assertEquals(5, knee);
   }
 }

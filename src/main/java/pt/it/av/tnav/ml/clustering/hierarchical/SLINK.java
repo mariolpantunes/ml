@@ -4,6 +4,7 @@ import pt.it.av.tnav.ml.clustering.cluster.Cluster;
 import pt.it.av.tnav.ml.clustering.cluster.ClusterUtils;
 import pt.it.av.tnav.ml.clustering.curvature.Curvature;
 import pt.it.av.tnav.ml.clustering.curvature.DSDT;
+import pt.it.av.tnav.ml.clustering.curvature.Lmethod;
 import pt.it.av.tnav.utils.ArrayUtils;
 import pt.it.av.tnav.utils.MathUtils;
 import pt.it.av.tnav.utils.PrintUtils;
@@ -31,14 +32,14 @@ public class SLINK implements Hierarchical {
    *
    */
   public SLINK() {
-    this.curv = new DSDT();
+    this.curv = new Lmethod();
   }
 
   @Override
   public <D extends Distance<D>> int[][] clustering(final List<D> dps) {
-    double height[] = new double[dps.size()],
-        mus[] = new double[dps.size()];
-    int parent[] = new int[dps.size()];
+    double[] height = new double[dps.size()],
+        mus = new double[dps.size()];
+    int[] parent = new int[dps.size()];
 
     parent[0] = 0;
     height[0] = Double.POSITIVE_INFINITY;
@@ -71,7 +72,7 @@ public class SLINK implements Hierarchical {
     //System.out.println(PrintUtils.array(parent));
     //System.out.println(PrintUtils.array(mus));
 
-    int d[][] = new int[dps.size()-1][2];
+    int[][] d = new int[dps.size()-1][2];
 
     for(int i = 0; i < dps.size()-1; i++) {
       // find minimum level
@@ -92,8 +93,14 @@ public class SLINK implements Hierarchical {
 
   @Override
   public <D extends Distance<D>> List<Cluster<D>> clustering(List<D> dps, int min, int max) {
-    int d[][] = clustering(dps), size = max - min + 1;
-    double x[] = new double[size], y[] = new double[size];
+    return clustering(dps, min, max, this.curv);
+  }
+
+  public <D extends Distance<D>> List<Cluster<D>> clustering(List<D> dps, int min, int max,
+                                                             Curvature curvature) {
+    int[][] d = clustering(dps);
+    int size = max - min + 1;
+    double[] x = new double[size], y = new double[size];
 
     // Create individual clusters
     List<Cluster<D>> clusters = new ArrayList<>(dps.size());
@@ -117,7 +124,7 @@ public class SLINK implements Hierarchical {
       j++;
     }
     ArrayUtils.replace(y, 0, MathUtils.eps());
-    int idx = curv.elbow(x, y);
+    int idx = curvature.elbow(x, y);
     int nC = (idx >= 0)?(int)x[idx]:max;
 
     // Rebuild the cluster to the correct number

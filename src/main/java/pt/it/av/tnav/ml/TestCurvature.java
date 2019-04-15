@@ -4,15 +4,7 @@ import pt.it.av.tnav.ml.clustering.Kmeans;
 import pt.it.av.tnav.ml.clustering.Kmeanspp;
 import pt.it.av.tnav.ml.clustering.cluster.Cluster;
 import pt.it.av.tnav.ml.clustering.cluster.ClusterUtils;
-import pt.it.av.tnav.ml.clustering.curvature.Curvature;
-import pt.it.av.tnav.ml.clustering.curvature.DFDT;
-import pt.it.av.tnav.ml.clustering.curvature.DKmethod;
-import pt.it.av.tnav.ml.clustering.curvature.DSDT;
-import pt.it.av.tnav.ml.clustering.curvature.Kneedle;
-import pt.it.av.tnav.ml.clustering.curvature.Lmethod;
-import pt.it.av.tnav.ml.clustering.curvature.MengerCurvature;
-import pt.it.av.tnav.ml.clustering.curvature.Rmethod;
-import pt.it.av.tnav.ml.clustering.curvature.Smethod;
+import pt.it.av.tnav.ml.clustering.curvature.*;
 import pt.it.av.tnav.ml.clustering.density.DBSCAN;
 import pt.it.av.tnav.ml.clustering.hierarchical.Hierarchical;
 import pt.it.av.tnav.ml.clustering.hierarchical.SLINK;
@@ -43,44 +35,21 @@ public class TestCurvature {
     Kmeans kmeans = new Kmeanspp();
     SLINK slink = new SLINK();
 
-    double cfd[] = {0.3333333333,
-        0.125,
-        0.06666666667,
-        0.04166666667,
-        0.02857142857,
-        0.02083333333,
-        0.01587301587,
-        0.0125,
-        0.0101010101,
-        0.008333333333,
-        0.006993006993,
-        0.005952380952,
-        0.005128205128,
-        0.004464285714,
-        0.003921568627,
-        0.003472222222,
-        0.003095975232,
-        0.002777777778};
-
     List<String> header = new ArrayList<>();
     header.add("Kneedle");
     header.add("L-method");
     header.add("S-method");
-    header.add("Menger Curvature");
     header.add("DFDT");
-    header.add("DSDT");
-    header.add("R-Method");
-    header.add("DK-method");
+    header.add("A-method");
+    header.add("AL-method");
 
     List<Curvature> curv = new ArrayList<>();
     curv.add(new Kneedle());
     curv.add(new Lmethod());
     curv.add(new Smethod());
-    curv.add(new MengerCurvature());
     curv.add(new DFDT());
-    curv.add(new DSDT());
-    curv.add(new Rmethod());
-    curv.add(new DKmethod());
+    curv.add(new Amethod());
+    curv.add(new ALmethod());
 
     // IRIS
     System.out.println("Iris dataset (3)");
@@ -89,9 +58,11 @@ public class TestCurvature {
     List<Point4D> irisDps = iris.load();
 
     System.out.println("K-means++");
-    elbowTest(kmeans, irisDps, (int) (Math.round(iris.classes() / 2.0)), iris.classes() * 2, reps);
+    elbowTest(header, curv, kmeans, irisDps, (int) (Math.round(iris.classes() / 2.0)),
+        iris.classes() * 2, reps);
     System.out.println("SLINK");
-    hiearchicalElbowTest(slink, irisDps, (int) (Math.round(iris.classes() / 2.0)), iris.classes() * 2);
+    hiearchicalElbowTest(header, curv, slink, irisDps, (int) (Math.round(iris.classes() / 2.0)),
+        iris.classes() * 2);
     //System.out.println();
     //System.out.println("DBSCAN");
     //dbscanElbowTest(irisDps,dmin,dmax);
@@ -104,9 +75,11 @@ public class TestCurvature {
     List<Vector> yeastDps = yeast.load();
 
     System.out.println("K-means++");
-    elbowTest(kmeans, yeastDps, (int) (Math.round(yeast.classes() / 2.0)), yeast.classes() * 2, reps);
+    elbowTest(header, curv, kmeans, yeastDps, (int) (Math.round(yeast.classes() / 2.0)),
+        yeast.classes() * 2, reps);
     System.out.println("SLINK");
-    hiearchicalElbowTest(slink, yeastDps, (int) (Math.round(yeast.classes() / 2.0)), yeast.classes() * 2);
+    hiearchicalElbowTest(header, curv, slink, yeastDps, (int) (Math.round(yeast.classes() / 2.0))
+        , yeast.classes() * 2);
     //System.out.println("DBSCAN");
     //dbscanElbowTest(yeastDps,dmin,dmax);
 
@@ -118,9 +91,11 @@ public class TestCurvature {
     List<Vector> controlDps = control.load();
 
     System.out.println("K-means++");
-    elbowTest(kmeans, controlDps, (int) (Math.round(control.classes() / 2.0)), control.classes() * 2, reps);
+    elbowTest(header, curv, kmeans, controlDps, (int) (Math.round(control.classes() / 2.0)),
+        control.classes() * 2, reps);
     System.out.println("SLINK");
-    hiearchicalElbowTest(slink, controlDps, (int) (Math.round(control.classes() / 2.0)), control.classes() * 2);
+    hiearchicalElbowTest(header, curv, slink, controlDps,
+        (int) (Math.round(control.classes() / 2.0)), control.classes() * 2);
     //System.out.println("DBSCAN");
     //dbscanElbowTest(controlDps,dmin,dmax);
 
@@ -132,9 +107,11 @@ public class TestCurvature {
     List<Vector> wineDps = wine.load();
 
     System.out.println("K-means++");
-    elbowTest(kmeans, wineDps, (int) (Math.round(wine.classes() / 2.0)), wine.classes() * 2, reps);
+    elbowTest(header, curv, kmeans, wineDps, (int) (Math.round(wine.classes() / 2.0)),
+        wine.classes() * 2, reps);
     System.out.println("SLINK");
-    hiearchicalElbowTest(slink, wineDps, (int) (Math.round(wine.classes() / 2.0)), wine.classes() * 2);
+    hiearchicalElbowTest(header, curv, slink, wineDps, (int) (Math.round(wine.classes() / 2.0)),
+        wine.classes() * 2);
     //System.out.println("DBSCAN");
     //dbscanElbowTest(wineDps,dmin,dmax);
 
@@ -146,9 +123,11 @@ public class TestCurvature {
     List<Vector> vehicleDps = vehicle.load();
 
     System.out.println("K-means++");
-    elbowTest(kmeans, vehicleDps, (int) (Math.round(vehicle.classes() / 2.0)), vehicle.classes() * 2, reps);
+    elbowTest(header, curv, kmeans, vehicleDps, (int) (Math.round(vehicle.classes() / 2.0)),
+        vehicle.classes() * 2, reps);
     System.out.println("SLINK");
-    hiearchicalElbowTest(slink, vehicleDps, (int) (Math.round(vehicle.classes() / 2.0)), vehicle.classes() * 2);
+    hiearchicalElbowTest(header, curv, slink, vehicleDps,
+        (int) (Math.round(vehicle.classes() / 2.0)), vehicle.classes() * 2);
     //System.out.println("DBSCAN");
     //dbscanElbowTest(vehicleDps,dmin,dmax);
 
@@ -160,9 +139,11 @@ public class TestCurvature {
     List<Point2D> a1Dps = a1.load();
 
     System.out.println("K-means++");
-    elbowTest(kmeans, a1Dps, (int) (Math.round(a1.classes() / 2.0)), a1.classes() * 2, reps);
+    elbowTest(header, curv, kmeans, a1Dps, (int) (Math.round(a1.classes() / 2.0)),
+        a1.classes() * 2, reps);
     System.out.println("SLINK");
-    hiearchicalElbowTest(slink, a1Dps, (int) (Math.round(a1.classes() / 2.0)), a1.classes() * 2);
+    hiearchicalElbowTest(header, curv, slink, a1Dps, (int) (Math.round(a1.classes() / 2.0)),
+        a1.classes() * 2);
     //System.out.println("DBSCAN");
     //dbscanElbowTest(a1Dps,dmin,dmax);
 
@@ -174,9 +155,11 @@ public class TestCurvature {
     List<Point2D> a2Dps = a2.load();
 
     System.out.println("K-means++");
-    elbowTest(kmeans, a2Dps, (int) (Math.round(a2.classes() / 2.0)), a2.classes() * 2, reps);
+    elbowTest(header, curv, kmeans, a2Dps, (int) (Math.round(a2.classes() / 2.0)),
+        a2.classes() * 2, reps);
     System.out.println("SLINK");
-    hiearchicalElbowTest(slink, a2Dps, (int) (Math.round(a2.classes() / 2.0)), a2.classes() * 2);
+    hiearchicalElbowTest(header, curv, slink, a2Dps, (int) (Math.round(a2.classes() / 2.0)),
+        a2.classes() * 2);
     //System.out.println("DBSCAN");
     //dbscanElbowTest(a2Dps,dmin,dmax);
 
@@ -188,38 +171,22 @@ public class TestCurvature {
     List<Point2D> a3Dps = a3.load();
 
     System.out.println("K-means++");
-    elbowTest(kmeans, a3Dps, (int) (Math.round(a3.classes() / 2.0)), a3.classes() * 2, reps);
+    elbowTest(header, curv, kmeans, a3Dps, (int) (Math.round(a3.classes() / 2.0)),
+        a3.classes() * 2, reps);
     System.out.println("SLINK");
-    hiearchicalElbowTest(slink, a3Dps, (int) (Math.round(a3.classes() / 2.0)), a3.classes() * 2);
+    hiearchicalElbowTest(header, curv, slink, a3Dps, (int) (Math.round(a3.classes() / 2.0)),
+        a3.classes() * 2);
     //System.out.println("DBSCAN");
     //dbscanElbowTest(a3Dps,dmin,dmax);
   }
 
-  public static <D extends Distance<D>> void elbowTest(final Kmeans alg, final List<D> dps,
-                                                       final int min, final int max, final int reps) {
+  public static <D extends Distance<D>> void elbowTest(List<String> header, List<Curvature> curv,
+                                                       final Kmeans alg, final List<D> dps,
+                                                       final int min, final int max,
+                                                       final int reps) {
     final int kmax = (max < dps.size()) ? max : dps.size() - 1;
-    double wsss[] = new double[(kmax - min) + 1],
-        x[] = new double[(kmax - min) + 1];
-
-    List<String> header = new ArrayList<>();
-    //header.add("Kneedle");
-    //header.add("L-method");
-    //header.add("S-method");
-    //header.add("Menger Curvature");
-    header.add("DFDT");
-    header.add("DSDT");
-    header.add("R-Method");
-    //header.add("DK-method");
-
-    List<Curvature> curv = new ArrayList<>();
-    //curv.add(new Kneedle());
-    //curv.add(new Lmethod());
-    //curv.add(new Smethod());
-    //curv.add(new MengerCurvature());
-    curv.add(new DFDT());
-    curv.add(new DSDT());
-    curv.add(new Rmethod());
-    //curv.add(new DKmethod());
+    double[] wsss = new double[(kmax - min) + 1],
+        x = new double[(kmax - min) + 1];
 
     int i = 0;
     for (int k = min; k <= kmax; k++, i++) {
@@ -247,29 +214,15 @@ public class TestCurvature {
     }
   }
 
-  public static <D extends Distance<D>> void hiearchicalElbowTest(Hierarchical alg, final List<D> dps, final int min, final int max) {
-    List<String> header = new ArrayList<>();
-    //header.add("Kneedle");
-    //header.add("L-method");
-    //header.add("S-method");
-    //header.add("Menger Curvature");
-    header.add("DFDT");
-    header.add("DSDT");
-    header.add("R-Method");
-    //header.add("DK-method");
+  public static <D extends Distance<D>> void hiearchicalElbowTest(final List<String> header,
+                                                                  final List<Curvature> curv,
+                                                                  final Hierarchical alg,
+                                                                  final List<D> dps,
+                                                                  final int min, final int max) {
 
-    List<Curvature> curv = new ArrayList<>();
-    //curv.add(new Kneedle());
-    //curv.add(new Lmethod());
-    //curv.add(new Smethod());
-    //curv.add(new MengerCurvature());
-    curv.add(new DFDT());
-    curv.add(new DSDT());
-    curv.add(new Rmethod());
-    //curv.add(new DKmethod());
-
-    int d[][] = alg.clustering(dps), size = max - min + 1;
-    double x[] = new double[size], y[] = new double[size];
+    int[][] d = alg.clustering(dps);
+    int size = max - min + 1;
+    double[] x = new double[size], y = new double[size];
 
     // Create individual clusters
     List<Cluster<D>> clusters = new ArrayList<>(dps.size());

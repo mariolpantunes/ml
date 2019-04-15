@@ -40,7 +40,7 @@ public class Amethod extends BaseCurvature {
     do {
       lastPoint = point;
       point = aMethod(x, y, cutoff);
-      cutoff = Math.max(MINCUTOFF, Math.min(point * 2, x.length));
+      cutoff = Math.min(point * 2, x.length);
     } while (point < lastPoint && cutoff >= MINCUTOFF);
 
     return point;

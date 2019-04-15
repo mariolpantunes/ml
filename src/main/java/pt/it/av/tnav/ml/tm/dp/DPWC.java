@@ -197,7 +197,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
       }
     }
 
-    double a[] = new double[validClusters.size()];
+    double[] a = new double[validClusters.size()];
 
     // Pre-compute affinity
     // Average affinity between data points
@@ -344,7 +344,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     Collections.sort(context);
 
     // Build co-occurence points to learn latent information
-    double maxCo[] = new double[context.size()];
+    double[] maxCo = new double[context.size()];
     for (int i = 0; i < context.size(); i++) {
       maxCo[i] = Collections.max(context.get(i).dimentions()).value;
     }

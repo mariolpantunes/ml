@@ -39,7 +39,7 @@ public class Lmethod extends BaseCurvature {
     do {
       lastPoint = point;
       point = lMethod(x, y, cutoff);
-      cutoff = Math.max(MINCUTOFF, Math.min(point * 2, x.length));
+      cutoff = Math.min(point * 2, x.length);
     } while (point < lastPoint && cutoff >= MINCUTOFF);
 
     return point;
@@ -54,12 +54,12 @@ public class Lmethod extends BaseCurvature {
   private int lMethod(final double x[], final double[] y, final int length) {
     int idx = 1;
     UnivariateRegression.LR lrl = UnivariateRegression.lr(x, y,0,0,idx+1),
-    lrr = UnivariateRegression.lr(x, y, idx, idx, length - (idx+1));
+    lrr = UnivariateRegression.lr(x, y, idx, idx, length - idx);
     double lmetric = lMetric(x, y, lrl, lrr, idx, length);
 
     for(int i = 2; i < length-1; i++) {
       lrl = UnivariateRegression.lr(x, y,0,0,i+1);
-      lrr = UnivariateRegression.lr(x, y, i, i, length - (i + 1));
+      lrr = UnivariateRegression.lr(x, y, i, i, length - i);
 
       double clmetric = lMetric(x, y, lrl, lrr, i, length);
       if(clmetric < lmetric) {
