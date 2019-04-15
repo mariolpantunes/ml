@@ -32,7 +32,7 @@ public class SLINK implements Hierarchical {
    *
    */
   public SLINK() {
-    this.curv = new Lmethod();
+    this.curv = Lmethod.build();
   }
 
   @Override
@@ -96,6 +96,7 @@ public class SLINK implements Hierarchical {
     return clustering(dps, min, max, this.curv);
   }
 
+  @Override
   public <D extends Distance<D>> List<Cluster<D>> clustering(List<D> dps, int min, int max,
                                                              Curvature curvature) {
     int[][] d = clustering(dps);
