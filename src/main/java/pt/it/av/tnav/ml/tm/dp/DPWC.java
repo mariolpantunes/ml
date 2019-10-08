@@ -14,9 +14,7 @@ import pt.it.av.tnav.utils.ArrayUtils;
 import pt.it.av.tnav.utils.CollectionsUtils;
 import pt.it.av.tnav.utils.MathUtils;
 import pt.it.av.tnav.utils.PrintUtils;
-import pt.it.av.tnav.utils.Utils;
 import pt.it.av.tnav.utils.bla.Matrix;
-import pt.it.av.tnav.utils.bla.Vector;
 import pt.it.av.tnav.utils.json.JSONArray;
 import pt.it.av.tnav.utils.json.JSONObject;
 import pt.it.av.tnav.utils.json.JSONValue;
@@ -30,7 +28,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -360,7 +357,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
 
     // Map NGrams to Indexes
     List<String> map = new ArrayList<>(points.size());
-    for(DPPoint p : points) {
+    for(DPPoint<?> p : points) {
       map.add(p.term().toString());
     }
 
@@ -374,7 +371,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     // Generate new points with latent information
     List<MatrixPoint> mpoints = new ArrayList<>();
     for(int i = 0; i < points.size(); i++) {
-      DPPoint p = points.get(i);
+      DPPoint<?> p = points.get(i);
       mpoints.add(new MatrixPoint(p.dpw(), nf, map));
     }
 

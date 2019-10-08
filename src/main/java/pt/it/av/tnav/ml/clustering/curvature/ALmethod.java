@@ -61,14 +61,14 @@ public class ALmethod extends BaseCurvature {
 
     double[] lmetrics = new double[length-2], ametrics =  new double[length-2];
     lmetrics[0] = lMetric(x, y, lrl, lrr, idx, length);
-    ametrics[0] = Math.abs(90.0 - lrl.angle(lrr));
+    ametrics[0] = Math.pow(90.0 - lrl.angle(lrr), 2.0);
 
     for(int i = 2; i < length-1; i++) {
       lrl = UnivariateRegression.lr(x, y,0,0,i+1);
       lrr = UnivariateRegression.lr(x, y, i, i, length - i);
 
       lmetrics[i-1] = lMetric(x, y, lrl, lrr, i, length);
-      ametrics[i-1] = Math.abs(90.0 - lrl.angle(lrr));
+      ametrics[i-1] = Math.pow(90.0 - lrl.angle(lrr), 2.0);;
     }
 
     ArrayUtils.rescaling(lmetrics, lmetrics);

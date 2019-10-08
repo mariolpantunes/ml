@@ -4,9 +4,7 @@ import pt.it.av.tnav.ml.tm.dp.DPW;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
 import pt.it.av.tnav.utils.bla.Matrix;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,11 +31,11 @@ public class DPWNMFOpt implements DPWOpt {
   public List<DPW.DpDimension> optimize(final NGram term,
                                         final NGram stemm,
                                         final List<DPW.DpDimension> dpDimensions) {
-    int i = Collections.binarySearch(map, term.toString());
+    int i = map.indexOf(term.toString());
     List<DPW.DpDimension> dimensions = new ArrayList<>(dpDimensions.size());
 
     for(DPW.DpDimension d : dpDimensions) {
-      int j = Collections.binarySearch(map, d.term.toString());
+      int j = map.indexOf(d.term.toString());
       dimensions.add(new DPW.DpDimension(d.term, d.stemm, nf.get(i,j)));
     }
 

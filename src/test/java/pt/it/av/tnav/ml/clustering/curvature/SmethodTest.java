@@ -9,13 +9,13 @@ public class SmethodTest {
   public void test_elbow() {
     Curvature alg = new Smethod();
     int elbow = alg.elbow(CurvatureTest.elbow_x, CurvatureTest.elbow_y);
-    assertEquals(8, elbow);
+    assertEquals(9, elbow);
   }
 
   @Test
   public void test_knee() {
     Curvature alg = new Smethod();
     int knee = alg.knee(CurvatureTest.knee_x, CurvatureTest.knee_y);
-    assertEquals(5, knee);
+    assertEquals(4, knee);
   }
 }

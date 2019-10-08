@@ -25,7 +25,7 @@ public class Smethod extends BaseCurvature {
     do {
       lastCurve = curve;
       curve = sMethod(x, y, cutoff)[0];
-      cutoff = curve * 2;
+      cutoff = Math.min(curve * 2, x.length);
       //System.out.println("LastCurve = "+lastCurve+" Curve = "+curve+" Cutoff = "+cutoff);
     } while (lastCurve > curve && cutoff >= Lmethod.MINCUTOFF);
 
@@ -39,7 +39,7 @@ public class Smethod extends BaseCurvature {
     do {
       lastCurve = curve;
       curve = sMethod(x, y, cutoff)[1];
-      cutoff = curve * 2;
+      cutoff = Math.min(curve * 2, x.length);
       //System.out.println("LastCurve = "+lastCurve+" Curve = "+curve+" Cutoff = "+cutoff);
     } while (lastCurve > curve && cutoff >= Lmethod.MINCUTOFF);
 
@@ -53,14 +53,14 @@ public class Smethod extends BaseCurvature {
    * @return
    */
   private int[] sMethod(final double x[], final double[] y, final int length) {
-    int p[] = {1, 2};
+    int[] p = {1, 2};
     double smetric = Double.POSITIVE_INFINITY;
 
-    for(int i = 1; i < length - 3; i++) {
+    for(int i = 1; i < length - 2; i++) {
       UnivariateRegression.LR lrl = UnivariateRegression.lr(x, y, 0, 0, i + 1);
-      for (int j = i + 1; j < length - 2; j++) {
-        UnivariateRegression.LR lrm = UnivariateRegression.lr(x, y, i, i, j - (i + 1)),
-            lrr = UnivariateRegression.lr(x, y, j, j, length - (j + 1));
+      for (int j = i + 1; j < length - 1; j++) {
+        UnivariateRegression.LR lrm = UnivariateRegression.lr(x, y, i, i, j - i),
+            lrr = UnivariateRegression.lr(x, y, j, j, length - j);
 
         double crmse = sMetric(x, y, lrl, lrm, lrr, i, j, length);
         if (crmse < smetric) {
@@ -85,7 +85,7 @@ public class Smethod extends BaseCurvature {
    * @param p2
    * @return
    */
-  private double sMetric(final double x[], final double[] y, final UnivariateRegression.LR lrl,
+  private double sMetric(final double[] x, final double[] y, final UnivariateRegression.LR lrl,
                          final UnivariateRegression.LR lrm, final UnivariateRegression.LR lrr,
                       final int p1, final int p2, final int length) {
     double rmsel = Lmethod.rmse(x,y,lrl,0,p1+1),

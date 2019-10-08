@@ -56,13 +56,13 @@ public class Amethod extends BaseCurvature {
     int idx = 1;
     UnivariateRegression.LR lrl = UnivariateRegression.lr(x, y,0,0,idx+1),
         lrr = UnivariateRegression.lr(x, y, idx, idx, length - idx);
-    double lmetric = Math.abs(90.0-lrl.angle(lrr));
+    double lmetric = Math.pow(90.0 - lrl.angle(lrr), 2.0);;
 
     for(int i = 2; i < length-1; i++) {
       lrl = UnivariateRegression.lr(x, y,0,0,i+1);
       lrr = UnivariateRegression.lr(x, y, i, i, length - i);
 
-      double clmetric = Math.abs(90.0 - lrl.angle(lrr));
+      double clmetric = Math.pow(90.0 - lrl.angle(lrr), 2.0);;
 
       if(clmetric < lmetric) {
         idx = i;
