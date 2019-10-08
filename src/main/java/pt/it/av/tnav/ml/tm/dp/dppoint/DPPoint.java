@@ -9,7 +9,7 @@ import pt.it.av.tnav.ml.tm.ngrams.NGram;
  * @author Mário Antunes
  * @version 1.0
  */
-public interface DPPoint<P extends DPPoint> extends Distance<P>, Similarity<P> {
+public interface DPPoint<P extends DPPoint<?>> extends Distance<P>, Similarity<P> {
   /**
    *
    * @return

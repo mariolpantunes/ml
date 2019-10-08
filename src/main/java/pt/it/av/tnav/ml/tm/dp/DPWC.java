@@ -381,6 +381,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
         kmax = (max < mpoints.size())?max:mpoints.size()-1;
     List<Cluster<MatrixPoint>> clusters = hc.clustering(mpoints, 2, kmax);
     DPWC dpwc = DPWC.buildDPWC(dpw, clusters);
+    
     return dpwc;
   }
 

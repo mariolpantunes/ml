@@ -2,6 +2,7 @@ package pt.it.av.tnav.ml.tm.dp.dpwOpt;
 
 import pt.it.av.tnav.ml.tm.dp.DPW;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
+import pt.it.av.tnav.utils.PrintUtils;
 import pt.it.av.tnav.utils.bla.Matrix;
 
 import java.util.ArrayList;
@@ -36,7 +37,11 @@ public class DPWNMFOpt implements DPWOpt {
 
     for(DPW.DpDimension d : dpDimensions) {
       int j = map.indexOf(d.term.toString());
-      dimensions.add(new DPW.DpDimension(d.term, d.stemm, nf.get(i,j)));
+      if(j < 0) {
+        System.out.println("Term "+d.term);
+        System.out.println("Map: "+PrintUtils.list(map));
+      }
+      dimensions.add(new DPW.DpDimension(d.term, d.stemm, nf.get(i, j)));
     }
 
     return dimensions;
