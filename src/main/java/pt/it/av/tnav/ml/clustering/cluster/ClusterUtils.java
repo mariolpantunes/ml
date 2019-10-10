@@ -34,7 +34,7 @@ public class ClusterUtils {
     else {
       double distortion = 0.0;
       int n = 0;
-      for (Cluster c : clusters)
+      for (Cluster<D> c : clusters)
         if(c != null) {
           distortion += c.distortion();
           n++;
@@ -72,7 +72,7 @@ public class ClusterUtils {
   public static <D extends Distance<D>> boolean emptyClusters(List<Cluster<D>> clusters) {
     boolean rv = false;
 
-    for (Cluster c : clusters) {
+    for (Cluster<D> c : clusters) {
       if (c.isEmpty()) {
         rv = true;
         break;

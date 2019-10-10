@@ -13,6 +13,11 @@ import java.util.List;
 public class Cluster<D extends Distance<D>> extends ArrayList<D> {
 
   /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
    * Creates an empty cluster.
    */
   public Cluster() {

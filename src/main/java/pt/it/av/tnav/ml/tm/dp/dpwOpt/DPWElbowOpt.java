@@ -1,10 +1,8 @@
 package pt.it.av.tnav.ml.tm.dp.dpwOpt;
 
-import pt.it.av.tnav.ml.clustering.curvature.Curvature;
 import pt.it.av.tnav.ml.clustering.curvature.DFDT;
 import pt.it.av.tnav.ml.tm.dp.DPW;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
-import pt.it.av.tnav.utils.bla.Vector;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;

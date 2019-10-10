@@ -2,9 +2,6 @@ package pt.it.av.tnav.ml.tm.dp.dppoint;
 
 import pt.it.av.tnav.ml.tm.dp.DPW;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
-import pt.it.av.tnav.utils.structures.mutableNumber.MutableDouble;
-
-import java.util.HashMap;
 
 /**
  * CoOccPoint, semantic points used for clustering.

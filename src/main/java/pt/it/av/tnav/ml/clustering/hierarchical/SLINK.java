@@ -3,16 +3,14 @@ package pt.it.av.tnav.ml.clustering.hierarchical;
 import pt.it.av.tnav.ml.clustering.cluster.Cluster;
 import pt.it.av.tnav.ml.clustering.cluster.ClusterUtils;
 import pt.it.av.tnav.ml.clustering.curvature.Curvature;
-import pt.it.av.tnav.ml.clustering.curvature.DSDT;
 import pt.it.av.tnav.ml.clustering.curvature.Lmethod;
 import pt.it.av.tnav.utils.ArrayUtils;
 import pt.it.av.tnav.utils.MathUtils;
-import pt.it.av.tnav.utils.PrintUtils;
-import pt.it.av.tnav.utils.structures.Distance;
 
+import pt.it.av.tnav.utils.structures.Distance;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.List;
 import java.util.Objects;
 

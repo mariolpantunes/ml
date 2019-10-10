@@ -4,7 +4,6 @@ import pt.it.av.tnav.ml.tm.dp.DPW;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,13 +12,11 @@ import java.util.List;
  */
 public class DPWStemmOpt implements DPWOpt {
   private static WeakReference<DPWOpt> wro = null;
-  private static DPWOpt o = null;
 
   @Override
   public List<DPW.DpDimension> optimize(final NGram term,
                                         final NGram stemm,
                                         final List<DPW.DpDimension> dpDimensions) {
-    List<DPW.DpDimension> dimensions = new ArrayList<>();
     for (int i = 0; i < dpDimensions.size() - 1; i++) {
       DPW.DpDimension a = dpDimensions.get(i);
       for (int j = i + 1; j < dpDimensions.size(); j++) {

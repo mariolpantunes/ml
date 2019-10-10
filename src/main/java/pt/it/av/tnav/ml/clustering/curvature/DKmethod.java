@@ -1,7 +1,6 @@
 package pt.it.av.tnav.ml.clustering.curvature;
 
 import pt.it.av.tnav.utils.ArrayUtils;
-import pt.it.av.tnav.utils.PrintUtils;
 
 import java.lang.ref.WeakReference;
 
