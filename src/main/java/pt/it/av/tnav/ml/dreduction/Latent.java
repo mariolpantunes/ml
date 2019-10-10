@@ -117,7 +117,7 @@ public class Latent {
 
     nf.uDiv(nf.max());
     for(int i = 0; i < context.size(); i++) {
-      sim.set(i, i, 1.0);
+      nf.set(i, i, 1.0);
     }
 
     return nf;
