@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Unit test for {@link DPWC} class.
@@ -33,15 +32,15 @@ public class DPWCTest {
         d2 = new ArrayList<>(),
         d3 = new ArrayList<>();
 
-    d1.add(new DPW.DpDimension(NGram.Unigram("car"), NGram.Unigram("car"), 0.7127072536215101));
-    d1.add(new DPW.DpDimension(NGram.Unigram("automobile"), NGram.Unigram("automobil"), 0.6360523692007233));
-    d2.add(new DPW.DpDimension(NGram.Unigram("propulsion"), NGram.Unigram("propuls"), 0.2792492378611569));
-    d2.add(new DPW.DpDimension(NGram.Unigram("system"), NGram.Unigram("system"), 0.27924979957100793));
-    d3.add(new DPW.DpDimension(NGram.Unigram("benz"), NGram.Unigram("benz"), 0.29510880183107174));
+    d1.add(new DPW.DpDimension(NGram.Unigram("car"), NGram.Unigram("car"), 1.0));
+    d1.add(new DPW.DpDimension(NGram.Unigram("automobile"), NGram.Unigram("automobil"), 0.8332115820388662));
+    d2.add(new DPW.DpDimension(NGram.Unigram("propulsion"), NGram.Unigram("propuls"), 0.41657763713676643));
+    d3.add(new DPW.DpDimension(NGram.Unigram("system"), NGram.Unigram("system"), 0.41802619058992313));
+    d1.add(new DPW.DpDimension(NGram.Unigram("benz"), NGram.Unigram("benz"), 0.4161488044971046));
 
     categories.add(new DPWC.Category(d1, 1.0));
-    categories.add(new DPWC.Category(d3, 0.36073853237476433));
-    categories.add(new DPWC.Category(d2, 0.3413922866664169));
+    categories.add(new DPWC.Category(d2, 0.5553060430230115));
+    categories.add(new DPWC.Category(d3, 0.5548417825554549));
     car = new DPWC(NGram.Unigram("car"), categories);
   }
 

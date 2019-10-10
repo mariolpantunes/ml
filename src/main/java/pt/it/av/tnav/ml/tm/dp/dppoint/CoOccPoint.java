@@ -42,8 +42,9 @@ public class CoOccPoint implements DPPoint<CoOccPoint> {
   public double affinity(final DPW dpw) {
     double rv = 1.0;
     if(this.dpw.term().equals(dpw.term())) {
-      //rv = (coOcc(dpw.term()) +  dpw.dimention(this.dpw.term())) / (2.0*max);
-      rv = Math.min(coOcc(dpw.term())/max, dpw.dimention(this.dpw.term())/max);
+      rv = (coOcc(dpw.term()) +  dpw.dimention(this.dpw.term())) / (2.0*max);
+      //rv = Math.max(coOcc(dpw.term()), dpw.dimention(this.dpw.term()))/max;
+      //rv = (coOcc(dpw.term())/max)*(dpw.dimention(this.dpw.term())/max);
     }
     return rv;
   }
@@ -58,6 +59,16 @@ public class CoOccPoint implements DPPoint<CoOccPoint> {
     return dpw.dimention(term);
   }
 
+  /**
+   * Returns the sum of the co-occurences between the NGrams.
+   * 
+   * @param point the second NGrams
+   * @return the sum of the co-occurences between the NGrams.
+   */
+  public double sumCoOcc(CoOccPoint point) {
+    return coOcc(point.term()) +  point.coOcc(dpw.term());
+  }
+
   @Override
   public double distanceTo(CoOccPoint point) {
     return 1.0 - similarityTo(point);
@@ -67,8 +78,9 @@ public class CoOccPoint implements DPPoint<CoOccPoint> {
   public double similarityTo(CoOccPoint point) {
     double rv = 1.0;
     if(!point.term().equals(dpw.term())) {
-      //rv = (coOcc(point.term()) +  point.coOcc(dpw.term())) / (2.0*max);
-      rv = Math.min(coOcc(point.term())/max, point.coOcc(dpw.term()) / max);
+      rv = (coOcc(point.term()) +  point.coOcc(dpw.term())) / (2.0*max);
+      //rv = Math.max(coOcc(point.term()), point.coOcc(dpw.term())) / max;
+      //rv = (coOcc(point.term())/max)*(point.coOcc(dpw.term()) / max);
     }
     return rv;
   }
