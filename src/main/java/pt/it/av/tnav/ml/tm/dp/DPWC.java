@@ -83,7 +83,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
       for (Category c1 : categories) {
         for (Category c2 : dpwc.categories) {
           //double s = DPW.similarity(c1.dpDimensions, c2.dpDimensions) * ((c1.affinity + c2.affinity) / 2.0);
-          double s = DPW.similarity(c1.dpDimensions, c2.dpDimensions) * c1.affinity * c2.affinity;
+          double s = DPW.similarity(c1.dpDimensions, c2.dpDimensions) * (c1.affinity * c2.affinity);
           if (s > rv) {
             rv = s;
           }
