@@ -335,24 +335,23 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     for (DPW.DpDimension dimension : dpw.dimentions()) {
       context.add(dpwpCache.fetch(dimension.term));
     }
+
     if(!context.contains(dpw)) {
       context.add(dpw);
     }
-    Collections.sort(context);
 
     // Build co-occurence points to learn latent information
+    // Find the maximum co-occurrence 
     double[] maxCo = new double[context.size()];
     for (int i = 0; i < context.size(); i++) {
       maxCo[i] = Collections.max(context.get(i).dimentions()).value;
     }
-
     int maxCoIdx = ArrayUtils.max(maxCo);
-    List<CachePoint<CoOccPoint>> points = new ArrayList<>();
+
     // Initialize the co-occurrence points for clustering
+    List<CachePoint<CoOccPoint>> points = new ArrayList<>();
     for (int i = 0; i < context.size(); i++) {
-      if (maxCo[i] > 0.0) {
-        points.add(new CachePoint<>(new CoOccPoint(context.get(i), maxCo[maxCoIdx])));
-      }
+      points.add(new CachePoint<>(new CoOccPoint(context.get(i), maxCo[maxCoIdx])));
     }
 
     // Map NGrams to Indexes

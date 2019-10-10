@@ -38,8 +38,9 @@ public class DPWNMFOpt implements DPWOpt {
     for(DPW.DpDimension d : dpDimensions) {
       int j = map.indexOf(d.term.toString());
       if(j < 0) {
-        System.out.println("Term "+d.term);
-        System.out.println("Map: "+PrintUtils.list(map));
+        System.out.println("Term: "+d.term);
+        System.out.println("Map : "+PrintUtils.list(map));
+        System.out.println("DP  : "+PrintUtils.list(dpDimensions));
       }
       dimensions.add(new DPW.DpDimension(d.term, d.stemm, nf.get(i, j)));
     }
