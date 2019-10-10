@@ -347,7 +347,6 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     // Learn latent information with NMF
     int minLat = (int)Math.round(map.size()/LMIN), maxLat = (int)Math.round(map.size()/LMAX);
     Matrix nf = Latent.nmf_dpw(context, minLat, maxLat, reps);
-    nf.uDiv(nf.max());
 
     // Optimize DPW profile with latent information
     DPWOpt opt = new DPWNMFOpt(nf, map);
