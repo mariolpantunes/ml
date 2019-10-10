@@ -41,7 +41,7 @@ public class MatrixPoint implements DPPoint<MatrixPoint>{
 
   @Override
   public double distanceTo(MatrixPoint point) {
-    return 1.0-similarityTo(point);
+    return 1.0 - similarityTo(point);
   }
 
   @Override

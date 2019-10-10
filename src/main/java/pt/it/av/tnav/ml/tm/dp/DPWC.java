@@ -82,8 +82,8 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     } else {
       for (Category c1 : categories) {
         for (Category c2 : dpwc.categories) {
-          double s = DPW.similarity(c1.dpDimensions, c2.dpDimensions)
-              * ((c1.affinity + c2.affinity) / 2.0);
+          //double s = DPW.similarity(c1.dpDimensions, c2.dpDimensions) * ((c1.affinity + c2.affinity) / 2.0);
+          double s = DPW.similarity(c1.dpDimensions, c2.dpDimensions) * c1.affinity * c2.affinity;
           if (s > rv) {
             rv = s;
           }
@@ -230,7 +230,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
    * @param point
    * @return
    */
-  public static <P extends DPPoint> DPW.DpDimension filter(DPW dpw, P point) {
+  public static <P extends DPPoint<P>> DPW.DpDimension filter(DPW dpw, P point) {
     DPW.DpDimension rv = null;
     for (DPW.DpDimension dimension : dpw.dimentions())
       if (dimension.term.equals(point.term())) {
