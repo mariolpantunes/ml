@@ -4,8 +4,6 @@ import pt.it.av.tnav.ml.clustering.hierarchical.Hierarchical;
 import pt.it.av.tnav.ml.clustering.hierarchical.CLINK;
 import pt.it.av.tnav.ml.dreduction.Latent;
 import pt.it.av.tnav.ml.tm.dp.cache.DPWPCache;
-import pt.it.av.tnav.ml.tm.dp.dppoint.CachePoint;
-import pt.it.av.tnav.ml.tm.dp.dppoint.CoOccPoint;
 import pt.it.av.tnav.ml.tm.dp.dppoint.DPPoint;
 import pt.it.av.tnav.ml.tm.dp.dppoint.MatrixPoint;
 import pt.it.av.tnav.ml.tm.dp.dpwOpt.DPWNMFOpt;
@@ -37,7 +35,7 @@ import java.util.List;
  * @version 1.0
  */
 public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> {
-  private static final int NMF_REPS=30;
+  private static final int NMF_REPS=100;
   private static final double RATIO = 1.5, LMIN=4.0, LMAX=2.0;
   private final NGram term;
   private List<Category> categories;
