@@ -1,36 +1,12 @@
 package pt.it.av.tnav.ml.clustering.hierarchical;
 
-import pt.it.av.tnav.ml.clustering.cluster.Cluster;
-import pt.it.av.tnav.ml.clustering.cluster.ClusterUtils;
-import pt.it.av.tnav.ml.clustering.curvature.Curvature;
-import pt.it.av.tnav.ml.clustering.curvature.DSDT;
 import pt.it.av.tnav.utils.ArrayUtils;
-import pt.it.av.tnav.utils.MathUtils;
 import pt.it.av.tnav.utils.structures.Distance;
-
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class CLINK implements Hierarchical{
   private static WeakReference<Hierarchical> wrh;
-  private final Curvature curv;
-
-  /**
-   *
-   * @param curv
-   */
-  public CLINK(final Curvature curv) {
-    this.curv = curv;
-  }
-
-  /**
-   *
-   */
-  public CLINK() {
-    this.curv = new DSDT();
-  }
 
   public <D extends Distance<D>> int[][] clustering(final List<D> dps) {
     double[] height = new double[dps.size()],
@@ -117,59 +93,6 @@ public class CLINK implements Hierarchical{
     return d;
   }
 
-  @Override
-  public <D extends Distance<D>> List<Cluster<D>> clustering(List<D> dps, int min, int max) {
-    return clustering(dps, min, max, this.curv);
-  }
-
-  @Override
-  public <D extends Distance<D>> List<Cluster<D>> clustering(List<D> dps, int min, int max,
-                                                             Curvature curvature) {
-    int[][] d = clustering(dps);
-    int size = max - min + 1;
-    double[] x = new double[size], y = new double[size];
-
-    // Create individual clusters
-    List<Cluster<D>> clusters = new ArrayList<>(dps.size());
-    for (int i = 0; i < dps.size(); i++) {
-      clusters.add(new Cluster<D>(dps.get(i)));
-    }
-
-    // Merge the clusters based on the d matrix
-    int i = 0, cSize = dps.size();
-    for (; cSize > max; i++, cSize--) {
-      clusters.get(d[i][1]).addAll(clusters.get(d[i][0]));
-      clusters.set(d[i][0], null);
-    }
-
-    int j = 0;
-    for (; cSize >= min; i++, cSize--) {
-      clusters.get(d[i][1]).addAll(clusters.get(d[i][0]));
-      clusters.set(d[i][0], null);
-      x[size - j - 1] = dps.size() - i;
-      y[size - j - 1] = ClusterUtils.avgDistortion(clusters);
-      j++;
-    }
-    ArrayUtils.replace(y, 0, MathUtils.eps());
-    int idx = curvature.elbow(x, y);
-
-    // Rebuild the cluster to the ideal number
-    clusters.clear();
-    for (i = 0; i < dps.size(); i++) {
-      clusters.add(new Cluster<D>(dps.get(i)));
-    }
-    i = 0;
-    cSize = dps.size();
-    for (; cSize > x[idx]; i++, cSize--) {
-      clusters.get(d[i][1]).addAll(clusters.get(d[i][0]));
-      clusters.set(d[i][0], null);
-    }
-
-    clusters.removeIf(Objects::isNull);
-
-    return clusters;
-  }
-
   /**
    * Builds a static {@link WeakReference} to a {@link Hierarchical} class.
    * <p>
@@ -182,12 +105,12 @@ public class CLINK implements Hierarchical{
   public synchronized static Hierarchical build() {
     Hierarchical rv = null;
     if (wrh == null) {
-      rv = new SLINK();
+      rv = new CLINK();
       wrh = new WeakReference<>(rv);
     } else {
       rv = wrh.get();
       if(rv == null) {
-        rv = new SLINK();
+        rv = new CLINK();
         wrh = new WeakReference<>(rv);
       }
     }

@@ -34,9 +34,9 @@ public class DPWCTest {
 
     d1.add(new DPW.DpDimension(NGram.Unigram("car"), NGram.Unigram("car"), 1.0));
     d1.add(new DPW.DpDimension(NGram.Unigram("automobile"), NGram.Unigram("automobil"), 0.8332115820388662));
-    d2.add(new DPW.DpDimension(NGram.Unigram("propulsion"), NGram.Unigram("propuls"), 0.41657763713676643));
-    d3.add(new DPW.DpDimension(NGram.Unigram("system"), NGram.Unigram("system"), 0.41802619058992313));
-    d1.add(new DPW.DpDimension(NGram.Unigram("benz"), NGram.Unigram("benz"), 0.4161488044971046));
+    d1.add(new DPW.DpDimension(NGram.Unigram("propulsion"), NGram.Unigram("propuls"), 0.41657763713676643));
+    d2.add(new DPW.DpDimension(NGram.Unigram("system"), NGram.Unigram("system"), 0.41802619058992313));
+    d3.add(new DPW.DpDimension(NGram.Unigram("benz"), NGram.Unigram("benz"), 0.4161488044971046));
 
     categories.add(new DPWC.Category(d1, 1.0));
     categories.add(new DPWC.Category(d2, 0.5553060430230115));

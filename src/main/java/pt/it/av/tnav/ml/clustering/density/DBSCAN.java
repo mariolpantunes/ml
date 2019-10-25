@@ -3,7 +3,6 @@ package pt.it.av.tnav.ml.clustering.density;
 import pt.it.av.tnav.ml.clustering.cluster.Cluster;
 import pt.it.av.tnav.ml.clustering.curvature.Curvature;
 import pt.it.av.tnav.utils.ArrayUtils;
-import pt.it.av.tnav.utils.PrintUtils;
 import pt.it.av.tnav.utils.structures.Distance;
 import pt.it.av.tnav.ml.clustering.curvature.DFDT;
 
