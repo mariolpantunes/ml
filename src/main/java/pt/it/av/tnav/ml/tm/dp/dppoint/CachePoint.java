@@ -31,11 +31,6 @@ public class CachePoint<P extends DPPoint<P>> implements DPPoint<CachePoint<P>> 
   }
 
   @Override
-  public NGram term() {
-    return point.term();
-  }
-
-  @Override
   public DPW dpw() {
     return point.dpw();
   }

@@ -29,11 +29,6 @@ public class CoOccPoint implements DPPoint<CoOccPoint> {
   }
 
   @Override
-  public NGram term() {
-    return dpw.term();
-  }
-
-  @Override
   public DPW dpw() {
     return dpw;
   }

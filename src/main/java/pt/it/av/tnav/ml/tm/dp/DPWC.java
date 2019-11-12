@@ -35,8 +35,8 @@ import java.util.List;
  * @version 1.0
  */
 public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> {
-  private static final int NMF_REPS=100;
-  private static final double RATIO = 1.5, LMIN=4.0, LMAX=2.0;
+  private static final int NMF_REPS = 100, MIN_CLUSTER_POINTS = 5;
+  private static final double RATIO = 1.5, LMIN = 4.0, LMAX = 2.0;
   private final NGram term;
   private List<Category> categories;
 
@@ -75,13 +75,14 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
   public double similarityTo(DPWC dpwc) {
     double rv = 0.0;
 
-    if(term.equals(dpwc.term)) {
+    if (term.equals(dpwc.term)) {
       rv = 1.0;
     } else {
       for (Category c1 : categories) {
         for (Category c2 : dpwc.categories) {
           double s = DPW.similarity(c1.dpDimensions, c2.dpDimensions) * ((c1.affinity + c2.affinity) / 2.0);
-          //double s = DPW.similarity(c1.dpDimensions, c2.dpDimensions) * (c1.affinity * c2.affinity);
+          // double s = DPW.similarity(c1.dpDimensions, c2.dpDimensions) * (c1.affinity *
+          // c2.affinity);
           if (s > rv) {
             rv = s;
           }
@@ -94,7 +95,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
 
   @Override
   public double distanceTo(DPWC dpwc) {
-    return 1.0-similarityTo(dpwc);
+    return 1.0 - similarityTo(dpwc);
   }
 
   @Override
@@ -122,25 +123,42 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
       rv = false;
     } else {
       DPWC dpwc = (DPWC) o;
-      rv = term.equals(dpwc.term) &&
-          CollectionsUtils.equals(categories, dpwc.categories);
+      rv = term.equals(dpwc.term) && CollectionsUtils.equals(categories, dpwc.categories);
     }
     return rv;
   }
 
   /**
-   * Returns a {@link DPWC} with a single category from a {@link DPW}.
-   * In other words, converts a {@link DPW} into a {@link DPWC}.
+   * Returns a {@link DPWC} with a single category from a {@link DPW}. In other
+   * words, converts a {@link DPW} into a {@link DPWC}.
    *
    * @param dpw
    * @param <P>
    * @return Returns a {@link DPWC} with a single category from a {@link DPW}.
    */
-  public static <P extends DPPoint<P>> DPWC buildDPWC(final DPW dpw) {
+  public static DPWC DPW2DPWC(final DPW dpw) {
     List<DPWC.Category> categories = new ArrayList<>();
     categories.add(new DPWC.Category(dpw.dimentions(), 1.0));
     return new DPWC(dpw.term(), categories);
   }
+
+  /**
+   * 
+   * @param <P>
+   * @param dpw
+   * @param points
+   * @return
+   */
+  /*public static <P extends DPPoint<P>> DPWC DPW2DPWC(final DPW dpw, final List<P> points) {
+    List<DPWC.Category> categories = new ArrayList<>();
+    List<DPW.DpDimension> dimension = new ArrayList<>();
+    for (P p : points) {
+      dimension.add(new DPW.DpDimension(p.term(), p.value()));
+    }
+    categories.add(new DPWC.Category(dpw.dimentions(), 1.0));
+
+    return new DPWC(dpw.term(), categories);
+  }*/
 
   /**
    * Returns a {@link DPWC} built using a {@link DPW} and a set of clusters.
@@ -155,7 +173,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     List<Cluster<P>> validClusters = new ArrayList<>();
 
     // Remove empyt clusters
-    for (Cluster<P> cluster : clusters){
+    for (Cluster<P> cluster : clusters) {
       if (cluster.size() > 0) {
         validClusters.add(cluster);
       }
@@ -175,8 +193,8 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
   }
 
   /**
-   * Returns a {@link DPWC} built using a {@link DPW} and a set of clusters.
-   * Uses the average affinity of each cluster as a weight to the similarity metric.
+   * Returns a {@link DPWC} built using a {@link DPW} and a set of clusters. Uses
+   * the average affinity of each cluster as a weight to the similarity metric.
    *
    * @param dpw
    * @param clusters
@@ -186,7 +204,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     List<Cluster<P>> validClusters = new ArrayList<>();
 
     // Remove empyt clusters
-    for (Cluster<P> cluster : clusters){
+    for (Cluster<P> cluster : clusters) {
       if (cluster.size() > 0) {
         validClusters.add(cluster);
       }
@@ -219,6 +237,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
       }
       categories.add(new DPWC.Category(dpDimensions, a[i++]));
     }
+
     categories.sort(Collections.reverseOrder());
     return new DPWC(dpw.term(), categories);
   }
@@ -247,7 +266,6 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
   public static class Category implements Comparable<Category> {
     public final List<DPW.DpDimension> dpDimensions;
     public final double affinity;
-
 
     public Category(final List<DPW.DpDimension> dpDimensions, final double affinity) {
       this.dpDimensions = dpDimensions;
@@ -281,8 +299,8 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
           rv = true;
         else if (o instanceof Category) {
           Category c = (Category) o;
-          rv = CollectionsUtils.equals(this.dpDimensions, c.dpDimensions) &&
-              MathUtils.equals(this.affinity,c.affinity, 0.01);
+          rv = CollectionsUtils.equals(this.dpDimensions, c.dpDimensions)
+              && MathUtils.equals(this.affinity, c.affinity, 0.01);
         }
       }
       return rv;
@@ -306,9 +324,9 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     NGram term = NGram.Unigram(json.get("term").asString());
 
     JSONArray cats = json.get("categories").asArray();
-    for(JSONValue c : cats) {
+    for (JSONValue c : cats) {
       List<DPW.DpDimension> dimensions = new ArrayList<>();
-      for(JSONValue d: c.asObject().get("dimentions").asArray()) {
+      for (JSONValue d : c.asObject().get("dimentions").asArray()) {
         JSONObject jd = d.asObject();
         dimensions.add(new DPW.DpDimension(NGram.Unigram(jd.get("term").asString()),
             NGram.Unigram(jd.get("stemm").asString()), jd.get("value").asDouble()));
@@ -329,21 +347,21 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
 
     // Learn Context DPWs
     // Map NGrams to Indexes
-    List<DPW> context = new ArrayList<>(dpw.size()+1);
+    List<DPW> context = new ArrayList<>(dpw.size() + 1);
     List<String> map = new ArrayList<>(context.size());
     for (DPW.DpDimension dimension : dpw.dimentions()) {
       context.add(dpwpCache.fetch(dimension.term));
       map.add(dimension.term.toString());
     }
 
-    if(!context.contains(dpw)) {
+    if (!context.contains(dpw)) {
       context.add(dpw);
       map.add(dpw.term().toString());
     }
 
     // Learn the missing frequencies based on latent information
     // Learn latent information with NMF
-    int minLat = (int)Math.round(map.size()/LMIN), maxLat = (int)Math.round(map.size()/LMAX);
+    int minLat = (int) Math.round(map.size() / LMIN), maxLat = (int) Math.round(map.size() / LMAX);
     Matrix nf = Latent.nmf_dpw(context, minLat, maxLat, reps);
 
     // Optimize DPW profile with latent information
@@ -352,15 +370,20 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
 
     // Generate new points with latent information
     List<MatrixPoint> mpoints = new ArrayList<>();
-    for(int i = 0; i < context.size(); i++) {
+    for (int i = 0; i < context.size(); i++) {
       mpoints.add(new MatrixPoint(context.get(i), nf, map));
     }
 
-    // Cluster DP Points into categories
-    Hierarchical hc = CLINK.build();
-    List<Cluster<MatrixPoint>> clusters = hc.clustering(mpoints, 2, mpoints.size() - 1);
-    DPWC dpwc = DPWC.buildDPWC(dpw, clusters);
-    
+    DPWC dpwc = null;
+    if (mpoints.size() > MIN_CLUSTER_POINTS) {
+      // Cluster DP Points into categories
+      Hierarchical hc = CLINK.build();
+      List<Cluster<MatrixPoint>> clusters = hc.clustering(mpoints, 2, mpoints.size() - 1);
+      dpwc = DPWC.buildDPWC(dpw, clusters);
+    } else {
+      dpwc = DPWC.DPW2DPWC(dpw);
+    }
+
     return dpwc;
   }
 
@@ -374,14 +397,14 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     JSONObject json = new JSONObject();
     JSONArray categories = new JSONArray();
 
-    for(Category c :dpwc.categories) {
+    for (Category c : dpwc.categories) {
       JSONObject category = new JSONObject();
       JSONArray dimentions = new JSONArray();
-      for(DPW.DpDimension d : c.dpDimensions) {
+      for (DPW.DpDimension d : c.dpDimensions) {
         JSONObject dimention = new JSONObject();
         dimention.put("stemm", d.stemm.toString());
-        dimention.put("term",d.term.toString());
-        dimention.put("value",d.value);
+        dimention.put("term", d.term.toString());
+        dimention.put("value", d.value);
         dimentions.add(dimention);
       }
       category.put("affinity", c.affinity);

@@ -14,7 +14,17 @@ public interface DPPoint<P extends DPPoint<?>> extends Distance<P>, Similarity<P
    *
    * @return
    */
-  NGram term();
+  default NGram term() {
+    return dpw().term();
+  }
+
+  /**
+   * 
+   * @return
+   */
+  default NGram stem() {
+    return dpw().stem();
+  }
 
   /**
    *

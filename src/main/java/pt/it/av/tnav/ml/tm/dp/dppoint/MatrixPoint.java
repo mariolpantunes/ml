@@ -20,11 +20,6 @@ public class MatrixPoint implements DPPoint<MatrixPoint>{
   }
 
   @Override
-  public NGram term() {
-    return dpw().term();
-  }
-
-  @Override
   public double affinity(DPW dpw) {
     double rv = 1.0;
     if(!this.dpw.term().equals(dpw.term())) {

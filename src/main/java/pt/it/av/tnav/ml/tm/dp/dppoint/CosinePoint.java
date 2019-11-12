@@ -35,11 +35,6 @@ public class CosinePoint implements DPPoint<CosinePoint> {
   }
 
   @Override
-  public NGram term() {
-    return dpw.term();
-  }
-
-  @Override
   public DPW dpw() {
     return dpw;
   }
