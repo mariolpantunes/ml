@@ -34,6 +34,11 @@ public class CoOccPoint implements DPPoint<CoOccPoint> {
   }
 
   @Override
+  public double value(final DPW dpw) {
+    return dpw.dimention(this.term());
+  }
+
+  @Override
   public double affinity(final DPW dpw) {
     double rv = 1.0;
     if(this.dpw.term().equals(dpw.term())) {

@@ -1,12 +1,11 @@
 package pt.it.av.tnav.ml.tm.dp.dppoint;
 
 import pt.it.av.tnav.ml.tm.dp.DPW;
-import pt.it.av.tnav.ml.tm.ngrams.NGram;
 import pt.it.av.tnav.utils.bla.Matrix;
 
 import java.util.List;
 
-public class MatrixPoint implements DPPoint<MatrixPoint>{
+public class MatrixPoint implements DPPoint<MatrixPoint> {
   private final DPW dpw;
   private final Matrix matrix;
   private final List<String> map;
@@ -20,9 +19,9 @@ public class MatrixPoint implements DPPoint<MatrixPoint>{
   }
 
   @Override
-  public double affinity(DPW dpw) {
+  public double affinity(final DPW dpw) {
     double rv = 1.0;
-    if(!this.dpw.term().equals(dpw.term())) {
+    if (!this.dpw.term().equals(dpw.term())) {
       int p2 = map.indexOf(dpw.term().toString());
       rv = matrix.get(selfIdx, p2);
     }
@@ -35,6 +34,16 @@ public class MatrixPoint implements DPPoint<MatrixPoint>{
   }
 
   @Override
+  public double value(final DPW dpw) {
+    double rv = 1.0;
+    if (!dpw.term().equals(this.dpw.term())) {
+      int p2 = map.indexOf(dpw.term().toString());
+      rv = matrix.get(selfIdx, p2);
+    }
+    return rv;
+  }
+
+  @Override
   public double distanceTo(MatrixPoint point) {
     return 1.0 - similarityTo(point);
   }
@@ -42,7 +51,7 @@ public class MatrixPoint implements DPPoint<MatrixPoint>{
   @Override
   public double similarityTo(MatrixPoint point) {
     double rv = 1.0;
-    if(!point.term().equals(dpw.term())) {
+    if (!point.term().equals(dpw.term())) {
       int p2 = map.indexOf(point.term().toString());
       rv = matrix.get(selfIdx, p2);
     }
