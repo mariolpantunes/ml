@@ -133,7 +133,7 @@ public class Cluster<D extends Distance<D>> extends ArrayList<D> {
   }
 
   /**
-   * Returns the distiortion of the cluster.
+   * Returns the distortion of the cluster.
    *
    * @return the distortion of the cluster.
    */

@@ -7,13 +7,14 @@ import pt.it.av.tnav.ml.tm.dp.DPW;
 import java.util.List;
 
 /**
- * Dimentionality reduction based on latent methods.
+ * Dimensionality reduction based on latent methods.
  *
  * @author Mário Antunes
  * @version 1.0
  */
 public class Latent {
-  private Latent() { }
+  private Latent() {
+  }
 
   /**
    *
@@ -24,8 +25,8 @@ public class Latent {
    * @param <E>
    * @return
    */
-  public static <E extends Similarity<E>> Matrix nmf(final List<E> points, final int minLat,
-                                                     final int maxLat, final int reps) {
+  public static <E extends Similarity<E>> Matrix nmf(final List<E> points, final int minLat, final int maxLat,
+      final int reps) {
     Matrix sim = Matrix.identity(points.size());
 
     for (int i = 0; i < points.size() - 1; i++) {
@@ -36,11 +37,11 @@ public class Latent {
       }
     }
 
-    Matrix wh[] = sim.nmf((int)Math.round(points.size() / (double)minLat));
+    Matrix wh[] = sim.nmf((int) Math.round(points.size() / (double) minLat));
     Matrix nf = wh[0].mul(wh[1]), tnf = null;
     double bcost = sim.euclideanDistance(nf);
     for (int i = 1; i < reps; i++) {
-      wh = sim.nmf((int)Math.round(points.size() / (double)minLat));
+      wh = sim.nmf((int) Math.round(points.size() / (double) minLat));
       tnf = wh[0].mul(wh[1]);
       double cost = sim.euclideanDistance(tnf);
       if (cost < bcost) {
@@ -49,9 +50,9 @@ public class Latent {
       }
     }
 
-    for (int d = minLat+1; d <= maxLat && d < points.size(); d++) {
+    for (int d = minLat + 1; d <= maxLat && d < points.size(); d++) {
       for (int i = 0; i < reps; i++) {
-        wh = sim.nmf((int)Math.round(points.size() / (double)d));
+        wh = sim.nmf((int) Math.round(points.size() / (double) d));
         tnf = wh[0].mul(wh[1]);
         double cost = sim.euclideanDistance(tnf);
         if (cost < bcost) {
@@ -63,7 +64,6 @@ public class Latent {
 
     return nf;
   }
-
 
   /**
    *
@@ -78,23 +78,23 @@ public class Latent {
     Matrix sim = Matrix.identity(context.size());
 
     for (int i = 0; i < context.size() - 1; i++) {
-      for (int j = i+1; j < context.size(); j++) {
-        double similarity = context.get(i).dimention(context.get(j).term()) + 
-        context.get(j).dimention(context.get(i).term());
+      for (int j = i + 1; j < context.size(); j++) {
+        double similarity = context.get(i).dimention(context.get(j).term())
+            + context.get(j).dimention(context.get(i).term());
         sim.set(i, j, similarity);
         sim.set(j, i, similarity);
       }
     }
 
-    for(int i = 0; i < context.size(); i++) {
+    for (int i = 0; i < context.size(); i++) {
       sim.set(i, i, context.get(i).dimention(context.get(i).term()));
     }
 
-    Matrix wh[] = sim.nmf((int)Math.round(context.size() / (double)minLat));
+    Matrix wh[] = sim.nmf((int) Math.round(context.size() / (double) minLat));
     Matrix nf = wh[0].mul(wh[1]), tnf = null;
     double bcost = sim.euclideanDistance(nf);
     for (int i = 1; i < reps; i++) {
-      wh = sim.nmf((int)Math.round(context.size() / (double)minLat));
+      wh = sim.nmf((int) Math.round(context.size() / (double) minLat));
       tnf = wh[0].mul(wh[1]);
       double cost = sim.euclideanDistance(tnf);
       if (cost < bcost) {
@@ -103,9 +103,9 @@ public class Latent {
       }
     }
 
-    for (int d = minLat+1; d <= maxLat && d < context.size(); d++) {
+    for (int d = minLat + 1; d <= maxLat && d < context.size(); d++) {
       for (int i = 0; i < reps; i++) {
-        wh = sim.nmf((int)Math.round(context.size() / (double)d));
+        wh = sim.nmf((int) Math.round(context.size() / (double) d));
         tnf = wh[0].mul(wh[1]);
         double cost = sim.euclideanDistance(tnf);
         if (cost < bcost) {
@@ -116,7 +116,7 @@ public class Latent {
     }
 
     nf.uDiv(nf.max());
-    for(int i = 0; i < context.size(); i++) {
+    for (int i = 0; i < context.size(); i++) {
       nf.set(i, i, 1.0);
     }
 

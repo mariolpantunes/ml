@@ -16,15 +16,15 @@ import java.util.List;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 2.0
  */
-public class AutoK {
+public class AutoClustering {
   /**
-   * Private constructor.
-   * This code is a static library.
+   * Private constructor. This code is a static library.
    */
-  private AutoK() { }
+  private AutoClustering() {
+  }
 
-  public static <D extends Distance<D>> List<Cluster<D>> silhouette(final Kmeans alg,
-                                                                    final List<D> dps, final int min, final int max){
+  public static <D extends Distance<D>> List<Cluster<D>> silhouette(final Kmeans alg, final List<D> dps, final int min,
+      final int max) {
     return silhouette(alg, dps, min, max, 10);
   }
 
@@ -38,9 +38,9 @@ public class AutoK {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> silhouette(final Kmeans alg,
-  final List<D> dps, final int min, final int max, final int reps){
-    final int kmax = (max < dps.size())?max:dps.size()-1;
+  public static <D extends Distance<D>> List<Cluster<D>> silhouette(final Kmeans alg, final List<D> dps, final int min,
+      final int max, final int reps) {
+    final int kmax = (max < dps.size()) ? max : dps.size() - 1;
     double sil[] = new double[(kmax - min) + 1];
     List<Cluster<D>> allClusters[] = Utils.cast(new List[(kmax - min) + 1]);
 
@@ -71,8 +71,8 @@ public class AutoK {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg,
-    final List<D> dps, final int min, final int max) {
+  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg, final List<D> dps, final int min,
+      final int max) {
     return elbow(alg, dps, min, max, 10, new Lmethod());
   }
 
@@ -85,8 +85,8 @@ public class AutoK {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg,
-  final List<D> dps, final int min, final int max, final Curvature cur) {
+  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg, final List<D> dps, final int min,
+      final int max, final Curvature cur) {
     return elbow(alg, dps, min, max, 3, cur);
   }
 
@@ -100,11 +100,10 @@ public class AutoK {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg,
-   final List<D> dps, final int min, final int max, final int reps, final Curvature cur) {
-    final int kmax = (max < dps.size())?max:dps.size()-1;
-    double wsss[] = new double[(kmax - min) + 1],
-        x[] = new double[(kmax - min) + 1];
+  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg, final List<D> dps, final int min,
+      final int max, final int reps, final Curvature cur) {
+    final int kmax = (max < dps.size()) ? max : dps.size() - 1;
+    double wsss[] = new double[(kmax - min) + 1], x[] = new double[(kmax - min) + 1];
     List<Cluster<D>> allClusters[] = Utils.cast(new List[(kmax - min) + 1]);
 
     int i = 0;
@@ -129,7 +128,7 @@ public class AutoK {
       idx = cur.elbow(x, wsss);
     }
 
-    //System.out.println(PrintUtils.array(wsss));
+    // System.out.println(PrintUtils.array(wsss));
 
     return allClusters[idx];
   }
@@ -143,8 +142,8 @@ public class AutoK {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> clustering(final Kmeans alg,
-    final List<D> dps, final int min, final int max, final int Nd) {
+  public static <D extends Distance<D>> List<Cluster<D>> clustering(final Kmeans alg, final List<D> dps, final int min,
+      final int max, final int Nd) {
     return clustering(alg, dps, min, max, Nd, 10);
   }
 
@@ -158,9 +157,9 @@ public class AutoK {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> clustering(final Kmeans alg,
-    final List<D> dps, int min,int max, int Nd, int reps) {
-    final int kmax = (max < dps.size())?max:dps.size()-1;
+  public static <D extends Distance<D>> List<Cluster<D>> clustering(final Kmeans alg, final List<D> dps, int min,
+      int max, int Nd, int reps) {
+    final int kmax = (max < dps.size()) ? max : dps.size() - 1;
     double fk[] = new double[(kmax - min) + 1];
     double Sk[] = new double[(kmax - min) + 1];
     double ak[] = new double[(kmax - min) + 1];
@@ -182,9 +181,9 @@ public class AutoK {
       fk[i] = f(i, Sk[i], Sk, ak, Nd);
       allClusters[i] = clusters;
     }
-    //System.out.println("SK: " + PrintUtils.array(Sk));
-    //System.out.println("AK: " + PrintUtils.array(ak));
-    //System.out.println("FK: " + PrintUtils.array(fk));
+    // System.out.println("SK: " + PrintUtils.array(Sk));
+    // System.out.println("AK: " + PrintUtils.array(ak));
+    // System.out.println("FK: " + PrintUtils.array(fk));
     int idx = ArrayUtils.min(fk, 0, i);
     return allClusters[idx];
   }
