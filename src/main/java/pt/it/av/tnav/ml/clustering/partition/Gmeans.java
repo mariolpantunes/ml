@@ -1,4 +1,4 @@
-package pt.it.av.tnav.ml.clustering;
+package pt.it.av.tnav.ml.clustering.partition;
 
 import java.util.List;
 

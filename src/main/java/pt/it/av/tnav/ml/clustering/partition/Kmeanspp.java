@@ -1,4 +1,4 @@
-package pt.it.av.tnav.ml.clustering;
+package pt.it.av.tnav.ml.clustering.partition;
 
 import pt.it.av.tnav.utils.ArrayUtils;
 import pt.it.av.tnav.utils.PrintUtils;
@@ -14,9 +14,9 @@ import java.util.List;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
-public class Kmeanspp extends Kmedoids {
-  @Override
-  protected <D extends Distance<D>> List<Cluster<D>> init(final List<D> dps, final int mappings[],
+public class Kmeanspp  {
+ 
+  protected static <D extends Distance<D>> List<Cluster<D>> init(final List<D> dps, final int mappings[],
                                                           final int k) {
     List<Cluster<D>> clusters = new ArrayList<>(k);
 
@@ -75,7 +75,7 @@ public class Kmeanspp extends Kmedoids {
    * @param <D>
    * @return
    */
-  private <D extends Distance<D>> double distanceClosestCluster(final D dp,
+  private static <D extends Distance<D>> double distanceClosestCluster(final D dp,
                                                                 List<Cluster<D>> clusters) {
     double rv = clusters.get(0).center().distanceTo(dp);
 
@@ -87,5 +87,10 @@ public class Kmeanspp extends Kmedoids {
     }
 
     return Math.pow(rv, 2.0);
+  }
+
+  public static <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps,
+  final int k) {
+    return Kmedoids.clustering(Kmeanspp::init, dps, k);
   }
 }
