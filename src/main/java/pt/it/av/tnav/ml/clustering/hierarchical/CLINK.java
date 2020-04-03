@@ -2,15 +2,23 @@ package pt.it.av.tnav.ml.clustering.hierarchical;
 
 import pt.it.av.tnav.utils.ArrayUtils;
 import pt.it.av.tnav.utils.structures.Distance;
-import java.lang.ref.WeakReference;
 import java.util.List;
 
-public class CLINK implements Hierarchical{
-  private static WeakReference<Hierarchical> wrh;
+/**
+ * Complete-linkage clustering implementation.
+ *
+ * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
+ * @version 1.0
+ * @see <a href="https://en.wikipedia.org/wiki/Complete-linkage clustering">
+ *      Complete-linkage_clustering </a>
+ */
+public class CLINK {
+  /** Static library */
+  private CLINK() {
+  }
 
-  public <D extends Distance<D>> int[][] clustering(final List<D> dps) {
-    double[] height = new double[dps.size()],
-        mus = new double[dps.size()];
+  public static <D extends Distance<D>> int[][] clustering(final List<D> dps) {
+    double[] height = new double[dps.size()], mus = new double[dps.size()];
     int[] parent = new int[dps.size()];
 
     parent[0] = 0;
@@ -30,10 +38,10 @@ public class CLINK implements Hierarchical{
         }
       }
 
-      int a = i-1;
-      for (int j = i-1; j >= 0; j--) {
+      int a = i - 1;
+      for (int j = i - 1; j >= 0; j--) {
         if (height[j] >= mus[parent[j]]) {
-          if(mus[j] < mus[a]) {
+          if (mus[j] < mus[a]) {
             a = j;
           }
         } else {
@@ -46,7 +54,7 @@ public class CLINK implements Hierarchical{
       parent[a] = i;
       height[a] = mus[a];
 
-      if (a < i-1) {
+      if (a < i - 1) {
         while (b != i) {
           if (b == i - 1) {
             parent[b] = i;
@@ -63,20 +71,19 @@ public class CLINK implements Hierarchical{
       }
 
       for (int j = 0; j < i; j++) {
-        if(parent[parent[j]] == i && height[j] >= height[parent[j]]) {
-            parent[j] = i;
-          }
+        if (parent[parent[j]] == i && height[j] >= height[parent[j]]) {
+          parent[j] = i;
         }
       }
+    }
 
+    // System.out.println(PrintUtils.array(height));
+    // System.out.println(PrintUtils.array(parent));
+    // System.out.println(PrintUtils.array(mus));
 
-    //System.out.println(PrintUtils.array(height));
-    //System.out.println(PrintUtils.array(parent));
-    //System.out.println(PrintUtils.array(mus));
+    int[][] d = new int[dps.size() - 1][2];
 
-    int[][] d = new int[dps.size()-1][2];
-
-    for(int i = 0; i < dps.size()-1; i++) {
+    for (int i = 0; i < dps.size() - 1; i++) {
       // find minimum level
       int idx = ArrayUtils.min(height);
       d[i][0] = idx;
@@ -84,36 +91,12 @@ public class CLINK implements Hierarchical{
       height[idx] = Double.POSITIVE_INFINITY;
     }
 
-    /*System.out.println("Merge elements");
-    for(int i = 0; i < d.length; i++) {
-      //System.out.println(dps.get(d[i][0])+" + "+dps.get(d[i][1]));
-      System.out.println(d[i][0]+" + "+d[i][1]);
-    }*/
+    /*
+     * System.out.println("Merge elements"); for(int i = 0; i < d.length; i++) {
+     * //System.out.println(dps.get(d[i][0])+" + "+dps.get(d[i][1]));
+     * System.out.println(d[i][0]+" + "+d[i][1]); }
+     */
 
     return d;
-  }
-
-  /**
-   * Builds a static {@link WeakReference} to a {@link Hierarchical} class.
-   * <p>
-   *   This method should be used whenever the {@link Hierarchical} will be built and destroy multiple times.
-   *   It will also share a single stemmer through several process/threads.
-   * </p>
-   *
-   * @return {@link Hierarchical} reference that points to a {@link CLINK}
-   */
-  public synchronized static Hierarchical build() {
-    Hierarchical rv = null;
-    if (wrh == null) {
-      rv = new CLINK();
-      wrh = new WeakReference<>(rv);
-    } else {
-      rv = wrh.get();
-      if(rv == null) {
-        rv = new CLINK();
-        wrh = new WeakReference<>(rv);
-      }
-    }
-    return rv;
   }
 }

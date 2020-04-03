@@ -7,6 +7,7 @@ import pt.it.av.tnav.ml.clustering.cluster.Cluster;
 import pt.it.av.tnav.ml.clustering.cluster.ClusterUtils;
 import pt.it.av.tnav.ml.clustering.curvature.Curvature;
 import pt.it.av.tnav.ml.clustering.curvature.Lmethod;
+import pt.it.av.tnav.ml.clustering.partition.Partition;
 
 import java.util.List;
 
@@ -23,11 +24,8 @@ public class AutoClustering {
   private AutoClustering() {
   }
 
-  public interface Clustering<D extends Distance<D>> {
-    public <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps, final int k);
-  }
 
-  public static <D extends Distance<D>> List<Cluster<D>> silhouette(final Clustering<D> c, final List<D> dps,
+  public static <D extends Distance<D>> List<Cluster<D>> silhouette(final Partition<D> c, final List<D> dps,
       final int min, final int max) {
     return silhouette(c, dps, min, max, 10);
   }
@@ -42,7 +40,7 @@ public class AutoClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> silhouette(final Clustering<D> c, final List<D> dps,
+  public static <D extends Distance<D>> List<Cluster<D>> silhouette(final Partition<D> c, final List<D> dps,
       final int min, final int max, final int reps) {
     final int kmax = (max < dps.size()) ? max : dps.size() - 1;
     double sil[] = new double[(kmax - min) + 1];
@@ -75,7 +73,7 @@ public class AutoClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Clustering<D> c, final List<D> dps, final int min,
+  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Partition<D> c, final List<D> dps, final int min,
       final int max) {
     return elbow(c, dps, min, max, 10, new Lmethod());
   }
@@ -89,7 +87,7 @@ public class AutoClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Clustering<D> c, final List<D> dps, final int min,
+  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Partition<D> c, final List<D> dps, final int min,
       final int max, final Curvature cur) {
     return elbow(c, dps, min, max, 3, cur);
   }
@@ -104,7 +102,7 @@ public class AutoClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Clustering<D> c, final List<D> dps, final int min,
+  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Partition<D> c, final List<D> dps, final int min,
       final int max, final int reps, final Curvature cur) {
     final int kmax = (max < dps.size()) ? max : dps.size() - 1;
     double wsss[] = new double[(kmax - min) + 1], x[] = new double[(kmax - min) + 1];
@@ -146,7 +144,7 @@ public class AutoClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> clustering(final Clustering<D> c, final List<D> dps, final int min,
+  public static <D extends Distance<D>> List<Cluster<D>> clustering(final Partition<D> c, final List<D> dps, final int min,
       final int max, final int Nd) {
     return clustering(c, dps, min, max, Nd, 10);
   }
@@ -161,7 +159,7 @@ public class AutoClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> clustering(final Clustering<D> c, final List<D> dps, int min,
+  public static <D extends Distance<D>> List<Cluster<D>> clustering(final Partition<D> c, final List<D> dps, int min,
       int max, int Nd, int reps) {
     final int kmax = (max < dps.size()) ? max : dps.size() - 1;
     double fk[] = new double[(kmax - min) + 1];

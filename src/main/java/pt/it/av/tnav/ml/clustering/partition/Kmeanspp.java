@@ -14,10 +14,12 @@ import java.util.List;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
-public class Kmeanspp  {
- 
-  protected static <D extends Distance<D>> List<Cluster<D>> init(final List<D> dps, final int mappings[],
-                                                          final int k) {
+public class Kmeanspp {
+  /** Static library */
+  private Kmeanspp() {
+  }
+
+  protected static <D extends Distance<D>> List<Cluster<D>> init(final List<D> dps, final int mappings[], final int k) {
     List<Cluster<D>> clusters = new ArrayList<>(k);
 
     if (dps.size() > 0) {
@@ -75,8 +77,7 @@ public class Kmeanspp  {
    * @param <D>
    * @return
    */
-  private static <D extends Distance<D>> double distanceClosestCluster(final D dp,
-                                                                List<Cluster<D>> clusters) {
+  private static <D extends Distance<D>> double distanceClosestCluster(final D dp, List<Cluster<D>> clusters) {
     double rv = clusters.get(0).center().distanceTo(dp);
 
     for (int i = 1; i < clusters.size(); i++) {
@@ -89,8 +90,7 @@ public class Kmeanspp  {
     return Math.pow(rv, 2.0);
   }
 
-  public static <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps,
-  final int k) {
+  public static <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps, final int k) {
     return Kmedoids.clustering(Kmeanspp::init, dps, k);
   }
 }
