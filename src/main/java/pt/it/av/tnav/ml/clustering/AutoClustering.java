@@ -23,9 +23,13 @@ public class AutoClustering {
   private AutoClustering() {
   }
 
-  public static <D extends Distance<D>> List<Cluster<D>> silhouette(final Kmeans alg, final List<D> dps, final int min,
-      final int max) {
-    return silhouette(alg, dps, min, max, 10);
+  public interface Clustering<D extends Distance<D>> {
+    public <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps, final int k);
+  }
+
+  public static <D extends Distance<D>> List<Cluster<D>> silhouette(final Clustering<D> c, final List<D> dps,
+      final int min, final int max) {
+    return silhouette(c, dps, min, max, 10);
   }
 
   /**
@@ -38,18 +42,18 @@ public class AutoClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> silhouette(final Kmeans alg, final List<D> dps, final int min,
-      final int max, final int reps) {
+  public static <D extends Distance<D>> List<Cluster<D>> silhouette(final Clustering<D> c, final List<D> dps,
+      final int min, final int max, final int reps) {
     final int kmax = (max < dps.size()) ? max : dps.size() - 1;
     double sil[] = new double[(kmax - min) + 1];
     List<Cluster<D>> allClusters[] = Utils.cast(new List[(kmax - min) + 1]);
 
     int i = 0;
     for (int k = min; k <= kmax; k++, i++) {
-      List<Cluster<D>> clusters = alg.clustering(dps, k);
+      List<Cluster<D>> clusters = c.clustering(dps, k);
       double wss = ClusterUtils.avgDistortion(clusters);
       for (int j = 1; j < reps; j++) {
-        List<Cluster<D>> currentClusters = alg.clustering(dps, k);
+        List<Cluster<D>> currentClusters = c.clustering(dps, k);
         double currentWSS = ClusterUtils.avgDistortion(currentClusters);
         if (currentWSS > wss && !ClusterUtils.emptyClusters(currentClusters)) {
           clusters = currentClusters;
@@ -71,9 +75,9 @@ public class AutoClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg, final List<D> dps, final int min,
+  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Clustering<D> c, final List<D> dps, final int min,
       final int max) {
-    return elbow(alg, dps, min, max, 10, new Lmethod());
+    return elbow(c, dps, min, max, 10, new Lmethod());
   }
 
   /**
@@ -85,9 +89,9 @@ public class AutoClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg, final List<D> dps, final int min,
+  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Clustering<D> c, final List<D> dps, final int min,
       final int max, final Curvature cur) {
-    return elbow(alg, dps, min, max, 3, cur);
+    return elbow(c, dps, min, max, 3, cur);
   }
 
   /**
@@ -100,7 +104,7 @@ public class AutoClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Kmeans alg, final List<D> dps, final int min,
+  public static <D extends Distance<D>> List<Cluster<D>> elbow(final Clustering<D> c, final List<D> dps, final int min,
       final int max, final int reps, final Curvature cur) {
     final int kmax = (max < dps.size()) ? max : dps.size() - 1;
     double wsss[] = new double[(kmax - min) + 1], x[] = new double[(kmax - min) + 1];
@@ -109,10 +113,10 @@ public class AutoClustering {
     int i = 0;
     for (int k = min; k <= kmax; k++, i++) {
       x[i] = k;
-      List<Cluster<D>> clusters = alg.clustering(dps, k);
+      List<Cluster<D>> clusters = c.clustering(dps, k);
       double wss = ClusterUtils.avgDistortion(clusters);
       for (int j = 1; j < reps; j++) {
-        List<Cluster<D>> currentClusters = alg.clustering(dps, k);
+        List<Cluster<D>> currentClusters = c.clustering(dps, k);
         double cwss = ClusterUtils.avgDistortion(currentClusters);
         if (cwss > wss && !ClusterUtils.emptyClusters(currentClusters)) {
           clusters = currentClusters;
@@ -142,9 +146,9 @@ public class AutoClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> clustering(final Kmeans alg, final List<D> dps, final int min,
+  public static <D extends Distance<D>> List<Cluster<D>> clustering(final Clustering<D> c, final List<D> dps, final int min,
       final int max, final int Nd) {
-    return clustering(alg, dps, min, max, Nd, 10);
+    return clustering(c, dps, min, max, Nd, 10);
   }
 
   /**
@@ -157,7 +161,7 @@ public class AutoClustering {
    * @param <D>
    * @return
    */
-  public static <D extends Distance<D>> List<Cluster<D>> clustering(final Kmeans alg, final List<D> dps, int min,
+  public static <D extends Distance<D>> List<Cluster<D>> clustering(final Clustering<D> c, final List<D> dps, int min,
       int max, int Nd, int reps) {
     final int kmax = (max < dps.size()) ? max : dps.size() - 1;
     double fk[] = new double[(kmax - min) + 1];
@@ -167,10 +171,10 @@ public class AutoClustering {
 
     int i = 0;
     for (int k = min; k <= kmax; k++, i++) {
-      List<Cluster<D>> clusters = alg.clustering(dps, k);
+      List<Cluster<D>> clusters = c.clustering(dps, k);
       double wss = ClusterUtils.avgDistortion(clusters);
       for (int j = 1; j < reps; j++) {
-        List<Cluster<D>> currentClusters = alg.clustering(dps, k);
+        List<Cluster<D>> currentClusters = c.clustering(dps, k);
         double cwss = ClusterUtils.avgDistortion(currentClusters);
         if (cwss > wss && !ClusterUtils.emptyClusters(currentClusters)) {
           clusters = currentClusters;

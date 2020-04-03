@@ -2,6 +2,7 @@ package pt.it.av.tnav.ml.clustering;
 
 import org.junit.BeforeClass;
 import pt.it.av.tnav.ml.clustering.cluster.Cluster;
+import pt.it.av.tnav.ml.clustering.partition.Kmedoids;
 import pt.it.av.tnav.utils.structures.point.Point2D;
 
 import java.util.ArrayList;
@@ -35,8 +36,7 @@ public class KmedoidsTest {
   public void test_clustering() {
     //System.out.println("Points: " + PrintUtils.list(dps));
 
-    Kmedoids alg = new Kmedoids();
-    List<Cluster<Point2D>> clusters = alg.clustering(dps, 2);
+    List<Cluster<Point2D>> clusters = Kmedoids.clustering(dps, 2);
 
     //System.out.println("Clusters: " + PrintUtils.list(clusters));
 
@@ -89,8 +89,7 @@ public class KmedoidsTest {
     points.add(new Point2D(-1.0, 5.0));
     points.add(new Point2D(-9.0, -2.0));
 
-    Kmedoids alg = new Kmedoids();
-    List<Cluster<Point2D>> clusters = alg.clustering(points, 2);
+    List<Cluster<Point2D>> clusters = Kmedoids.clustering(points, 2);
     assertTrue(clusters != null);
   }
 }

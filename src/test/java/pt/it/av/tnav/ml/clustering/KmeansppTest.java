@@ -2,6 +2,7 @@ package pt.it.av.tnav.ml.clustering;
 
 import org.junit.BeforeClass;
 import pt.it.av.tnav.ml.clustering.cluster.Cluster;
+import pt.it.av.tnav.ml.clustering.partition.Kmeanspp;
 import pt.it.av.tnav.utils.structures.point.Point2D;
 
 import java.util.ArrayList;
@@ -36,8 +37,7 @@ public class KmeansppTest {
   public void test_clustering() {
     //System.out.println("Points: " + PrintUtils.list(dps));
 
-    Kmeanspp alg = new Kmeanspp();
-    List<Cluster<Point2D>> clusters = alg.clustering(dps, 2);
+    List<Cluster<Point2D>> clusters = Kmeanspp.clustering(dps, 2);
 
     //System.out.println("Clusters: " + PrintUtils.list(clusters));
 
@@ -90,8 +90,7 @@ public class KmeansppTest {
     points.add(new Point2D(-1.0, 5.0));
     points.add(new Point2D(-9.0, -2.0));
 
-    Kmeanspp alg = new Kmeanspp();
-    List<Cluster<Point2D>> clusters = alg.clustering(points, 2);
+    List<Cluster<Point2D>> clusters = Kmeanspp.clustering(points, 2);
     assertTrue(clusters != null);
   }
 }
