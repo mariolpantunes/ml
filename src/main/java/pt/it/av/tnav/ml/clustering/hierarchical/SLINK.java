@@ -1,15 +1,17 @@
 package pt.it.av.tnav.ml.clustering.hierarchical;
 
+import pt.it.av.tnav.ml.clustering.cluster.Cluster;
+import pt.it.av.tnav.ml.clustering.curvature.Lmethod;
 import pt.it.av.tnav.utils.ArrayUtils;
 import pt.it.av.tnav.utils.structures.Distance;
-import java.lang.ref.WeakReference;
 import java.util.List;
 
-public class SLINK implements Hierarchical {
-  private static WeakReference<Hierarchical> wrh;
+public class SLINK {
+  /** Static library */
+  private SLINK() {
+  }
 
-  @Override
-  public <D extends Distance<D>> int[][] clustering(final List<D> dps) {
+  public static <D extends Distance<D>> int[][] dendogram(final List<D> dps) {
     double[] height = new double[dps.size()], mus = new double[dps.size()];
     int[] parent = new int[dps.size()];
 
@@ -63,28 +65,13 @@ public class SLINK implements Hierarchical {
     return d;
   }
 
-  /**
-   * Builds a static {@link WeakReference} to a {@link Hierarchical} class.
-   * <p>
-   * This method should be used whenever the {@link Hierarchical} will be built
-   * and destroy multiple times. It will also share a single stemmer through
-   * several process/threads.
-   * </p>
-   *
-   * @return {@link Hierarchical} reference that points to a {@link SLINK}
-   */
-  public synchronized static Hierarchical build() {
-    Hierarchical rv = null;
-    if (wrh == null) {
-      rv = new SLINK();
-      wrh = new WeakReference<>(rv);
-    } else {
-      rv = wrh.get();
-      if (rv == null) {
-        rv = new SLINK();
-        wrh = new WeakReference<>(rv);
-      }
-    }
-    return rv;
+  public static <D extends Distance<D>> List<Cluster<D>> fit(final List<D> dps, final int k) {
+    int dendogram[][] = dendogram(dps);
+    return HierarchicalUtils.d2c(dps, dendogram, k);
+  }
+
+  public static <D extends Distance<D>> List<Cluster<D>> fit(final List<D> dps) {
+    int dendogram[][] = dendogram(dps);
+    return HierarchicalUtils.d2c(dps, dendogram, new Lmethod());
   }
 }

@@ -1,6 +1,5 @@
 package pt.it.av.tnav.ml.tm.dp;
 
-import pt.it.av.tnav.ml.clustering.hierarchical.Hierarchical;
 import pt.it.av.tnav.ml.clustering.hierarchical.CLINK;
 import pt.it.av.tnav.ml.dreduction.Latent;
 import pt.it.av.tnav.ml.tm.dp.cache.DPWPCache;
@@ -377,8 +376,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     DPWC dpwc = null;
     if (mpoints.size() > MIN_CLUSTER_POINTS) {
       // Cluster DP Points into categories
-      Hierarchical hc = CLINK.build();
-      List<Cluster<MatrixPoint>> clusters = hc.clustering(mpoints, 2, mpoints.size() - 1);
+      List<Cluster<MatrixPoint>> clusters = CLINK.fit(mpoints);
       dpwc = DPWC.buildDPWC(dpw, clusters);
     } else {
       dpwc = DPWC.DPW2DPWC(dpw);

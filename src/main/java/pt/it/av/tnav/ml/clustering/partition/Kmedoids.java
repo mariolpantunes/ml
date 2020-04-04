@@ -92,11 +92,11 @@ public class Kmedoids {
     return rv;
   }
 
-  public static <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps, final int k) {
-    return clustering(Kmedoids::init, dps, k);
+  public static <D extends Distance<D>> List<Cluster<D>> fit(final List<D> dps, final int k) {
+    return fit(Kmedoids::init, dps, k);
   }
 
-  protected static <D extends Distance<D>> List<Cluster<D>> clustering(final Init<D> c, final List<D> dps,
+  protected static <D extends Distance<D>> List<Cluster<D>> fit(final Init<D> c, final List<D> dps,
       final int k) {
     // mapping used to identity where each data point is attributed
     final int mapping[] = new int[dps.size()];

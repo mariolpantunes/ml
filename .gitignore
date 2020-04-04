@@ -3,6 +3,9 @@
 .settings
 Test*.java
 
+#VSCode
+.vscode
+
 # Jetbrains Clion:
 .idea
 *.iml

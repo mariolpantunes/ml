@@ -1,5 +1,7 @@
 package pt.it.av.tnav.ml.clustering.hierarchical;
 
+import pt.it.av.tnav.ml.clustering.cluster.Cluster;
+import pt.it.av.tnav.ml.clustering.curvature.Lmethod;
 import pt.it.av.tnav.utils.ArrayUtils;
 import pt.it.av.tnav.utils.structures.Distance;
 import java.util.List;
@@ -17,7 +19,7 @@ public class CLINK {
   private CLINK() {
   }
 
-  public static <D extends Distance<D>> int[][] clustering(final List<D> dps) {
+  public static <D extends Distance<D>> int[][] dendogram(final List<D> dps) {
     double[] height = new double[dps.size()], mus = new double[dps.size()];
     int[] parent = new int[dps.size()];
 
@@ -98,5 +100,15 @@ public class CLINK {
      */
 
     return d;
+  }
+
+  public static <D extends Distance<D>> List<Cluster<D>> fit(final List<D> dps, final int k) {
+    int dendogram[][] = dendogram(dps);
+    return HierarchicalUtils.d2c(dps, dendogram, k);
+  }
+
+  public static <D extends Distance<D>> List<Cluster<D>> fit(final List<D> dps) {
+    int dendogram[][] = dendogram(dps);
+    return HierarchicalUtils.d2c(dps, dendogram, new Lmethod());
   }
 }

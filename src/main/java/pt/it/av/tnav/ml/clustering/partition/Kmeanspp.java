@@ -90,7 +90,7 @@ public class Kmeanspp {
     return Math.pow(rv, 2.0);
   }
 
-  public static <D extends Distance<D>> List<Cluster<D>> clustering(final List<D> dps, final int k) {
-    return Kmedoids.clustering(Kmeanspp::init, dps, k);
+  public static <D extends Distance<D>> List<Cluster<D>> fit(final List<D> dps, final int k) {
+    return Kmedoids.fit(Kmeanspp::init, dps, k);
   }
 }

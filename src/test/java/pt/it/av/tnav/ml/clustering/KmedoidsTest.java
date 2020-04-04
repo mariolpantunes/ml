@@ -36,7 +36,7 @@ public class KmedoidsTest {
   public void test_clustering() {
     //System.out.println("Points: " + PrintUtils.list(dps));
 
-    List<Cluster<Point2D>> clusters = Kmedoids.clustering(dps, 2);
+    List<Cluster<Point2D>> clusters = Kmedoids.fit(dps, 2);
 
     //System.out.println("Clusters: " + PrintUtils.list(clusters));
 
@@ -89,7 +89,7 @@ public class KmedoidsTest {
     points.add(new Point2D(-1.0, 5.0));
     points.add(new Point2D(-9.0, -2.0));
 
-    List<Cluster<Point2D>> clusters = Kmedoids.clustering(points, 2);
+    List<Cluster<Point2D>> clusters = Kmedoids.fit(points, 2);
     assertTrue(clusters != null);
   }
 }

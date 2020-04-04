@@ -48,10 +48,10 @@ public class AutoClustering {
 
     int i = 0;
     for (int k = min; k <= kmax; k++, i++) {
-      List<Cluster<D>> clusters = c.clustering(dps, k);
+      List<Cluster<D>> clusters = c.fit(dps, k);
       double wss = ClusterUtils.avgDistortion(clusters);
       for (int j = 1; j < reps; j++) {
-        List<Cluster<D>> currentClusters = c.clustering(dps, k);
+        List<Cluster<D>> currentClusters = c.fit(dps, k);
         double currentWSS = ClusterUtils.avgDistortion(currentClusters);
         if (currentWSS > wss && !ClusterUtils.emptyClusters(currentClusters)) {
           clusters = currentClusters;
@@ -111,10 +111,10 @@ public class AutoClustering {
     int i = 0;
     for (int k = min; k <= kmax; k++, i++) {
       x[i] = k;
-      List<Cluster<D>> clusters = c.clustering(dps, k);
+      List<Cluster<D>> clusters = c.fit(dps, k);
       double wss = ClusterUtils.avgDistortion(clusters);
       for (int j = 1; j < reps; j++) {
-        List<Cluster<D>> currentClusters = c.clustering(dps, k);
+        List<Cluster<D>> currentClusters = c.fit(dps, k);
         double cwss = ClusterUtils.avgDistortion(currentClusters);
         if (cwss > wss && !ClusterUtils.emptyClusters(currentClusters)) {
           clusters = currentClusters;
@@ -169,10 +169,10 @@ public class AutoClustering {
 
     int i = 0;
     for (int k = min; k <= kmax; k++, i++) {
-      List<Cluster<D>> clusters = c.clustering(dps, k);
+      List<Cluster<D>> clusters = c.fit(dps, k);
       double wss = ClusterUtils.avgDistortion(clusters);
       for (int j = 1; j < reps; j++) {
-        List<Cluster<D>> currentClusters = c.clustering(dps, k);
+        List<Cluster<D>> currentClusters = c.fit(dps, k);
         double cwss = ClusterUtils.avgDistortion(currentClusters);
         if (cwss > wss && !ClusterUtils.emptyClusters(currentClusters)) {
           clusters = currentClusters;
