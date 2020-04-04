@@ -360,8 +360,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
 
     // Learn the missing frequencies based on latent information
     // Learn latent information with NMF
-    int minLat = (int) Math.round(map.size() / LMIN), maxLat = (int) Math.round(map.size() / LMAX);
-    Matrix nf = Latent.nmf_dpw(context, minLat, maxLat, reps);
+    Matrix nf = Latent.nmf_dpw(context);
 
     // Optimize DPW profile with latent information
     DPWOpt opt = new DPWNMFOpt(nf, map);
@@ -376,6 +375,7 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     DPWC dpwc = null;
     if (mpoints.size() > MIN_CLUSTER_POINTS) {
       // Cluster DP Points into categories
+      // List<Cluster<MatrixPoint>> clusters = CLINK.fit(mpoints);
       List<Cluster<MatrixPoint>> clusters = CLINK.fit(mpoints);
       dpwc = DPWC.buildDPWC(dpw, clusters);
     } else {

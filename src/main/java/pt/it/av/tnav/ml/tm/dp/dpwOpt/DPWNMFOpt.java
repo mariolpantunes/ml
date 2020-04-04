@@ -29,13 +29,11 @@ public class DPWNMFOpt implements DPWOpt {
   }
 
   @Override
-  public List<DPW.DpDimension> optimize(final NGram term,
-                                        final NGram stemm,
-                                        final List<DPW.DpDimension> dpDimensions) {
+  public List<DPW.DpDimension> optimize(final NGram term, final NGram stemm, final List<DPW.DpDimension> dpDimensions) {
     int i = map.indexOf(term.toString());
     List<DPW.DpDimension> dimensions = new ArrayList<>(dpDimensions.size());
 
-    for(DPW.DpDimension d : dpDimensions) {
+    for (DPW.DpDimension d : dpDimensions) {
       int j = map.indexOf(d.term.toString());
       dimensions.add(new DPW.DpDimension(d.term, d.stemm, nf.get(i, j)));
     }
