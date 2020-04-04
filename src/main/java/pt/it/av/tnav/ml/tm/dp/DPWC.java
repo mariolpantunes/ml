@@ -1,6 +1,6 @@
 package pt.it.av.tnav.ml.tm.dp;
 
-import pt.it.av.tnav.ml.clustering.hierarchical.SLINK;
+import pt.it.av.tnav.ml.clustering.partition.Kmeanspp;
 import pt.it.av.tnav.ml.dreduction.Latent;
 import pt.it.av.tnav.ml.tm.dp.cache.DPWPCache;
 import pt.it.av.tnav.ml.tm.dp.dppoint.DPPoint;
@@ -17,6 +17,7 @@ import pt.it.av.tnav.utils.json.JSONObject;
 import pt.it.av.tnav.utils.json.JSONValue;
 import pt.it.av.tnav.utils.structures.Distance;
 import pt.it.av.tnav.utils.structures.Similarity;
+import pt.it.av.tnav.ml.clustering.AutoClustering;
 import pt.it.av.tnav.ml.clustering.cluster.Cluster;
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
 
@@ -35,7 +36,7 @@ import java.util.List;
  */
 public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> {
   private static final int NMF_REPS = 100, MIN_CLUSTER_POINTS = 5;
-  private static final double RATIO = 1.5, LMIN = 4.0, LMAX = 2.0;
+  private static final double RATIO = 1.5;
   private final NGram term;
   private List<Category> categories;
 
@@ -148,16 +149,15 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
    * @param points
    * @return
    */
-  /*public static <P extends DPPoint<P>> DPWC DPW2DPWC(final DPW dpw, final List<P> points) {
-    List<DPWC.Category> categories = new ArrayList<>();
-    List<DPW.DpDimension> dimension = new ArrayList<>();
-    for (P p : points) {
-      dimension.add(new DPW.DpDimension(p.term(), p.value()));
-    }
-    categories.add(new DPWC.Category(dpw.dimentions(), 1.0));
-
-    return new DPWC(dpw.term(), categories);
-  }*/
+  /*
+   * public static <P extends DPPoint<P>> DPWC DPW2DPWC(final DPW dpw, final
+   * List<P> points) { List<DPWC.Category> categories = new ArrayList<>();
+   * List<DPW.DpDimension> dimension = new ArrayList<>(); for (P p : points) {
+   * dimension.add(new DPW.DpDimension(p.term(), p.value())); } categories.add(new
+   * DPWC.Category(dpw.dimentions(), 1.0));
+   * 
+   * return new DPWC(dpw.term(), categories); }
+   */
 
   /**
    * Returns a {@link DPWC} built using a {@link DPW} and a set of clusters.
@@ -373,10 +373,12 @@ public class DPWC implements Similarity<DPWC>, Distance<DPWC>, Comparable<DPWC> 
     }
 
     DPWC dpwc = null;
-    if (mpoints.size() > MIN_CLUSTER_POINTS) {
+
+    if (mpoints.size() >= MIN_CLUSTER_POINTS) {
       // Cluster DP Points into categories
       // List<Cluster<MatrixPoint>> clusters = CLINK.fit(mpoints);
-      List<Cluster<MatrixPoint>> clusters = SLINK.fit(mpoints);
+      // List<Cluster<MatrixPoint>> clusters = SLINK.fit(mpoints);
+      List<Cluster<MatrixPoint>> clusters = AutoClustering.silhouette(Kmeanspp::fit, mpoints, 2, mpoints.size() - 1);
       dpwc = DPWC.buildDPWC(dpw, clusters);
     } else {
       dpwc = DPWC.DPW2DPWC(dpw);
