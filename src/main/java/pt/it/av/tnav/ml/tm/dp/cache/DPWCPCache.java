@@ -23,7 +23,7 @@ public class DPWCPCache extends AbstractPCache<NGram, DPWC> {
   }
 
   @Override
-  protected DPWC buid(NGram key) {
+  protected DPWC build(NGram key) {
     return DPWC.learn(key, dpwpCache);
   }
 
