@@ -37,7 +37,7 @@ public class Kmedoids {
 
     ArrayUtils.shuffle(idxs);
     for (int i = 0; i < k; i++) {
-      clusters.add(new Cluster<>(dps.get(idxs[i])));
+      clusters.add(new Cluster<D>(dps.get(idxs[i])));
       mappings[idxs[i]] = i;
     }
     return clusters;

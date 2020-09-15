@@ -8,7 +8,7 @@ import java.lang.ref.WeakReference;
  * DK-method to detect knee/elbow points.
  * <p>
  *   Discrete Curvature (Kf(x)) Method.
- *   Computes the values of curvature analitically.
+ *   Computes the values of curvature analytically.
  * </p>
  *
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>

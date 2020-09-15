@@ -1,5 +1,6 @@
 package pt.it.av.tnav.ml.clustering.curvature;
 
+import pt.it.av.tnav.ml.sp.Smoothing;
 import pt.it.av.tnav.utils.ArrayUtils;
 
 import java.lang.ref.WeakReference;
@@ -25,84 +26,16 @@ public class Kneedle extends BaseCurvature{
   /**
    * Find a single knee (the best one) in a batch manner.
    * Since it work on a batch manner it becomes simpler than the conventional algorithm.
-   * This version assumes the X variable is incremental [1, 2, 3, ..., length(Y)].
-   *
-   * @param y
-   * @return
-   */
-  public int knee(final double[] y) {
-    double inc = 1.0 / y.length, ys[] = new double[y.length],
-        yn[] = new double[y.length], yDiff[] = new double[y.length];
-    ArrayUtils.mm(y, ys, 1);
-    ArrayUtils.rescaling(ys, yn);
-
-    for (int i = 0; i < y.length; i++) {
-      yDiff[i] = yn[i] - (i * inc);
-    }
-
-    return ArrayUtils.max(yDiff);
-  }
-
-  /**
-   * Find a single curvature (the best one) in a batch manner.
-   * Since it work on a batch manner it becomes simpler than the conventional algorithm.
-   * This version assumes the X variable is incremental [1, 2, 3, ..., length(Y)].
-   * It also assumes that the curvature is inverted (insteas of using y=x, it uses y=-x).
-   *
-   * @param y
-   * @return
-   */
-  public static int ielbow(final double[] y) {
-    double inc = 1.0 / y.length, ys[] = new double[y.length],
-        yn[] = new double[y.length], yDiff[] = new double[y.length];
-    ArrayUtils.mm(y, ys, 1);
-    ArrayUtils.rescaling(ys, yn);
-
-    for (int i = 0; i < y.length; i++) {
-      yDiff[i] = yn[i] - (1.0 - (i * inc));
-    }
-
-    return ArrayUtils.min(yDiff);
-  }
-
-  /**
-   * Find a single curvature (the best one) in a batch manner.
-   * Since it work on a batch manner it becomes simpler than the conventional algorithm.
-   * This version assumes the X variable is incremental [1, 2, 3, ..., length(Y)].
-   *
-   * @param y
-   * @return
-   */
-  public int elbow(final double[] y) {
-    double inc = 1.0 / y.length, ys[] = new double[y.length],
-        yn[] = new double[y.length], yDiff[] = new double[y.length];
-    ArrayUtils.mm(y, ys, 1);
-    ArrayUtils.rescaling(ys, yn);
-
-    for (int i = 0; i < y.length; i++) {
-      yDiff[i] = yn[i] - (i * inc);
-    }
-
-    //System.err.println(PrintUtils.array(yDiff));
-    //System.err.println(ArrayUtils.min(yDiff));
-
-    return ArrayUtils.min(yDiff);
-  }
-
-  /**
-   * Find a single knee (the best one) in a batch manner.
-   * Since it work on a batch manner it becomes simpler than the conventional algorithm.
    *
    * @param x
    * @param y
    * @return
    */
   public int find_knee(final double[] x, final double[] y) {
-    double xs[] = new double[x.length], xn[] = new double[x.length],
+    double xn[] = new double[x.length],
         ys[] = new double[y.length], yn[] = new double[y.length];
-    ArrayUtils.mm(x, xs, 1);
-    ArrayUtils.rescaling(xs, xn);
-    ArrayUtils.mm(y, ys, 1);
+    ArrayUtils.rescaling(x, xn);
+    Smoothing.sma_linear(y, x, 1, ys);
     ArrayUtils.rescaling(ys, yn);
 
     double[] yDiff = new double[y.length];
@@ -142,11 +75,10 @@ public class Kneedle extends BaseCurvature{
    * @return
    */
   private int elbow_positive(final double[] x, final double[] y) {
-    double xs[] = new double[x.length], xn[] = new double[x.length],
+    double xn[] = new double[x.length],
         ys[] = new double[y.length], yn[] = new double[y.length];
-    ArrayUtils.mm(x, xs, 1);
-    ArrayUtils.rescaling(xs, xn);
-    ArrayUtils.mm(y, ys, 1);
+    ArrayUtils.rescaling(x, xn);
+    Smoothing.sma_linear(y, x, 1, ys);
     ArrayUtils.rescaling(ys, yn);
 
     double[] yDiff = new double[y.length];
@@ -164,11 +96,10 @@ public class Kneedle extends BaseCurvature{
    * @return
    */
   private int elbow_negative(final double[] x, final double[] y) {
-    double xs[] = new double[x.length], xn[] = new double[x.length],
+    double xn[] = new double[x.length],
         ys[] = new double[y.length], yn[] = new double[y.length];
-    ArrayUtils.mm(x, xs, 1);
-    ArrayUtils.rescaling(xs, xn);
-    ArrayUtils.mm(y, ys, 1);
+    ArrayUtils.rescaling(x, xn);
+    Smoothing.sma_linear(y, x, 1, ys);
     ArrayUtils.rescaling(ys, yn);
 
     double[] yDiff = new double[y.length];
