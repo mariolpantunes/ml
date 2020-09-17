@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.it.av.tnav.ml.sp.Smoothing;
-import pt.it.av.tnav.utils.ArrayUtils;
 import pt.it.av.tnav.utils.PrintUtils;
 import pt.it.av.tnav.utils.structures.point.Point2D;
 
