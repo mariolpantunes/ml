@@ -1,10 +1,20 @@
 package pt.it.av.tnav.ml.sp;
 
+import java.util.Arrays;
+import java.util.List;
+
 import pt.it.av.tnav.utils.MathUtils;
 import pt.it.av.tnav.utils.structures.point.Point2D;
 
 public final class Smoothing {
   private Smoothing() {
+  }
+
+  public static List<Point2D> sma_last(final List<Point2D> values, final double width_before, final double width_after) {
+    Point2D array[] = new Point2D[values.size()];
+    array = values.toArray(array);
+    Point2D[] out = sma_last(array, width_before, width_after);
+    return Arrays.asList(out);
   }
 
   public static Point2D[] sma_last(final Point2D[] values, final double width_before, final double width_after) {
