@@ -10,6 +10,14 @@ public final class Smoothing {
   private Smoothing() {
   }
 
+  public static List<Point2D> sma_last(final List<Point2D> values, final double width) {
+    return sma_last(values, width, width);
+  }
+
+  public static Point2D[] sma_last(final Point2D[] values, final double width) {
+    return sma_last(values, width, width);
+  }
+  
   public static List<Point2D> sma_last(final List<Point2D> values, final double width_before, final double width_after) {
     Point2D array[] = new Point2D[values.size()];
     array = values.toArray(array);
