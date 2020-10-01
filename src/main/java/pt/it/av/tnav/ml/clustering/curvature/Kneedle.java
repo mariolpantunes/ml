@@ -1,6 +1,5 @@
 package pt.it.av.tnav.ml.clustering.curvature;
 
-import pt.it.av.tnav.ml.sp.Smoothing;
 import pt.it.av.tnav.utils.ArrayUtils;
 
 import java.lang.ref.WeakReference;
@@ -35,7 +34,7 @@ public class Kneedle extends BaseCurvature{
     double xn[] = new double[x.length],
         ys[] = new double[y.length], yn[] = new double[y.length];
     ArrayUtils.rescaling(x, xn);
-    Smoothing.sma_linear(y, x, 1, ys);
+    //Smoothing.sma_linear(y, x, 1, ys);
     ArrayUtils.rescaling(ys, yn);
 
     double[] yDiff = new double[y.length];
@@ -78,7 +77,7 @@ public class Kneedle extends BaseCurvature{
     double xn[] = new double[x.length],
         ys[] = new double[y.length], yn[] = new double[y.length];
     ArrayUtils.rescaling(x, xn);
-    Smoothing.sma_linear(y, x, 1, ys);
+    //Smoothing.sma_linear(y, x, 1, ys);
     ArrayUtils.rescaling(ys, yn);
 
     double[] yDiff = new double[y.length];
@@ -99,7 +98,7 @@ public class Kneedle extends BaseCurvature{
     double xn[] = new double[x.length],
         ys[] = new double[y.length], yn[] = new double[y.length];
     ArrayUtils.rescaling(x, xn);
-    Smoothing.sma_linear(y, x, 1, ys);
+    //Smoothing.sma_linear(y, x, 1, ys);
     ArrayUtils.rescaling(ys, yn);
 
     double[] yDiff = new double[y.length];

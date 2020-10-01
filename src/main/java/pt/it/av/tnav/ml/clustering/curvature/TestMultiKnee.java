@@ -177,7 +177,7 @@ public class TestMultiKnee {
 
         // apply sma_linear
         double sy[] = new double[y.length];
-        Smoothing.sma_linear(y, x, 3, sy);
+        //Smoothing.sma_linear(y, x, 3, sy);
 
         // output new csv
         writer = new FileWriter(csvFileSmooth);
