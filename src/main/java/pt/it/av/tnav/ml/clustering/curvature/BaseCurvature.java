@@ -61,4 +61,6 @@ public abstract class BaseCurvature implements Curvature{
    * @return
    */
   public abstract int find_elbow(double[] x, double[] y);
+
+  
 }

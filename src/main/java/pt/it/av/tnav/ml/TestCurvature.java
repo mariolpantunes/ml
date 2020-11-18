@@ -1,6 +1,6 @@
 package pt.it.av.tnav.ml;
 
-import pt.it.av.tnav.ml.clustering.partition.Kmeanspp;
+/*import pt.it.av.tnav.ml.clustering.partition.Kmeanspp;
 import pt.it.av.tnav.ml.clustering.cluster.Cluster;
 import pt.it.av.tnav.ml.clustering.cluster.ClusterUtils;
 import pt.it.av.tnav.ml.clustering.curvature.*;
@@ -40,7 +40,6 @@ public class TestCurvature {
     header.add("AL-method");
 
     List<Curvature> curv = new ArrayList<>();
-    curv.add(new Kneedle());
     curv.add(new Lmethod());
     curv.add(new Smethod());
     curv.add(new DFDT());
@@ -234,7 +233,7 @@ public class TestCurvature {
      * clusters.get(d[i][1]).addAll(clusters.get(d[i][0])); clusters.set(d[i][0],
      * null); x[dps.size() - i - 2] = dps.size() - i - 1; y[dps.size() - i - 2] =
      * ClusterUtils.avgDistortion(clusters); }
-     */
+     
 
     ArrayUtils.replace(y, 0, MathUtils.eps());
     System.out.println(PrintUtils.array(x));
@@ -264,7 +263,6 @@ public class TestCurvature {
     header.add("DK-method");
 
     List<Curvature> curv = new ArrayList<>();
-    curv.add(new Kneedle());
     curv.add(new Lmethod());
     // curv.add(new Smethod());
     curv.add(new MengerCurvature());
@@ -288,4 +286,5 @@ public class TestCurvature {
       System.out.println("\t" + header.get(i) + " -> " + bClusters.size());
     }
   }
-}
+  
+}*/

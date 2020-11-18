@@ -1,152 +1,175 @@
 package pt.it.av.tnav.ml.clustering.curvature;
 
-import pt.it.av.tnav.utils.ArrayUtils;
+import pt.it.av.tnav.ml.sp.Smoothing;
+import pt.it.av.tnav.utils.csv.CSV;
+import pt.it.av.tnav.utils.structures.point.Point2D;
 
-import java.lang.ref.WeakReference;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * <p>
- * Detect knee points in a curve using the "Kneedle" algorithm as described in the paper
- * "Finding a Kneedle in a Haystack: Detecting Knee Points in System Behavior".
+ * Detect knee points in a curve using the "Kneedle" algorithm as described in
+ * the paper "Finding a Kneedle in a Haystack: Detecting Knee Points in System
+ * Behavior".
  * </p>
- * Kneedle algorithm described in:
- * Satopaa, V., Albrecht, J., Irwin, D., & Raghavan, B. (2011, June).
- * Finding a" Kneedle" in a Haystack: Detecting Knee Points in System Behavior.
- * In 2011 31st International Conference on Distributed Computing Systems Workshops (pp. 166-171). IEEE.
+ * Kneedle algorithm described in: Satopaa, V., Albrecht, J., Irwin, D., &
+ * Raghavan, B. (2011, June). Finding a" Kneedle" in a Haystack: Detecting Knee
+ * Points in System Behavior. In 2011 31st International Conference on
+ * Distributed Computing Systems Workshops (pp. 166-171). IEEE.
  *
- * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
+ * @author Mário Antunes
  * @version 1.0
  */
-public class Kneedle extends BaseCurvature{
-  private static WeakReference<Curvature> wrc = null;
+public class Kneedle {
 
-  /**
-   * Find a single knee (the best one) in a batch manner.
-   * Since it work on a batch manner it becomes simpler than the conventional algorithm.
-   *
-   * @param x
-   * @param y
-   * @return
-   */
-  public int find_knee(final double[] x, final double[] y) {
-    double xn[] = new double[x.length],
-        ys[] = new double[y.length], yn[] = new double[y.length];
-    ArrayUtils.rescaling(x, xn);
-    //Smoothing.sma_linear(y, x, 1, ys);
-    ArrayUtils.rescaling(ys, yn);
+  private static int[] findMinMax(final List<Point2D> values) {
+    int minX = 0, maxX = 0, minY = 0, maxY = 0;
 
-    double[] yDiff = new double[y.length];
-    for (int i = 0; i < y.length; i++) {
-      yDiff[i] = yn[i] - xn[i];
+    for (int i = 1; i < values.size(); i++) {
+      Point2D p = values.get(i);
+      // search for X
+      if (p.x() < values.get(minX).x()) {
+        minX = i;
+      } else if (p.x() > values.get(maxX).x()) {
+        maxX = i;
+      }
+      // search for Y
+      if (p.y() < values.get(minY).y()) {
+        minY = i;
+      } else if (p.y() > values.get(maxY).y()) {
+        maxY = i;
+      }
     }
 
-    return ArrayUtils.max(yDiff);
+    return new int[] { minX, maxX, minY, maxY };
   }
 
-  /**
-   * Find a single curvature (the best one) in a batch manner.
-   * Since it work on a batch manner it becomes simpler than the conventional algorithm.
-   *
-   * @param x
-   * @param y
-   * @return
-   */
-  public int find_elbow(final double[] x, final double[] y) {
-    // Check the slope of the curvature
-    double m = (y[y.length-1] - y[0]) / (x[x.length-1] - x[0]);
-    int rv = 0;
+  private static List<Point2D> normalize(final List<Point2D> values) {
+    List<Point2D> rv = new ArrayList<>();
 
-    if(m >= 0) {
-      rv = elbow_positive(x, y);
-    } else {
-      rv = elbow_negative(x, y);
+    // Find max min for each coordinate
+    int idx[] = findMinMax(values);
+    double minX = values.get(idx[0]).x(), maxX = values.get(idx[1]).x(), minY = values.get(idx[2]).y(),
+        maxY = values.get(idx[3]).y();
+
+    // Normalize the points
+    for (Point2D p : values) {
+      double x = (p.x() - minX) / (maxX - minX), y = (p.y() - minY) / (maxY - minY);
+      rv.add(new Point2D(x, y));
     }
 
     return rv;
   }
 
-  /**
-   *
-   * @param x
-   * @param y
-   * @return
-   */
-  private int elbow_positive(final double[] x, final double[] y) {
-    double xn[] = new double[x.length],
-        ys[] = new double[y.length], yn[] = new double[y.length];
-    ArrayUtils.rescaling(x, xn);
-    //Smoothing.sma_linear(y, x, 1, ys);
-    ArrayUtils.rescaling(ys, yn);
+  private static List<Point2D> differences(final List<Point2D> values, final Direction cd, final Concavity c) {
+    List<Point2D> rv = new ArrayList<>();
 
-    double[] yDiff = new double[y.length];
-    for (int i = 0; i < y.length; i++) {
-      yDiff[i] = yn[i] - xn[i];
+    for (Point2D p : values) {
+      double x = p.x(), y = 0;
+
+      if (cd == Direction.Decreasing) {
+        y = p.x() + p.y();
+        if (c == Concavity.Counterclockwise) {
+          y = 1.0 - y;
+        }
+      } else {
+        y = p.y() - p.x();
+        if (c == Concavity.Counterclockwise) {
+          y = Math.abs(y);
+        }
+      }
+      rv.add(new Point2D(x, y));
     }
 
-    return ArrayUtils.min(yDiff);
+    return rv;
   }
 
-  /**
-   *
-   * @param x
-   * @param y
-   * @return
-   */
-  private int elbow_negative(final double[] x, final double[] y) {
-    double xn[] = new double[x.length],
-        ys[] = new double[y.length], yn[] = new double[y.length];
-    ArrayUtils.rescaling(x, xn);
-    //Smoothing.sma_linear(y, x, 1, ys);
-    ArrayUtils.rescaling(ys, yn);
+  public static int[] knee(final List<Point2D> values) {
+    return knee(values, 1.0, Direction.Decreasing, Concavity.Counterclockwise);
+  }
 
-    double[] yDiff = new double[y.length];
-    for (int i = 0; i < y.length; i++) {
-      yDiff[i] = yn[i] - (1.0 - xn[i]);
+  public static int[] knee(final List<Point2D> values, final double sensitivity) {
+    return knee(values, sensitivity, Direction.Decreasing, Concavity.Counterclockwise);
+  }
+
+  public static int[] knee(final List<Point2D> values, final double sensitivity, final Direction cd,
+      final Concavity c) {
+    // int knees[] = new int[];
+    // checkConstraints(x, y);
+
+    // Smoothing
+    List<Point2D> Ds = Smoothing.sma_linear(values, 3);
+
+    //TODO: remove
+    try {
+      CSV csv = new CSV();
+      csv.addLines(Ds);
+      final String csvFile = "/home/mantunes/multiknee/plot_smooth.csv";
+      FileWriter w = new FileWriter(csvFile);
+      csv.write(w);
+      w.flush();
+      w.close();
+    } catch (Exception e) {
+
     }
 
-    return ArrayUtils.min(yDiff);
-  }
+    // Normalization
+    List<Point2D> Dsn = normalize(Ds);
 
-  /**
-   * TODO: fix this
-   * @param x
-   * @param y
-   * @return
-   */
-  public static int[] knee(final double[] x, final double[] y, final double sensitivity) {
-    //int knees[] = new int[];
-    checkConstraints(x, y);
+    //TODO: remove
+    try {
+      CSV csv = new CSV();
+      csv.addLines(Dsn);
+      final String csvFile = "/home/mantunes/multiknee/plot_normalization.csv";
+      FileWriter w = new FileWriter(csvFile);
+      csv.write(w);
+      w.flush();
+      w.close();
+    } catch (Exception e) {
 
+    }
+
+    // Compute the differences
+    List<Point2D> Dd = differences(Dsn, cd, c);
+    
+    //TODO: remove
+    try {
+      CSV csv = new CSV();
+      csv.addLines(Dd);
+      final String csvFile = "/home/mantunes/multiknee/plot_diff.csv";
+      FileWriter w = new FileWriter(csvFile);
+      csv.write(w);
+      w.flush();
+      w.close();
+    } catch (Exception e) {
+
+    }
+
+    // Find local maxima
     List<Integer> kneeIndices = new ArrayList<Integer>();
     List<Integer> lmxIndices = new ArrayList<Integer>();
     List<Double> lmxThresholds = new ArrayList<Double>();
 
-    double xn[] = new double[x.length], yn[] = new double[y.length];
-    ArrayUtils.rescaling(y, yn);
-    ArrayUtils.rescaling(x, xn);
-
-    double[] yDiff = new double[y.length];
-    for (int i = 0; i < y.length; i++) {
-      yDiff[i] = yn[i] - xn[i];
-    }
-
     boolean detectKneeForLastLmx = false;
-    for (int i = 1; i < y.length - 1; i++) {
+    for (int i = 1; i < Dd.size() - 1; i++) {
+      double y0 = Dd.get(i - 1).y(), y = Dd.get(i).y(), y1 = Dd.get(i + 1).y();
 
       // check if the difference values of a point are bigger
       // than for its left and right neighbour => local maximum
-      if (yDiff[i] > yDiff[i - 1] && yDiff[i] > yDiff[i + 1]) {
+      if (y > y0 && y > y1) {
 
         // local maximum found
         lmxIndices.add(i);
 
         // compute the threshold value for this local maximum
-        // NOTE: As stated in the paper the threshold Tlmx is computed. Since the mean distance of all consecutive
-        // x-values summed together for a normalized function is always (1 / (n -1)) we do not have to compute the
+        // NOTE: As stated in the paper the threshold Tlmx is computed. Since the mean
+        // distance of all consecutive
+        // x-values summed together for a normalized function is always (1 / (n -1)) we
+        // do not have to compute the
         // whole sum here as stated in the paper.
-        double tlmx = yDiff[i] - sensitivity / (xn.length - 1);
+        double tlmx = Dd.get(i).y() - sensitivity / (Dd.size() - 1);
         lmxThresholds.add(tlmx);
 
         // try to find out if the current local maximum is a knee point
@@ -155,14 +178,15 @@ public class Kneedle extends BaseCurvature{
 
       // check for new knee point
       if (detectKneeForLastLmx) {
-        if (yDiff[i + 1] < lmxThresholds.get(lmxThresholds.size() - 1)) {
-
+        if (Dd.get(i + 1).y() < lmxThresholds.get(lmxThresholds.size() - 1)) {
           // knee detected
           kneeIndices.add(lmxIndices.get(lmxIndices.size() - 1));
           detectKneeForLastLmx = false;
         }
       }
     }
+
+    System.err.println("Knee Indices: " + kneeIndices.size());
 
     int knees[] = new int[kneeIndices.size()];
     for (int i = 0; i < kneeIndices.size(); i++) {
@@ -172,44 +196,14 @@ public class Kneedle extends BaseCurvature{
     return knees;
   }
 
-  /**
-   * @param x
-   * @param y
-   */
-  private static void checkConstraints(final double[] x, final double[] y) {
-
-    if (x.length != y.length || x.length < 2) {
-      throw new IllegalArgumentException("x and y arrays must have size > 1 and the same number of elements");
-    }
-
-    for (int i = 0; i < x.length - 1; i++) {
-      if (x[i + 1] <= x[i]) {
-        throw new IllegalArgumentException("x values must be sorted and increasing");
-      }
-    }
+  enum Direction {
+    Increasing, Decreasing
   }
 
-  /**
-   * Builds a static {@link WeakReference} to a {@link Curvature} class.
-   * <p>
-   *   This method should be used whenever the {@link Curvature} will be built and destroy multiple times.
-   *   It will also share a single stemmer through several process/threads.
-   * </p>
-   *
-   * @return {@link Curvature} reference that points to a {@link Kneedle}.
-   */
-  public synchronized static Curvature build() {
-    Curvature rv = null;
-    if (wrc == null) {
-      rv = new DFDT();
-      wrc = new WeakReference<>(rv);
-    } else {
-      rv = wrc.get();
-      if(rv == null) {
-        rv = new DFDT();
-        wrc = new WeakReference<>(rv);
-      }
-    }
-    return rv;
+  enum Concavity {
+    /* tangent goes anti-clockwise */
+    Counterclockwise,
+    /* tangent goes clockwise */
+    Clockwise
   }
 }
