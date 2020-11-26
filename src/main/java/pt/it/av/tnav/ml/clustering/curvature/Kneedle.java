@@ -1,6 +1,8 @@
 package pt.it.av.tnav.ml.clustering.curvature;
 
 import pt.it.av.tnav.ml.sp.Smoothing;
+import pt.it.av.tnav.ml.sp.RDP;
+import pt.it.av.tnav.utils.MathUtils;
 import pt.it.av.tnav.utils.csv.CSV;
 import pt.it.av.tnav.utils.structures.point.Point2D;
 
@@ -102,7 +104,7 @@ public class Kneedle {
     // Smoothing
     List<Point2D> Ds = Smoothing.sma_linear(values, 3);
 
-    //TODO: remove
+    // TODO: remove
     try {
       CSV csv = new CSV();
       csv.addLines(Ds);
@@ -118,7 +120,7 @@ public class Kneedle {
     // Normalization
     List<Point2D> Dsn = normalize(Ds);
 
-    //TODO: remove
+    // TODO: remove
     try {
       CSV csv = new CSV();
       csv.addLines(Dsn);
@@ -131,10 +133,27 @@ public class Kneedle {
 
     }
 
+    // TODO: test RDP here
+    List<Point2D> Drdp = RDP.rdp(Dsn);
+    double space_saving = MathUtils.round((1.0 - (Drdp.size() / (double) Dsn.size())) * 100.0, 2);
+    System.out.println("Number of data points after RDP: " + Drdp.size() + " (" + space_saving + "%)");
+
+    // write CSV with reduction data
+    try {
+      CSV csv = new CSV();
+      csv.addLines(Drdp);
+      FileWriter w = new FileWriter("/home/mantunes/multiknee/plot_rdp.csv");
+      csv.write(w);
+      w.flush();
+      w.close();
+    } catch (Exception e) {
+
+    }
+
     // Compute the differences
-    List<Point2D> Dd = differences(Dsn, cd, c);
-    
-    //TODO: remove
+    List<Point2D> Dd = differences(Drdp, cd, c);
+
+    // TODO: remove
     try {
       CSV csv = new CSV();
       csv.addLines(Dd);
